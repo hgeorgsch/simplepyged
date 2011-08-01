@@ -23,7 +23,7 @@
 # To contact the author, see http://github.com/dijxtra/simplepyged
 
 # Global imports
-class Event:
+class Event(object):
     """ Class represeting an event """
     def __init__(self, line):
         self.line = line

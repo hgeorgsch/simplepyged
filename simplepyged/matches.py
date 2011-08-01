@@ -26,7 +26,7 @@
 
 from records import Individual
 
-class MatchIndividual():
+class MatchIndividual(object):
     """ Class for determining whether an Individual matches certain criteria """
 
     def __init__(self, individual):
@@ -165,7 +165,7 @@ class MatchIndividual():
         return False
 
 
-class MatchList:
+class MatchList(object):
     """ Class for matching individuals against list of records
 
     For each boolean method of MatchIndividual class, there is method

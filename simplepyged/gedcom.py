@@ -30,7 +30,7 @@
 import string
 from records import *
 
-class Gedcom:
+class Gedcom(object):
     """ Gedcom parser
 
     This parser is for the Gedcom 5.5 format.  For documentation of

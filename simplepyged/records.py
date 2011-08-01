@@ -26,7 +26,7 @@
 import string
 from events import Event
 
-class Line:
+class Line(object):
     """ Line of a GEDCOM file
 
     Each line in a Gedcom file has following format:
