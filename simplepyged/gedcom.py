@@ -79,7 +79,6 @@ class Gedcom(Node):
         self._record_dict = {}
         self._current_level = -1
         self._current_line = self
-        self._individuals = 0
         self._parse(file)
 
     def record_dict(self):
