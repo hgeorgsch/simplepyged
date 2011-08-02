@@ -38,7 +38,7 @@ class McIntyreTest(unittest.TestCase):
 
     def test_matchlist(self):
         """ Testing class MatchList """
-        m = MatchList(self.g.individual_list())
+        m = MatchList(list(self.g.individual_list()))
 
         results = m.surname_match('Merriman')
         individual = results[0]
@@ -55,7 +55,7 @@ class McIntyreTest(unittest.TestCase):
     def test_criteria(self):
         """ Testing criteria search """
 
-        m = MatchList(self.g.individual_list())
+        m = MatchList(list(self.g.individual_list()))
 
         criteria = "surname=McIntyre:birthrange=1820-1840:deathrange=1865-1870"
         result = m.criteria_match(criteria)

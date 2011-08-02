@@ -13,8 +13,8 @@ class McIntyreTest(unittest.TestCase):
         """Check if parser collected all records"""
         self.assertEqual(len(self.g.record_dict()), 57)
 
-        self.assertEqual(len(self.g.individual_list()), 41)
-        self.assertEqual(len(self.g.family_list()), 16)
+        self.assertEqual(len(list(self.g.individual_list())), 41)
+        self.assertEqual(len(list(self.g.family_list())), 16)
               
 
     def test_missing_xref(self):

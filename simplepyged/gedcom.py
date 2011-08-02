@@ -77,8 +77,6 @@ class Gedcom(Node):
         """
 	Node.__init__(self)
         self._record_dict = {}
-        self._individual_list = []
-        self._family_list = []
         self._current_level = -1
         self._current_line = self
         self._individuals = 0
@@ -95,13 +93,13 @@ class Gedcom(Node):
         """ Return a list of all the individuals in the Gedcom file.  The
         individuals are in the same order as they appeared in the file.
         """
-        return self._individual_list
+        return self.children_tags("INDI")
 
     def family_list(self):
         """ Return a list of all the families in the Gedcom file.  The
         families are in the same order as they appeared in the file.
         """
-        return self._family_list
+        return self.children_tags("FAM")
 
     def get_record(self, xref):
         """ Return an object of class Record (or it's subclass) identified by xref """
@@ -152,10 +150,8 @@ class Gedcom(Node):
         if l == 0: #current line is in fact a brand new record
             if t == "INDI":
                 e = Individual(l,p,t,v,self.record_dict())
-                self._individual_list.append(e)
             elif t == "FAM":
                 e = Family(l,p,t,v,self.record_dict())
-                self._family_list.append(e)
             elif t == "OBJE":
                 e = Multimedia(l,p,t,v,self.record_dict())
             elif t == "NOTE":
