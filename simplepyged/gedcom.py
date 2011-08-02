@@ -55,7 +55,7 @@ def parse_line(line):
 
   return (level,pointer,tag,value)
 
-class Gedcom(object):
+class Gedcom(Node):
     """ Gedcom parser
 
     This parser is for the Gedcom 5.5 format.  For documentation of
@@ -74,13 +74,13 @@ class Gedcom(object):
     def __init__(self,file):
         """ Initialize a Gedcom parser. You must supply a Gedcom file.
         """
+	Node.__init__(self)
         self._record_dict = {}
         self._line_list = []
         self._individual_list = []
         self._family_list = []
-        self._line_top = Line(-1,"","TOP","",self._record_dict)
         self._current_level = -1
-        self._current_line = self._line_top
+        self._current_line = self
         self._individuals = 0
         self._parse(file)
 

@@ -31,6 +31,13 @@ from errors import *
 class Node(object):
     def __init__(self):
        self._children_lines = []
+       self._parent_line = None
+       self._level = -1
+
+    def level(self):
+        """ Return the level of this line """
+        return self._level
+
     def children_lines(self):
         """ Return the child lines of this line """
 	for i in self._children_lines: yield i
@@ -48,6 +55,15 @@ class Node(object):
         for c in self.children_lines():
             if c.tag() == tag: return c
         return None
+
+    def parent_line(self):
+        """ Return the parent line of this line """
+        return self._parent_line
+
+    def add_parent_line(self,line):
+        """ Add a parent line to this line """
+        self._parent_line = line
+
 
 class Line(Node):
     """ Line of a GEDCOM file
@@ -87,8 +103,6 @@ class Line(Node):
         self._tag = tag
         self._value = value
         self._dict = dict
-        # structuring
-        self._parent_line = None
 
     def _init(self):
         """ A method which GEDCOM parser runs after all lines are available. Subclasses should implement this method if they want to work with other Lines at parse time, but after all Lines are parsed. """
@@ -101,10 +115,6 @@ class Line(Node):
         """
         return self.__class__.__name__
 
-    def level(self):
-        """ Return the level of this line """
-        return self._level
-
     def xref(self):
         """ Return the xref of this line """
         return self._xref
@@ -116,14 +126,6 @@ class Line(Node):
     def value(self):
         """ Return the value of this line """
         return self._value
-
-    def parent_line(self):
-        """ Return the parent line of this line """
-        return self._parent_line
-
-    def add_parent_line(self,line):
-        """ Add a parent line to this line """
-        self._parent_line = line
 
     def children_single_record(self, tag):
         L = self.children_tag_records(tag)
