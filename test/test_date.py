@@ -13,8 +13,18 @@ class WrightTest(unittest.TestCase):
        pass
 
     def test_exact(self):
-        self.assertEqual(
-	      formatdate(makeDate( "12 MAY 1777" )), "12. mai 1777" )
+        d1 = makeDate( "1922" )
+        self.assertEqual( type(d1), DateProper )
+        self.assertEqual( formatdate(d1), "1922" )
+
+        d2 = makeDate( "0064" )
+        self.assertEqual( type(d2), DateProper )
+        self.assertEqual( formatdate(d2), "64" )
+	      
+	d1 = makeDate( "12 MAY 1777" )
+        self.assertEqual( type(d1), DateProper )
+        self.assertEqual( formatdate(d1), "12. mai 1777" )
+
         self.assertEqual(
 	      formatdate(makeDate( "28 FEB 1777" )), "28. februar 1777" )
         self.assertEqual(

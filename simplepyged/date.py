@@ -34,18 +34,32 @@ keywords = [
       "(B.C.)" ]
 
 class Date(object): 
-   def __init__(self,dat):
+   def __init__(self,*a): pass
+   def year(self): return -1
+   def gedcom(self): return ""
+class DateProper(object): 
+   def __init__(self,parts):
       self.BC = False
+      dat = list(parts)
       if dat[-1] in [ "B.C.", "BC", "(B.C.)" ]:
          self.bc = True
          dat = dat[:-1]
-      self.year = dat.pop()
+      self._year = int(dat.pop())
       self.month = None
       self.day = None
-      if len(dat) > 0: self.month = month_number[dat.pop()]
-      if len(dat) > 0: self.day = dat.pop()
+      if len(dat) > 0: self.month = month_number[dat.pop().upper()]
+      if len(dat) > 0: self.day = int(dat.pop())
       assert len(dat) == 0
-   def getDate(self): return (self.year,self.month,self.day)
+   def gedcom(self):
+      R = ""
+      if self.day != None: R += unicode(self.day) + " "
+      if self.month != None: R += months[self.month-1] + " "
+      if self._year != None: R += unicode(self._year)
+      return R
+
+   def getDate(self): return (self._year,self.month,self.day)
+   def year(self): 
+      return self._year
    def isBC(self): return self.BC
 
 class DateInterpreted(Date):
@@ -57,12 +71,14 @@ class DatePhrase(Date):
       self.date = dat
    def __str__(self): return self.date
    def getDate(self): return self.date
+   def gedcom(self): return self.date
 class DateApproximate(Date):
    def __init__(self,dat):
       assert dat[0] in [ "CAL", "EST", "ABT" ]
       self.approximation = dat[0]
       self.date = makeDate( dat[1:] )
    def getDate(self): return self.date
+   def year(self): return self.date.year()
 class DateRange(Date):
    def getDate(self): return (self.start,self.end)
    def __init__(self,dat):
@@ -93,15 +109,19 @@ class DatePeriod(Date):
 
 def makeDate(dat):
    if isinstance(dat,str): parts = dat.split()
+   elif isinstance(dat,unicode): parts = dat.split()
    else: parts = dat
    if parts[0] in [ "FROM", "TO" ]: return DatePeriod( parts )
    if parts[0] in [ "CAL", "EST", "ABT" ]: return DateApproximate( parts )
    if parts[0] in [ "BET", "BEF", "AFT" ]: return DateRange( parts )
    if parts[0] == "INT": return DateInterpreted( parts )
    try:
-     return Date( parts )
+      return DateProper( parts )
    except:
      return DatePhrase( parts )
+
+months = [ "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+           "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", ]
 
 
 month_number = {

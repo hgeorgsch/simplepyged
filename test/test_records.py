@@ -15,10 +15,14 @@ class McIntyreTest(unittest.TestCase):
 
         self.assertEqual(mary.type(), 'Individual')
        
-        self.assertEqual(mary.birth().dateplace(), ('19 Nov 1923', 'Louisiana, USA'))
+	(d,p) = mary.birth().dateplace()
+        self.assertEqual( d.gedcom(), '19 NOV 1923' )
+        self.assertEqual( p, [ 'Louisiana', 'USA' ] )
         self.assertEqual(mary.alive(), True)
         self.assertEqual(mary.father().alive(), False)
-        self.assertEqual(mary.father().death().dateplace(), ('19 Aug 1975', 'Bastrop, Louisiana'))
+	(d,p) = mary.father().death().dateplace()
+        self.assertEqual( d.gedcom(), '19 AUG 1975')
+        self.assertEqual( p, [ 'Bastrop', 'Louisiana' ] )
         self.assertEqual(mary.sex(), 'F')
         self.assertEqual(mary.given_name(), 'Mary Christine')
         self.assertEqual(mary.surname(), 'Hern')
@@ -38,7 +42,9 @@ class McIntyreTest(unittest.TestCase):
         """Testing class Family"""
         fam = self.g.get_family('@F8@')
 
-        self.assertEqual(fam.marriage().dateplace(), ('22 Oct 1821', 'Jefferson County, Mississippi, USA'))
+	(d,p) = fam.marriage().dateplace()
+        self.assertEqual( d.gedcom(), '22 OCT 1821' )
+        self.assertEqual( p, [ 'Jefferson County', 'Mississippi', 'USA' ] )
 
     def test_relatives(self):
         """Testing Individual methods concerned with finding a relative"""
@@ -81,7 +87,10 @@ class WrightTest(unittest.TestCase):
 
         self.assertEqual(delores.type(), 'Individual')
 
-        self.assertEqual(delores.birth().dateplace(), ('24 JUL 1963', ''))
+        (d,p) = delores.birth().dateplace()
+        self.assertEqual( d.gedcom(), '24 JUL 1963' )
+        self.assertEqual( p, '' )
+
         self.assertEqual(delores.sex(), 'F')
         self.assertEqual(delores.given_name(), 'Delores')
         self.assertEqual(delores.surname(), 'Hyatt')
@@ -100,7 +109,9 @@ class WrightTest(unittest.TestCase):
 
         self.assertEqual(family.husband().name(), ('Cosmond G', 'Wright'))
         self.assertEqual(family.married(), True)
-        self.assertEqual(family.marriage().dateplace(), ('1 SEP 1973', 'Troronto, Ontario, Canada')) #sic :-)
+        (d,p) = family.marriage().dateplace()
+        self.assertEqual( d.gedcom(), '1 SEP 1973' )
+        self.assertEqual( p, [ 'Troronto', 'Ontario', 'Canada' ] ) #sic :-)
         
 
 if __name__ == '__main__':

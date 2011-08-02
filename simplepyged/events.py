@@ -23,6 +23,8 @@
 #
 # To contact the author, see http://github.com/dijxtra/simplepyged
 
+import date
+
 # Global imports
 class Event(object):
     """ Class represeting an event """
@@ -32,7 +34,15 @@ class Event(object):
 
         self.type = self._get_value('TYPE')
         self.date = self._get_value('DATE')
+	if ( self.date != None): self.date = date.makeDate( self.date )
         self.place = self._get_value('PLAC')
+	if ( self.place != None):
+	   self.place = [ p.strip() for p in self.place.split( "," ) ]
+
+    def year(self):
+       if self.date == None: R = -1
+       else: R = self.date.year()
+       return R
 
     def _get_value(self, tag):
         """ Returns value of a child tag"""

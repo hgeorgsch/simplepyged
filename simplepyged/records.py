@@ -322,17 +322,8 @@ class Individual(Record):
     def birth_year(self):
         """ Return the birth year of a person in integer format """
 
-        if self.birth() == None:
-            return -1
-
-        if self.birth().date == None:
-            return -1
-
-        try:
-            date = int(string.split(self.birth().date)[-1])
-            return date
-        except ValueError:
-            return -1
+        if self.birth() == None: return -1
+        return self.birth().year()
 
     def alive(self):
         """ Return True if individual lacks death entry """
@@ -354,17 +345,8 @@ class Individual(Record):
     def death_year(self):
         """ Return the death year of a person in integer format """
 
-        if self.death() == None:
-            return -1
-
-        if self.death().date == None:
-            return -1
-
-        try:
-            date = int(string.split(self.death().date)[-1])
-            return date
-        except ValueError:
-            return -1
+        if self.death() == None: return -1
+        return self.death().year() 
 
     def deceased(self):
         """ Check if a person is deceased """
@@ -388,7 +370,7 @@ class Individual(Record):
         def ret_year(marr):
             if marr.date is None:
                 return ''
-            return int(marr.date.split(" ")[-1])
+            return int(marr.year())
 
         return map(ret_year, self.marriages())
 
