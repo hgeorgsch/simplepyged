@@ -2,6 +2,7 @@
 #
 # Gedcom 5.5 Parser
 #
+# Copyright (C) 2011 Hans Georg Schaathun (hg [ at ] schaathun.net)
 # Copyright (C) 2010 Nikola Škorić (nskoric [ at ] gmail.com)
 #
 # This program is free software; you can redistribute it and/or
@@ -122,6 +123,11 @@ class Line(Node):
     def add_parent_line(self,line):
         """ Add a parent line to this line """
         self._parent_line = line
+
+    def children_single_record(self, tag):
+        L = self.children_tag_records(tag)
+	if len(L) == 0: return None
+	else: return L[0]
 
     def children_tag_records(self, tag):
         """ Returns list of records which are pointed by child lines with given tag. """
@@ -561,15 +567,8 @@ class Family(Record):
 
         Initialise husband, wife and children attributes. """
         
-        try:
-            self._husband = self.children_tag_records("HUSB")[0]
-        except IndexError:
-            self._husband = None
-
-        try:
-            self._wife = self.children_tag_records("WIFE")[0]
-        except IndexError:
-            self._wife = None
+        self._husband = self.children_single_record("HUSB")
+        self._wife = self.children_single_record("WIFE")
 
         try:
             self._children = self.children_tag_records("CHIL")
