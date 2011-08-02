@@ -140,8 +140,7 @@ class Gedcom(Node):
             self._parse_line(number,line.decode("utf-8"))
             number += 1
 
-        for e in self.line_list():
-            e._init()
+        self._init()
 
     def _parse_line(self,number,line):
         # each line should have: Level SP (Xref SP)? Tag (SP Value)? (SP)? NL

@@ -39,6 +39,14 @@ class Node(object):
        self._parent_line = None
        self._level = -1
 
+    def _init(self):
+        """
+	A method which GEDCOM parser runs after all lines are available.
+	Subclasses should implement this method if they want to work with
+	other Lines at parse time, but after all Lines are parsed. 
+	"""
+	for e in self.children_lines(): e._init()
+
     def level(self):
         """ Return the level of this node. """
         return self._level
@@ -108,10 +116,6 @@ class Line(Node):
         self._tag = tag
         self._value = value
         self._dict = dict
-
-    def _init(self):
-        """ A method which GEDCOM parser runs after all lines are available. Subclasses should implement this method if they want to work with other Lines at parse time, but after all Lines are parsed. """
-        pass
 
     def type(self):
         """ Return class name of this instance
@@ -214,6 +218,7 @@ class Individual(Record):
 
     def _init(self):
         """ Implementing Line._init() """
+	Record._init(self)
         self._parent_family = self.get_parent_family()
         self._families = self.get_families()
 
@@ -574,6 +579,7 @@ class Family(Record):
         """ Implementing Line._init()
 
         Initialise husband, wife and children attributes. """
+	Record._init(self)
         
         self._husband = self.children_single_record("HUSB")
         self._wife = self.children_single_record("WIFE")
