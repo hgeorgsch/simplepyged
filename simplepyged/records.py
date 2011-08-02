@@ -261,7 +261,7 @@ class Individual(Record):
         
         if len(famc) > 1:
 	   print "Warning: multiple parent families not supported"
-	   print "Additional parents ignored for individual", self.pointer()
+	   print "Additional parents ignored for individual", self.xref()
 
         if len(famc) == 0:
             return None
