@@ -260,7 +260,8 @@ class Individual(Record):
         famc = self.children_tag_records("FAMC")
         
         if len(famc) > 1:
-            raise Exception('Individual has multiple parent families.')
+	   print "Warning: multiple parent families not supported"
+	   print "Additional parents ignored for individual", self.pointer()
 
         if len(famc) == 0:
             return None
