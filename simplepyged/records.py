@@ -29,13 +29,18 @@ from events import Event
 from errors import *
 
 class Node(object):
+    """
+    A generic superclass for Gedcom Nodes, including files, records,
+    lines and other structures.  It handles parent and child nodes,
+    as well as the level.  A file has a level of -1.
+    """
     def __init__(self):
        self._children_lines = []
        self._parent_line = None
        self._level = -1
 
     def level(self):
-        """ Return the level of this line """
+        """ Return the level of this node. """
         return self._level
 
     def children_lines(self):
