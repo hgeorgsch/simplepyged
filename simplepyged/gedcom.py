@@ -219,4 +219,22 @@ class GedcomParseError(Exception):
     def __str__(self):
         return self.value
 
-class MalformedPointer(Exception): pass
+class MalformedPointerError(Exception): 
+   """
+   Exception to be raised when what should be an xref pointer
+   does not fit the required syntax.
+   """
+   pass
+class GedcomMissingRecordError(Exception): 
+   """
+   Exception to be raised when an xref pointer points to 
+   a non-existent record.
+   """
+   pass
+class GedcomStructureError(Exception):
+   """
+   Exception to be raised when structural inconsistencies are found
+   in the Gedcom data structure, e.g. a family CHIL pointer without
+   an inverse.
+   """
+   pass
