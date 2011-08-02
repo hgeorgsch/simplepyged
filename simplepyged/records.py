@@ -26,7 +26,28 @@
 import string
 from events import Event
 
-class Line(object):
+class Node(object):
+    def __init__(self):
+       self._children_lines = []
+    def children_lines(self):
+        """ Return the child lines of this line """
+	for i in self._children_lines: yield i
+
+    def add_child(self,line):
+        """ Add a child line to this line """
+        self._children_lines.append(line)
+        
+    def children_tags(self, tag):
+        """ Returns list of child lines whos tag matches the argument. """
+        for c in self.children_lines():
+            if c.tag() == tag: yield c
+    def children_single_tag(self, tag):
+        """ Returns list of child lines whos tag matches the argument. """
+        for c in self.children_lines():
+            if c.tag() == tag: return c
+        return None
+
+class Line(Node):
     """ Line of a GEDCOM file
 
     Each line in a Gedcom file has following format:
@@ -57,6 +78,7 @@ class Line(object):
         tag, value, and global line dictionary.  Normally initialized
         by the Gedcom parser, not by a user.
         """
+	Node.__init__(self)
         # basic line info
         self._level = level
         self._xref = xref
@@ -64,7 +86,6 @@ class Line(object):
         self._value = value
         self._dict = dict
         # structuring
-        self._children_lines = []
         self._parent_line = None
 
     def _init(self):
@@ -94,30 +115,13 @@ class Line(object):
         """ Return the value of this line """
         return self._value
 
-    def children_lines(self):
-        """ Return the child lines of this line """
-        return self._children_lines
-
     def parent_line(self):
         """ Return the parent line of this line """
         return self._parent_line
 
-    def add_child(self,line):
-        """ Add a child line to this line """
-        self.children_lines().append(line)
-        
     def add_parent_line(self,line):
         """ Add a parent line to this line """
         self._parent_line = line
-
-    def children_tags(self, tag):
-        """ Returns list of child lines whos tag matches the argument. """
-        lines = []
-        for c in self.children_lines():
-            if c.tag() == tag:
-                lines.append(c)
-
-        return lines
 
     def children_tag_records(self, tag):
         """ Returns list of records which are pointed by child lines with given tag. """
@@ -204,7 +208,7 @@ class Individual(Record):
 
     def sex(self):
         """ Returns 'M' for males, 'F' for females """
-        return self.children_tags("SEX")[0].value()
+        return self.children_single_tag("SEX").value()
 
     def parent_family(self):
         return self._parent_family
@@ -593,7 +597,7 @@ class Family(Record):
 
     def married(self):
         """ Return True if parents were married """
-        return len(self.children_tags("MARR")) > 0
+        return self.children_single_tag("MARR") != None
 
     def marriage(self):
         """ Return one randomly chosen marriage event

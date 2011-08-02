@@ -35,10 +35,9 @@ class Event(object):
 
     def _get_value(self, tag):
         """ Returns value of a child tag"""
-        try:
-            return self.line.children_tags(tag)[0].value()
-        except IndexError:
-            return None
+        C = self.line.children_single_tag(tag)
+	if C == None: return None
+	else: return C.value()
         
     def dateplace(self):
         """ Returns a pair of strings in format (date, place) """
