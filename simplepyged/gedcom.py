@@ -29,6 +29,7 @@
 
 # Global imports
 import string
+import codecs
 from records import *
 from errors import *
 from traceback import print_exc
@@ -76,7 +77,6 @@ class Gedcom(Node):
         """
 	Node.__init__(self)
         self._record_dict = {}
-        self._line_list = []
         self._individual_list = []
         self._family_list = []
         self._current_level = -1
@@ -90,12 +90,6 @@ class Gedcom(Node):
         The key for the dictionary is the xref.
         """
         return self._record_dict
-
-    def line_list(self):
-        """ Return a list of all the lines in the Gedcom file.  The
-        lines are in the same order as they appeared in the file.
-        """
-        return self._line_list
 
     def individual_list(self):
         """ Return a list of all the individuals in the Gedcom file.  The
@@ -179,7 +173,6 @@ class Gedcom(Node):
         else:
             e = Line(l,p,t,v,self.record_dict())
 
-        self._line_list.append(e)
         if p != '':
             self._record_dict[p] = e
 
@@ -201,6 +194,11 @@ class Gedcom(Node):
         error = "Gedcom format error on line " + unicode(number) + ': ' + text
         raise GedcomParseError(error)
 
-    def _print(self):
-        for e in self.line_list:
-            print string.join([unicode(e.level()),e.xref(),e.tag(),e.value()])
+    def _print(self,file=None):
+       if file != None:
+          f = codecs.open( file, "w", "UTF-8" )
+          for e in self.line_list(): f.write( unicode(e) + "\n" )
+          f.close()
+       else:
+          for e in self.line_list(): print unicode(e)
+

@@ -47,6 +47,16 @@ class Node(object):
 	"""
 	for e in self.children_lines(): e._init()
 
+    def line_list(self):
+        """
+	Return an iterator of all the lines in the Gedcom node.  The
+        lines are in the same order as they appeared in the file.
+        """
+	for e in self.children_lines():
+	   yield e
+	   for c in e.line_list():
+	      yield c
+
     def level(self):
         """ Return the level of this node. """
         return self._level
