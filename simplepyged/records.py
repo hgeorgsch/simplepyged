@@ -569,11 +569,7 @@ class Family(Record):
         
         self._husband = self.children_single_record("HUSB")
         self._wife = self.children_single_record("WIFE")
-
-        try:
-            self._children = self.children_tag_records("CHIL")
-        except IndexError:
-            self._children = []
+        self._children = self.children_tag_records("CHIL")
 
         self.marriage_events = self._parse_generic_event_list("MARR")
 
