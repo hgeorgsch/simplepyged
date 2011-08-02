@@ -26,6 +26,7 @@
 # Global imports
 import string
 from events import Event
+from errors import *
 
 class Node(object):
     def __init__(self):
@@ -134,9 +135,9 @@ class Line(Node):
         lines = []
         for e in self.children_tags(tag):
             try:
-                lines.append(self._dict[e.value()])
+               lines.append(self._dict[e.value()])
             except KeyError:
-                pass
+	       raise MissingRecordError, "Undefined pointer.  Missing record."
 
         return lines
 
