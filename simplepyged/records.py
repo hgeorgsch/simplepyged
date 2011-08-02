@@ -196,24 +196,11 @@ class Record(Line):
         return retval
 
 
-class Multimedia(Record):
-    pass
-
-
-class Note(Record):
-    pass
-
-
-class Repository(Record):
-    pass
-
-
-class Source(Record):
-    pass
-
-
-class Submitter(Record):
-    pass
+class Multimedia(Record): pass
+class Note(Record): pass
+class Repository(Record): pass
+class Source(Record): pass
+class Submitter(Record): pass
 
 
 class Individual(Record):
