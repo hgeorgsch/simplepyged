@@ -30,6 +30,7 @@
 # Global imports
 import string
 from records import *
+from errors import *
 from traceback import print_exc
 
 def parse_line(line):
@@ -53,9 +54,6 @@ def parse_line(line):
      value = ""
 
   return (level,pointer,tag,value)
-
-def valid_pointer(s):
-   return s[0] == "@" and s[-1] == "@"
 
 class Gedcom(object):
     """ Gedcom parser
@@ -207,34 +205,3 @@ class Gedcom(object):
     def _print(self):
         for e in self.line_list:
             print string.join([unicode(e.level()),e.xref(),e.tag(),e.value()])
-
-
-class GedcomParseError(Exception):
-    """ Exception raised when a Gedcom parsing error occurs
-    """
-    
-    def __init__(self, value):
-        self.value = value
-        
-    def __str__(self):
-        return self.value
-
-class MalformedPointerError(Exception): 
-   """
-   Exception to be raised when what should be an xref pointer
-   does not fit the required syntax.
-   """
-   pass
-class GedcomMissingRecordError(Exception): 
-   """
-   Exception to be raised when an xref pointer points to 
-   a non-existent record.
-   """
-   pass
-class GedcomStructureError(Exception):
-   """
-   Exception to be raised when structural inconsistencies are found
-   in the Gedcom data structure, e.g. a family CHIL pointer without
-   an inverse.
-   """
-   pass
