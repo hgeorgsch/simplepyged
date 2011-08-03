@@ -28,6 +28,12 @@ import string
 from events import Event
 from errors import *
 
+def parse_name(e):
+  name = string.split(e.value(),'/')
+  first = string.strip(name[0])
+  last = string.strip(name[1])
+  return (first,last)
+
 class Node(object):
     """
     A generic superclass for Gedcom Nodes, including files, records,
@@ -287,9 +293,7 @@ class Individual(Record):
                 # some older Gedcom files don't use child tags but instead
                 # place the name in the value of the NAME tag
                 if e.value() != "":
-                    name = string.split(e.value(),'/')
-                    first = string.strip(name[0])
-                    last = string.strip(name[1])
+		   (first,last) = parse_name(e)
                 else:
                     for c in e.children_lines():
                         if c.tag() == "GIVN":
