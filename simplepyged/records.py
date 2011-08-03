@@ -142,6 +142,16 @@ class Line(Node):
         """ Return the tag of this line """
         return self._tag
 
+    def value_cont(self):
+        """ 
+	Return the value of this line, including any subsequent
+	CONT/CONC lines.
+	"""
+        v = self.value()
+        for l in self.children_lines():
+	   if l.tag() == "CONT": v += "\n" + l.value()
+	   elif l.tag() == "CONC": v += l.value()
+        return v
     def value(self):
         """ Return the value of this line """
         return self._value
@@ -197,7 +207,12 @@ class Record(Line):
 
 
 class Multimedia(Record): pass
-class Note(Record): pass
+class Note(Record): 
+   def value_cont(self):
+      v = self.value()
+      for l in self.children_lines():
+	 if l.tag() == "CONT": v += "\n" + l.value()
+	 elif l.tag() == "CONC": v += l.value()
 class Repository(Record): pass
 class Source(Record): pass
 class Submitter(Record): pass

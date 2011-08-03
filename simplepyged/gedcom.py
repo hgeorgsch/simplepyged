@@ -32,6 +32,7 @@ import string
 import codecs
 from records import *
 from errors import *
+from notes import NoteStructure
 from traceback import print_exc
 
 def parse_line(line):
@@ -167,7 +168,10 @@ class Gedcom(Node):
             else:
                 e = Record(l,p,t,v,self.record_dict())
         else:
-            e = Line(l,p,t,v,self.record_dict())
+            if t == "NOTE":
+              e = NoteStructure(l,p,t,v,self.record_dict())
+	    else:
+              e = Line(l,p,t,v,self.record_dict())
 
         if p != '':
             self._record_dict[p] = e
