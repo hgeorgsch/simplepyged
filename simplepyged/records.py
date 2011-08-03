@@ -207,12 +207,7 @@ class Record(Line):
 
 
 class Multimedia(Record): pass
-class Note(Record): 
-   def value_cont(self):
-      v = self.value()
-      for l in self.children_lines():
-	 if l.tag() == "CONT": v += "\n" + l.value()
-	 elif l.tag() == "CONC": v += l.value()
+class Note(Record): pass
 class Repository(Record): pass
 class Source(Record): pass
 class Submitter(Record): pass

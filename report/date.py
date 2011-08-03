@@ -24,7 +24,9 @@
 from simplepyged.date import *
 
 def formatdate(dat):
-   if isinstance(dat,DateApproximate):
+   if dat == None: return ""
+   elif dat == "": return ""
+   elif isinstance(dat,DateApproximate):
       return "omkring " + formatdate( dat.getDate() )
    elif isinstance(dat,DateRange):
       (d1,d2) = dat.getDate()
