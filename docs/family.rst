@@ -1,7 +1,7 @@
 Family
 ======
 
-.. automodule:: records
+.. automodule:: simplepyged.records
 
 .. autoclass:: Family
    :members:

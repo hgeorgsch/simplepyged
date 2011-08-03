@@ -17,6 +17,7 @@ General
    gedcom.rst
    line.rst
    record.rst
+   date.rst
 
 Record types
 ^^^^^^^^^^^^

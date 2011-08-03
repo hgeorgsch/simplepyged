@@ -3,7 +3,7 @@ Multimedia, Note, Repository, Source, Submitter
 
 Classes Multimedia, Note, Repository, Source and Submitter are not implemented.
 
-.. automodule:: records
+.. automodule:: simplepyged.records
 
 .. autoclass:: Multimedia
    :members:
