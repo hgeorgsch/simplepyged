@@ -111,6 +111,7 @@ def makeDate(dat):
    if isinstance(dat,str): parts = dat.split()
    elif isinstance(dat,unicode): parts = dat.split()
    else: parts = dat
+   if len(parts) == 0: return None
    if parts[0] in [ "FROM", "TO" ]: return DatePeriod( parts )
    if parts[0] in [ "CAL", "EST", "ABT" ]: return DateApproximate( parts )
    if parts[0] in [ "BET", "BEF", "AFT" ]: return DateRange( parts )
