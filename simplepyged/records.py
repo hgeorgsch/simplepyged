@@ -594,6 +594,14 @@ class Family(Record):
         """ Return list of parents in this family """
         return [self._husband, self._wife]
 
+    def children_count(self):
+        """
+	Return the number of children.
+	"""
+        n = self.children_single_tag("NCHI")
+	if n != None: return int(n.value())
+        else: return len(self._children)
+
     def children(self):
         """ Return list of children in this family """
         return self._children
@@ -603,7 +611,8 @@ class Family(Record):
         return self.children_single_tag("MARR") != None
 
     def marriage(self):
-        """ Return one randomly chosen marriage event
+        """ 
+	Return the first marriage event from the record.
 
         If a family has only one marriage event (which is most common
         case), return that one marriage event. For list of all marriage
