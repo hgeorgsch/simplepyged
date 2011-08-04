@@ -133,6 +133,11 @@ class Line(Node):
         self._value = value
         self._dict = dict
 
+    def is_empty(self):
+       if self.value() != "": return False
+       if len(self._children_lines) > 0: return False
+       return True
+
     def type(self):
         """ Return class name of this instance
 
@@ -207,7 +212,7 @@ class Record(Line):
         """ Creates new event for each line with given tag"""
         retval = []
         for event_line in self.children_tags(tag):
-            retval.append(Event(event_line))
+	   if not event_line.is_empty(): retval.append(Event(event_line))
 
         return retval
 
@@ -340,8 +345,8 @@ class Individual(Record):
         return self.birth().year()
 
     def alive(self):
-        """ Return True if individual lacks death entry """
-        return self.death() is None
+        "Return True if individual lacks death entry."
+	return self.death() is None
 
     def death(self):
         """ Return one randomly chosen death event
