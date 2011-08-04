@@ -57,6 +57,11 @@ dic_norsk = { "and" : "og",
               "daughter" : "dotter til", 
               "son" : "son til", 
               "child" : "barn av", 
+              "born" : "fødd", 
+              "died" : "død", 
+              "married" : "gift", 
+              "with" : "med", 
+              "sources" : "kjelder", 
 	    }
 
 class Report(object):
@@ -87,7 +92,7 @@ class Report(object):
 
    def simplename(self,node):
       (f,s) = node.name()
-      ref = self.__history.get(key)
+      ref = self.__history.get( node.xref() )
       self._builder.put_name(f,s,ref)
       if ref != None: return
       by = node.birth_year()
@@ -130,12 +135,13 @@ class Report(object):
       else:
         (d,p) = marr.dateplace()
 	if not (d or p):
-          self._builder.put( "g.m. " )
+          self._builder.put( self._dic["married"].capitalize() + " " )
+          self._builder.put( self._dic["with"].capitalize() + " " )
         else:
-          self._builder.put( "Gift " )
+          self._builder.put( self._dic["married"].capitalize() + " " )
           self._builder.put( date.formatdate(d) )
           self._builder.put( self.formatplace(p) )
-          self._builder.put( "med " )
+          self._builder.put( self._dic["with"] + " " )
       # (2) Spouse name (and details)
       (fn,sn) = ind.name()
       self._builder.put_name(fn,sn)
@@ -156,14 +162,14 @@ class Report(object):
       # (2) BIRT
       birt = ind.birth()
       if birt != None:
-        self._builder.put( "fødd " )
+        self._builder.put( self._dic["born"] + " " )
         (d,p) = birt.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
       # (3) DEAT
       deat = ind.death()
       if deat != None:
-        self._builder.put( "død " )
+        self._builder.put( self._dic["died"] + " " )
         (d,p) = deat.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
@@ -173,7 +179,7 @@ class Report(object):
       # (1) BIRT
       birt = ind.birth()
       if birt != None:
-        self._builder.put( "fødd " )
+        self._builder.put( self._dic["born"] + " " )
         (d,p) = birt.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
@@ -182,7 +188,7 @@ class Report(object):
       # (3) DEAT
       deat = ind.death()
       if deat != None:
-        self._builder.put( "død " )
+        self._builder.put( self._dic["died"] + " " )
         (d,p) = deat.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
@@ -228,7 +234,9 @@ class Report(object):
 
       # (6) FAMS
       for n in ind.children_tag_records("FAMS"):
-	 self.spouse( n, n.wife() )
+	 if ind.sex() == "M": self.spouse( n, n.wife() )
+	 elif ind.sex() == "F": self.spouse( n, n.husband() )
+         else: raise Exception, "Unknown gender for spouse"
 	 self._builder.put_enum_s()
 	 for c in n.children():
 	    self._builder.put_item_s()
@@ -253,7 +261,7 @@ class Report(object):
       #    OBJE ??
       L = list(ind.children_tags("SOUR"))
       if len(L) > 1:
-        self._builder.put_subheader( "Sources" )
+        self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
 
 class Builder(object):
