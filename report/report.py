@@ -83,12 +83,21 @@ class Report(object):
       else:
 	 raise NotImplementedError, "Only source records are supported."
 	 quotes = node.children_tags("TEXT")
-      # TODO: Make output
+      # TODO: Make output (citation)
 
    def simplename(self,node):
       (f,s) = node.name()
-      self._builder.put_name(f,s)
-      # TODO: add living years or reference
+      ref = self.__history.get(key)
+      self._builder.put_name(f,s,ref)
+      if ref != None: return
+      by = node.birth_year()
+      dy = node.birth_year()
+      if by < 0 and dy < 0: return
+      self._builder.put( "(" )
+      if by >= 0: self._builder.put( str(by) )
+      self._builder.put( "--" )
+      if dy >= 0: self._builder.put( str(dy) )
+      self._builder.put( ")" )
 
    def parents(self,node):
       father = node.father()
