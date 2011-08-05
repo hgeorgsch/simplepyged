@@ -255,7 +255,8 @@ class Report(object):
 
       # find the name and make the header
       (fn,sn) = ind.name()
-      self._builder.put_phead(fn,sn,number,ref)
+      if ref != None: self._builder.put_phead(fn,sn,number,key)
+      else: self._builder.put_phead_repeat(fn,sn,number,ref)
 
       # if the person has been processed before, we are done
       if ref != None: return ref
@@ -324,17 +325,19 @@ class Report(object):
         for cit in L: self.citation(cit)
 
 class Builder(object):
-   def put_url(self,url,text): 
+   def put_url(self,url,text=None): 
       if text == None: print "<URL:%s>" % (url,)
       else: print "%s <URL:%s>" % (text,url,)
-   def put_ref(self,ref): 
+   def put_cite(self,ref): 
       print "[%s]" % (ref,)
    def put_name(self,fn,sn,ref=None): 
       if ref == None: print "%s %s" % (fn,sn),
       else: print "%s %s (sjå %s)" % (fn,sn,ref),
-   def put_phead(self,fn,sn,no,ref): 
-      if ref == None: print "%s\t%s %s" % (no,fn,sn)
-      else: print "%s\t%s %s (sjå %s)" % (no,fn,sn,ref)
+   def put_phead(self,fn,sn,no,key): 
+      print "%s\t%s %s" % (no,fn,sn)
+      print
+   def put_phead_repeat(self,fn,sn,no,ref): 
+      print "%s\t%s %s (sjå %s)" % (no,fn,sn,ref)
       print 
    def put_subheader(self,header): print header + ":"
    def put_shead_s(self): print "*",
