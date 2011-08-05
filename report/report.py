@@ -18,7 +18,9 @@ __all__ = [ "Report", "Builder" ]
 from . import date 
 from simplepyged.errors import * 
 from simplepyged.events import Event
+from simplepyged.records import parse_name
 
+from Queue import Queue
 
 class devnull():
    def append(self,*a): pass
@@ -60,20 +62,20 @@ dic_norsk = { "and" : "og",
               "daughter" : "dotter til", 
               "son" : "son til", 
               "child" : "barn av", 
-              "born" : "fødd", 
-              "died" : "død", 
+              "born" : u"fødd", 
+              "died" : u"død", 
               "married" : "gift", 
               "with" : "med", 
               "sources" : "kjelder", 
-              "BIRT" : "fødd", 
-              "CHR" : "døypt", 
+              "BIRT" : u"fødd", 
+              "CHR" : u"døypt", 
               "GRAD" : "eksamen", 
               "OCCU" : "yrke", 
               "CENS" : "folketeljing", 
               "EMIG" : "utvandra", 
               "IMMI" : "innvandra", 
-              "RESI" : "busett", 
-              "DEAT" : "død", 
+              "RESI" : u"busett", 
+              "DEAT" : u"død", 
               "BURI" : "gravlagd", 
               "PROB" : "skifte", 
 	    }
@@ -87,6 +89,27 @@ class Report(object):
       else: self._builder = builder
       self._dic = dic
 
+   def stamtavle(self,ref,mgen=12,header="Stamtavle"):
+      self._builder.preamble( header )
+      q = Queue()
+      ind = self.__file.get( ref )
+      assert ind != None
+      q.put( ( 1, 1, ind ) )
+      pgen = 0
+      while not q.empty():
+	 (cgen, no, ind) = q.get(False)
+	 if pgen < cgen:
+	    self._builder.put_shead_s()
+	    self._builder.put( "Generasjon " + str(cgen) )
+	    self._builder.put_shead_e()
+	    pgen = cgen
+	 if cgen < mgen:
+           f = ind.father()
+	   if f != None: q.put( ( cgen+1, 2*no, f ) )
+           m = ind.mother()
+	   if m != None: q.put( ( cgen+1, 2*no + 1, m ) )
+	 self.individual(ind=ind,number=no)
+      self._builder.postamble()
    def event(self,ind,event):
       # text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
       # NOTE/SOUR/OBJE
@@ -97,7 +120,9 @@ class Report(object):
       gender = ind.sex()
       # TYPE/event
       if tag == "EVEN":
-	 self._builder.put( type.capitalize() )
+	 if type == None: self._builder.put( "EVEN" )
+	 else: self._builder.put( type.capitalize() )
+
       elif tag == "OCCU":
 	 self._builder.put( val.capitalize() )
       else:
@@ -183,15 +208,15 @@ class Report(object):
         (d,p) = marr.dateplace()
 	if not (d or p):
           self._builder.put( self._dic["married"].capitalize() + " " )
-          self._builder.put( self._dic["with"].capitalize() + " " )
         else:
           self._builder.put( self._dic["married"].capitalize() + " " )
           self._builder.put( date.formatdate(d) )
           self._builder.put( self.formatplace(p) )
-          self._builder.put( self._dic["with"] + " " )
       # (2) Spouse name (and details)
-      (fn,sn) = ind.name()
-      self._builder.put_name(fn,sn)
+      if ind != None:
+        self._builder.put( self._dic["with"] + " " )
+        (fn,sn) = ind.name()
+        self._builder.put_name(fn,sn)
       # (3) Family events
       # TODO: Family events
 
@@ -240,14 +265,14 @@ class Report(object):
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
 
-   def individual(self,ref,number=None):
+   def individual(self,ref=None,number=None,ind=None):
       """
       Generate a report on a single individual with the given reference
       ref (either a xref or a refn).  If given, number is the person's
       ID number in a longer report.
       """
       # look up the person
-      ind = self.__file.get(ref)
+      if ind == None: ind = self.__file.get(ref)
       key = ind.xref()
 
       # check if the person has already been included
@@ -255,7 +280,7 @@ class Report(object):
 
       # find the name and make the header
       (fn,sn) = ind.name()
-      if ref != None: self._builder.put_phead(fn,sn,number,key)
+      if ref == None: self._builder.put_phead(fn,sn,number,key)
       else: self._builder.put_phead_repeat(fn,sn,number,ref)
 
       # if the person has been processed before, we are done
@@ -297,12 +322,14 @@ class Report(object):
 	 if ind.sex() == "M": self.spouse( n, n.wife() )
 	 elif ind.sex() == "F": self.spouse( n, n.husband() )
          else: raise Exception, "Unknown gender for spouse"
-	 self._builder.put_enum_s()
-	 for c in n.children():
-	    self._builder.put_item_s()
-	    self.child(c)
-	    self._builder.put_item_e()
-	 self._builder.put_enum_e()
+	 cs = list(n.children())
+	 if len(cs) > 0:
+	   self._builder.put_enum_s()
+	   for c in cs:
+	      self._builder.put_item_s()
+	      self.child(c)
+	      self._builder.put_item_e()
+	   self._builder.put_enum_e()
 	 self._builder.put_paragraph()
 
       # (7) other names (with TYPE) (name pieces, ROMN and FONE ignored)
@@ -310,7 +337,7 @@ class Report(object):
       if len(L) > 1:
 	 self._builder.put_subheader( "Ogso kjend som: " )
 	 for node in L[1:]:
-	    (f,s) = parse_name( node.value() )
+	    (f,s) = parse_name( node )
 	    self._builder.put_name( f,s )
 	    # TODO print sources
 
@@ -340,6 +367,7 @@ class Builder(object):
       print "%s\t%s %s (sjå %s)" % (no,fn,sn,ref)
       print 
    def put_subheader(self,header): print header + ":"
+   def put_book_title(self,h): print " ###    %s    ### " % (h,)
    def put_shead_s(self): print "*",
    def put_shead_e(self): print
    def put_chead_s(self): print "*",
@@ -355,3 +383,5 @@ class Builder(object):
    def put_dagger(self): print "d. "
    def put_paragraph(self): print "\n\n"
    def put(self,x): print x,
+   def preamble(self): pass
+   def postamble(self): pass

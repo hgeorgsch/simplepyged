@@ -1,0 +1,105 @@
+% $Id: llbook.sty 752 2011-07-31 04:33:01Z georg $
+
+\RequirePackage[utf8x]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{hyperref}
+\RequirePackage{comment}
+% \RequirePackage{hyperref}
+%% hyperref does not handle # in URL-s
+\newif\ifgensection\gensectiontrue
+\newif\ifbrief\brieffalse
+\DeclareOption{gensection}{\gensectiontrue}
+\DeclareOption{brie}{\brietrue}
+\ProcessOptions
+
+% All http URL-s are set with the \fnurl macro.
+% We define this to be a hyperlink with a short text «link».
+% It will look silly in print, but it's the best we can do for
+% now.
+
+\def\llurl#1{(\href{#1}{link})}
+\def\fnurl#1{(\href{#1}{link})}
+%\def\fnurl#1{\footnote{\url{#1}}}
+
+
+% Shrink the margins to use more of the page.
+% This is taken from fullpage.sty, which is on some systems.
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt
+\evensidemargin \oddsidemargin
+\textwidth 6.5in
+
+\newcounter{childnumber}
+
+% The \noname command is needed because TeX doesnt like underscores.
+\newcommand{\noname}{\underline{\ \ \ \ \ }}
+
+\newcommand{\nodate}{\underline{\ \ \ \ }}
+
+% Environment for printing the list of children.
+\newenvironment{childrenlist}{\begin{small}\begin{list}{\sc\roman{childnumber}.}{\usecounter{childnumber}\setlength{\leftmargin}{0.5in}\setlength{\labelsep}{0.07in}\setlength{\labelwidth}{0.43in}}}{\end{list}\end{small}}
+
+% The following commands are used to create the index.
+\newcommand{\bold}[1]{{\bf #1}}
+\newcommand{\bfit}[1]{{\bf\it #1}}
+%%\newcommand{\see}[2]{{\it see #1}} %not needed with makeidx.sty
+
+%% \newcommand{\generation}
+
+\newcommand{\image}[4]{\begin{figure}
+\centerline{\psfig{figure=#1,height=#4}}
+\label{#3}
+\caption{#2}
+\end{figure}}
+\newcommand{\imwide}[4]{\begin{figure*}
+\centerline{\psfig{figure=#1,height=#4}}
+\label{#3}
+\caption{#2}
+\end{figure*}}
+\makeindex
+
+% \input{tree}
+
+\def\mktitle{
+  \let\l@@author\@author
+  \maketitle
+  \clearpage
+  \onecolumn
+  \pagestyle{empty}
+  \mbox{ }
+  \vfill
+  \begin{center}
+
+  Copyright \copyright \ \today \  \l@@author\\
+  % /* getstrmsg(copyplace, "Enter the place for the copyright notice:") */
+  % /* strxlat(tex_xlat, copyplace) */
+  \end{center}
+  \clearpage
+}
+\def\tocpage{
+  \pagestyle{myheadings}
+  \twocolumn
+
+  \setcounter{page}{1}
+  \tableofcontents
+}
+\newcommand{\PersonHeader}[3]{%
+  \ifgensection\subsection*{#1 #2}\relax
+    \def\@currentlabel{\thechapter.#1}\relax
+  \else\section*{#1 #2}\def\@currentlabel{#1}\fi\label{#3}
+}
+\newcommand{\PersonRepeat}[3]{%
+  \ifgensection\subsection*{#2 #3 \rm (See #1)}\relax
+  \else\section*{#2 #3 \rm (See #1)}\fi
+  %\subsection*{#2 #3 \rm (See #1)}
+}
+\newcommand{\generation}[2]{
+  \ifgensection
+    \ifbrief\section{#2 \AncDec\  \mbox{Generation~#1}}\relax
+    \else\section{\mbox{Generation~#1}}\fi
+  \else\chapter*{#2 \AncDec\  \mbox{Generation~#1}}\fi
+  \setcounter{footnote}{0}
+}

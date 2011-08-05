@@ -31,7 +31,8 @@ from errors import *
 def parse_name(e):
   name = string.split(e.value(),'/')
   first = string.strip(name[0])
-  last = string.strip(name[1])
+  if len(name) == 1: last = ""
+  else: last = string.strip(name[1])
   return (first,last)
 
 class Node(object):
@@ -293,18 +294,15 @@ class Individual(Record):
         """ Return a person's names as a tuple: (first,last) """
         first = ""
         last = ""
-        for e in self.children_lines():
-            if e.tag() == "NAME":
-                # some older Gedcom files don't use child tags but instead
-                # place the name in the value of the NAME tag
-                if e.value() != "":
-		   (first,last) = parse_name(e)
-                else:
-                    for c in e.children_lines():
-                        if c.tag() == "GIVN":
-                            first = c.value()
-                        if c.tag() == "SURN":
-                            last = c.value()
+        e = self.children_single_tag( "NAME" )
+        # some older Gedcom files don't use child tags but instead
+        # place the name in the value of the NAME tag
+        if e.value() != "":
+           (first,last) = parse_name(e)
+        else:
+           for c in e.children_lines():
+              if c.tag() == "GIVN": first = c.value()
+              if c.tag() == "SURN": last = c.value()
         return (first,last)
 
     def given_name(self):
@@ -624,6 +622,7 @@ class Family(Record):
         events see self.marriage_events.
         """
 
+	if len(self.marriage_events) == 0: return None
         return self.marriage_events[0]
 
     def is_relative(self, candidate):

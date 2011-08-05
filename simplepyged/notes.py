@@ -67,7 +67,7 @@ class NoteStructure(Line):
        if self._record != None:
 	  return self._record.children_tags("SOUR")
        else:
-	  return self._record.children_tags("SOUR")
+	  return []
 
     def note_type(self):
         """

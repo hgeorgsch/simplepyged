@@ -30,13 +30,13 @@ def formatdate(dat):
       return "omkring " + formatdate( dat.getDate() )
    elif isinstance(dat,DateRange):
       (d1,d2) = dat.getDate()
-      if d2 == None: return "før " + formatdate(d1)
-      elif d1 == None: return "etter " + formatdate(d2)
-      else: return "mellom " + formatdate(d1) + " og " + formatdate(d2)
+      if d2 == None: return u"før " + formatdate(d1)
+      elif d1 == None: return u"etter " + formatdate(d2)
+      else: return u"mellom " + formatdate(d1) + " og " + formatdate(d2)
    elif isinstance(dat,DatePeriod):
       (d1,d2) = dat.getDate()
-      if d2 == None: return "frå " + formatdate(d1)
-      elif d1 == None: return "til " + formatdate(d2)
+      if d2 == None: return u"frå " + formatdate(d1)
+      elif d1 == None: return u"til " + formatdate(d2)
       else: return formatdate(d1) + "--" + formatdate(d2)
    elif isinstance(dat,DatePhrase):
       return str(dat)
