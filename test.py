@@ -5,4 +5,5 @@ from report.report import Report
 
 g = Gedcom("alrik.ged")
 r = Report(g)
-r.individual("@I166@")
+# r.individual("@I166@")
+r.individual("@I954@")

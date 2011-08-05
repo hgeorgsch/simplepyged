@@ -30,7 +30,6 @@ class Event(object):
     """ Class represeting an event """
     def __init__(self, line):
         self.line = line
-        self.tag = self.line.tag()
 
         self.type = self._get_value('TYPE')
         self.date = self._get_value('DATE')
@@ -39,6 +38,10 @@ class Event(object):
 	if ( self.place != None):
 	   self.place = [ p.strip() for p in self.place.split( "," ) ]
 
+    def tag(self): return self.line.tag()
+    def value(self): return self.line.value()
+    def children_single_tag(self,*a,**kw):
+       return self.line.children_single_tag(*a,**kw)
     def year(self):
        if self.date == None: R = -1
        else: R = self.date.year()
@@ -61,3 +64,13 @@ class Event(object):
             place = self.place
 
         return (date, place)
+
+# text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
+# NOTE/SOUR/OBJE
+
+# TYPE
+# DATE/PLAC
+# AGE
+# CAUS/AGNC
+# NOTE/SOUR/OBJE
+# Ignore: RESN/RELI/ADDR

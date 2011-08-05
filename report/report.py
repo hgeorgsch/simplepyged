@@ -17,6 +17,7 @@ a template for Concrete Builders.
 __all__ = [ "Report", "Builder" ]
 from . import date 
 from simplepyged.errors import * 
+from simplepyged.events import Event
 
 
 class devnull():
@@ -52,6 +53,8 @@ class IndiBins(dict):
       self["AFN"]  = devnull()
       self["REFN"] = devnull()
       self["SUBM"] = devnull()
+      # ignored records (handled elsewhere)
+      self["SEX"] = devnull()
 
 dic_norsk = { "and" : "og", 
               "daughter" : "dotter til", 
@@ -62,6 +65,17 @@ dic_norsk = { "and" : "og",
               "married" : "gift", 
               "with" : "med", 
               "sources" : "kjelder", 
+              "BIRT" : "fødd", 
+              "CHR" : "døypt", 
+              "GRAD" : "eksamen", 
+              "OCCU" : "yrke", 
+              "CENS" : "folketeljing", 
+              "EMIG" : "utvandra", 
+              "IMMI" : "innvandra", 
+              "RESI" : "busett", 
+              "DEAT" : "død", 
+              "BURI" : "gravlagd", 
+              "PROB" : "skifte", 
 	    }
 
 class Report(object):
@@ -73,6 +87,39 @@ class Report(object):
       else: self._builder = builder
       self._dic = dic
 
+   def event(self,ind,event):
+      # text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
+      # NOTE/SOUR/OBJE
+      tag    = event.tag()
+      val    = event.value()
+      type   = event.children_single_tag("TYPE")
+      if type != None: type   = type.value()
+      gender = ind.sex()
+      # TYPE/event
+      if tag == "EVEN":
+	 self._builder.put( type.capitalize() )
+      elif tag == "OCCU":
+	 self._builder.put( val.capitalize() )
+      else:
+         self._builder.put( self._dic.get(tag,tag).capitalize() )
+	 if type != None: self._builder.put( "(" + type + ")" )
+      # CAUS
+      c = event.children_single_tag("CAUS")
+      if c != None: self._builder.put( "av " + c.value() )
+      # AGE
+      c = event.children_single_tag("AGE")
+      if c != None: self._builder.put( "(" + c.value() + ")" )
+      # AGNC
+      c = event.children_single_tag("AGNC")
+      if c != None:
+	 self._builder.put( "ved " + c.value() )
+      # DATE/PLAC:
+      (d,p) = event.dateplace()
+      self._builder.put( date.formatdate( d ) )
+      self._builder.put( self.formatplace( p ) )
+      # Finalise
+      self._builder.put( ". " )
+      # NOTE/SOUR/OBJE
    def citation(self,node):
       assert node.tag() == "SOUR"
       val = node.value()
@@ -96,7 +143,7 @@ class Report(object):
       self._builder.put_name(f,s,ref)
       if ref != None: return
       by = node.birth_year()
-      dy = node.birth_year()
+      dy = node.death_year()
       if by < 0 and dy < 0: return
       self._builder.put( "(" )
       if by >= 0: self._builder.put( str(by) )
@@ -215,17 +262,29 @@ class Report(object):
 
       # otherwise, we sort all the child nodes for processing
       rec = IndiBins()
-      for e in ind.children(): rec.add(e)
+      for e in ind.children_lines(): rec.add(e)
 
       # (1) Main name
       self._builder.put_name(fn,sn)
 
       # (2) OBJE ??
-      # (3) vitals
-      self.vitals(ind)
-      self._builder.put_paragraph()
+      # (3) vitals (birth and parents)
+      birt = ind.birth()
+      if birt != None: self.event( ind, birt )
+      self.parents( ind )
 
       # (4) biography (events)
+      for e in rec[None]:
+	 if e.tag() == "BIRT": continue
+	 else: self.event( ind, Event( e ) )
+      #self.vitals(ind)
+      # CHR
+      # other
+      # DEAT 
+      # BURI 
+      # PROB
+      self._builder.put_paragraph()
+
       # (5) NOTE
       for n in ind.children_tags("NOTE"):
 	 self._builder.put(n.value_cont())
