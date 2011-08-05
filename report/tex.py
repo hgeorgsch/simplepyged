@@ -4,7 +4,7 @@
 import codecs
 
 def char_escape(x):
-   return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" )
+   return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" ).replace( "#", "\\#" )
 
 class texBuilder(object):
    llpackage = u"llbook"

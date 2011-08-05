@@ -321,7 +321,11 @@ class Report(object):
       for n in ind.children_tag_records("FAMS"):
 	 if ind.sex() == "M": self.spouse( n, n.wife() )
 	 elif ind.sex() == "F": self.spouse( n, n.husband() )
-         else: raise Exception, "Unknown gender for spouse"
+         else: 
+	    print "Warning! Unknown gender for individual", key
+	    a = n.wife()
+	    if a == ind: self.spouse( n, n.husband() )
+	    else: self.spouse( n, a )
 	 cs = list(n.children())
 	 if len(cs) > 0:
 	   self._builder.put_enum_s()

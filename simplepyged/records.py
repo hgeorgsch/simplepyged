@@ -246,7 +246,9 @@ class Individual(Record):
 
     def sex(self):
         """ Returns 'M' for males, 'F' for females """
-        return self.children_single_tag("SEX").value()
+	s = self.children_single_tag("SEX")
+	if s == None: return "U"
+	else: return s.value()
 
     def parent_family(self):
         return self._parent_family
