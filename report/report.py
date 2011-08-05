@@ -88,6 +88,11 @@ class Report(object):
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
+   def history_add(self,ind,no):
+      key = ind.xref()
+      refno = self.__history.get( key )
+      if refno == None: self.__history[key] = no
+      return self.__history[key] 
 
    def stamtavle(self,ref,mgen=12,header="Stamtavle"):
       self._builder.preamble( header )
@@ -95,9 +100,10 @@ class Report(object):
       ind = self.__file.get( ref )
       assert ind != None
       q.put( ( 1, 1, ind ) )
+      self.history_add(ind,1)
       pgen = 0
       while not q.empty():
-	 (cgen, no, ind) = q.get(False)
+	 (cgen, no, ind ) = q.get(False)
 	 if pgen < cgen:
 	    self._builder.put_shead_s()
 	    self._builder.put( "Generasjon " + str(cgen) )
@@ -105,9 +111,13 @@ class Report(object):
 	    pgen = cgen
 	 if cgen < mgen:
            f = ind.father()
-	   if f != None: q.put( ( cgen+1, 2*no, f ) )
+	   if f != None: 
+	      q.put( ( cgen+1, 2*no, f ) )
+              self.history_add(f,2*no)
            m = ind.mother()
-	   if m != None: q.put( ( cgen+1, 2*no + 1, m ) )
+	   if m != None: 
+	      q.put( ( cgen+1, 2*no + 1, m ) )
+              self.history_add(m,2*no)
 	 self.individual(ind=ind,number=no)
       self._builder.postamble()
    def event(self,ind,event):
@@ -280,11 +290,13 @@ class Report(object):
 
       # find the name and make the header
       (fn,sn) = ind.name()
-      if ref == None: self._builder.put_phead(fn,sn,number,key)
-      else: self._builder.put_phead_repeat(fn,sn,number,ref)
+      if ref != None and ref < number:
+	 self._builder.put_phead_repeat(fn,sn,number,ref)
+      else:
+	 self._builder.put_phead(fn,sn,number,key)
 
       # if the person has been processed before, we are done
-      if ref != None: return ref
+      if ref != None and ref < number: return ref
 
       # otherwise, we sort all the child nodes for processing
       rec = IndiBins()
