@@ -85,9 +85,11 @@ class Report(object):
    def __init__(self,file,builder=None,dic=dic_norsk):
       self.__file = file
       self.__history = {}
+      self.__reflist = []
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
+
    def history_add(self,ind,no):
       key = ind.xref()
       refno = self.__history.get( key )
@@ -117,7 +119,7 @@ class Report(object):
            m = ind.mother()
 	   if m != None: 
 	      q.put( ( cgen+1, 2*no + 1, m ) )
-              self.history_add(m,2*no)
+              self.history_add(m,2*no + 1)
 	 self.individual(ind=ind,number=no)
       self._builder.postamble()
    def event(self,ind,event):
@@ -138,6 +140,7 @@ class Report(object):
       else:
          self._builder.put( self._dic.get(tag,tag).capitalize() )
 	 if type != None: self._builder.put( "(" + type + ")" )
+      self._builder.put( " " )
       # CAUS
       c = event.children_single_tag("CAUS")
       if c != None: self._builder.put( "av " + c.value() )
@@ -151,10 +154,16 @@ class Report(object):
       # DATE/PLAC:
       (d,p) = event.dateplace()
       self._builder.put( date.formatdate( d ) )
+      if d != None and p != None: self._builder.put( " " )
       self._builder.put( self.formatplace( p ) )
       # Finalise
       self._builder.put( ". " )
       # NOTE/SOUR/OBJE
+      for n in event.children_tags("NOTE"):
+	 self._builder.put(n.value_cont())
+	 for s in n.sources(): self.citation(s)
+      # TODO distinguish between different kinds of notes.
+      # TODO SOUR/OBJE
    def citation(self,node):
       assert node.tag() == "SOUR"
       val = node.value()
@@ -163,14 +172,17 @@ class Report(object):
       if valid_pointer(val): 
 	 source = self.__file.get(val)
 	 page = node.children_single_tag("PAGE")
+	 if page != None: page = page.value()
 	 data = node.children_single_tag("DATA")
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
-	 # TODO: Make the source record
+	 self.__reflist.append( source )
+	 self._builder.put_cite( val, page )
+	 # TODO: handle notes and quotes
+	 # TODO: process reference list
       else:
 	 raise NotImplementedError, "Only source records are supported."
 	 quotes = node.children_tags("TEXT")
-      # TODO: Make output (citation)
 
    def simplename(self,node):
       (f,s) = node.name()
@@ -199,6 +211,7 @@ class Report(object):
 	 if mother != None: self._builder.put( " "+self._dic["and"]+" " )
       if mother != None:
 	 mother = self.simplename(mother)
+      self._builder.put( ". " )
 
    def formatplace(self,plac):
       if plac == None: return ""
@@ -221,10 +234,11 @@ class Report(object):
         else:
           self._builder.put( self._dic["married"].capitalize() + " " )
           self._builder.put( date.formatdate(d) )
+	  if d != None and p != None: self._builder.put( " " )
           self._builder.put( self.formatplace(p) )
       # (2) Spouse name (and details)
       if ind != None:
-        self._builder.put( self._dic["with"] + " " )
+        self._builder.put( " " + self._dic["with"] + " " )
         (fn,sn) = ind.name()
         self._builder.put_name(fn,sn)
       # (3) Family events
@@ -304,6 +318,7 @@ class Report(object):
 
       # (1) Main name
       self._builder.put_name(fn,sn)
+      self._builder.put( " " )
 
       # (2) OBJE ??
       # (3) vitals (birth and parents)
@@ -326,6 +341,7 @@ class Report(object):
       # (5) NOTE
       for n in ind.children_tags("NOTE"):
 	 self._builder.put(n.value_cont())
+	 self._builder.put( "---" )
 	 for s in n.sources(): self.citation(s)
 	 self._builder.put_paragraph()
 
@@ -352,10 +368,13 @@ class Report(object):
       L = list(ind.children_tags("NAME"))
       if len(L) > 1:
 	 self._builder.put_subheader( "Ogso kjend som: " )
-	 for node in L[1:]:
+	 for node in L[1:-1]:
 	    (f,s) = parse_name( node )
 	    self._builder.put_name( f,s )
+	    self._builder.put( ", " )
 	    # TODO print sources
+	 (f,s) = parse_name( L[-1] )
+	 self._builder.put_name( f,s )
 
       # (8) SOUR (with PAGE) (ignore EVEN, QUAY)
       #    NOTE (url only) -> link

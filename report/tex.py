@@ -30,8 +30,9 @@ class texBuilder(object):
       self.file.close()
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
-   def put_cite(self,ref): 
-      self.file.write( "\\cite{%s}" % (ref,) )
+   def put_cite(self,ref,page=None): 
+      if page == None: self.file.write( "\\cite{%s}" % (ref,) )
+      else: self.file.write( "\\cite[%s]{%s}" % (page,ref,) )
    def put_name(self,fn,sn,ref=None): 
       if ref == None: s = "%s \\textsc{%s}" % (fn,sn,)
       else: s =  "%s \\textsc{%s} (\\textsc{%s})" % (fn,sn,ref)

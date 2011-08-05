@@ -40,6 +40,7 @@ class Event(object):
 
     def tag(self): return self.line.tag()
     def value(self): return self.line.value()
+    def children_tags(self,*a,**kw): return self.line.children_tags(*a,**kw)
     def children_single_tag(self,*a,**kw):
        return self.line.children_single_tag(*a,**kw)
     def year(self):
