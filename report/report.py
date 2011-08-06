@@ -219,7 +219,7 @@ class Report(object):
       if plac == []: return ""
       return u"på " + ", ".join(plac)
 
-   def spouse(self,fam,ind):
+   def spouse(self,fam,ind,short=False):
       marr = fam.marriage()
       # (1) Gift dato (etc)
       if marr == None:
@@ -240,7 +240,9 @@ class Report(object):
       if ind != None:
         self._builder.put( " " + self._dic["with"] + " " )
         (fn,sn) = ind.name()
-        self._builder.put_name(fn,sn)
+	ref = self.__history.get(ind.xref())
+        self._builder.put_name(fn,sn,ref)
+	if ref != None and short: return
       # (3) Family events
       # TODO: Family events
 
@@ -347,13 +349,18 @@ class Report(object):
 
       # (6) FAMS
       for n in ind.children_tag_records("FAMS"):
-	 if ind.sex() == "M": self.spouse( n, n.wife() )
-	 elif ind.sex() == "F": self.spouse( n, n.husband() )
+	 if ind.sex() == "M": spouse = n.wife()
+	 elif ind.sex() == "F": spouse = n.husband() 
          else: 
 	    print "Warning! Unknown gender for individual", key
-	    a = n.wife()
-	    if a == ind: self.spouse( n, n.husband() )
-	    else: self.spouse( n, a )
+	    spouse = n.wife()
+	    if spouse == ind: spouse = n.husband() 
+	 short = False
+	 if spouse != None:
+           sref = self.__history.get( spouse.xref() )
+	   if sref < ref: short = True
+	 self.spouse( n, spouse, short )
+	 if short: return
 	 cs = list(n.children())
 	 if len(cs) > 0:
 	   self._builder.put_enum_s()
