@@ -96,10 +96,12 @@ class Report(object):
       if refno == None: self.__history[key] = no
       return self.__history[key] 
 
-   def stamtavle(self,ref,mgen=12,header="Stamtavle"):
-      self._builder.preamble( header )
+   def stamtavle(self,ref,mgen=12,header=None):
       q = Queue()
       ind = self.__file.get( ref )
+      if header == None:
+	 header = "Stamtavle for %s %s" % ind.name()
+      self._builder.preamble( header )
       assert ind != None
       q.put( ( 1, 1, ind ) )
       self.history_add(ind,1)

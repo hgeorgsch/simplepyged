@@ -11,17 +11,18 @@ class texBuilder(object):
    author = u"Hans Georg Schaathun"
    title = ""
    bibstyle = "plain"
-   def __init__(self,file):
+   def __init__(self,file,title=""):
       f = file.split( "." )
       if len(f) > 1: bf = "".join(f[:-1])
       else: bf = file
       self.file    = codecs.open( file, "w", "UTF-8" )
       self.bibfile = codecs.open( bf + ".bib", "w", "UTF-8" )
       self.basename = bf
+      self.title = title
 
    def preamble(self,h):
      self.file.write(
-	    u"\\documentclass[pdftex,twocolumn,10pt,oneside,titlepage]{book}\n"
+	    u"\\documentclass[pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
             + u"\\xdef\AncDec{Ancestors}\n\n"

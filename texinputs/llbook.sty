@@ -88,7 +88,11 @@
 }
 \newcommand{\PersonHeader}[3]{%
   \ifgensection\subsection*{#1 #2}\relax
-    \def\@currentlabel{\thechapter.#1}\relax
+    \ifx\chapter\undefined
+      \def\@currentlabel{#1}\relax
+    \else
+      \def\@currentlabel{\thechapter.#1}\relax
+    \fi
   \else\section*{#1 #2}\def\@currentlabel{#1}\fi\label{#3}
 }
 \newcommand{\PersonRepeat}[3]{%
