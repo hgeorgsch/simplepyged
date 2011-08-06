@@ -85,6 +85,10 @@ class Node(object):
         for c in self.children_lines():
             if c.tag() == tag: return c
         return None
+    def children_single_val(self, tag):
+       R = self.children_single_tag(tag)
+       if R != None: R = R.value()
+       return R
 
     def parent_line(self):
         """ Return the parent line of this line """

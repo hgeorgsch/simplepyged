@@ -85,7 +85,7 @@ class Report(object):
    def __init__(self,file,builder=None,dic=dic_norsk):
       self.__file = file
       self.__history = {}
-      self.__reflist = []
+      self.__reflist = set()
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
@@ -121,6 +121,15 @@ class Report(object):
 	      q.put( ( cgen+1, 2*no + 1, m ) )
               self.history_add(m,2*no + 1)
 	 self.individual(ind=ind,number=no)
+      for s in self.__reflist:
+	 print type(s)
+	 author = s.children_single_val( "AUTH" )
+	 title  = s.children_single_val( "TITL" )
+	 url    = None
+	 pub    = s.children_single_val( "PUBL" )
+	 notes  = None
+	 xref   = s.xref()
+	 self._builder.put_bib( xref, author, title, url, pub, notes )
       self._builder.postamble()
    def event(self,ind,event):
       # text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
@@ -176,7 +185,7 @@ class Report(object):
 	 data = node.children_single_tag("DATA")
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
-	 self.__reflist.append( source )
+	 self.__reflist.add( source )
 	 self._builder.put_cite( val, page )
 	 # TODO: handle notes and quotes
 	 # TODO: process reference list
@@ -427,3 +436,5 @@ class Builder(object):
    def put(self,x): print x,
    def preamble(self): pass
    def postamble(self): pass
+   def put_bib( self, xref, author, title, url, publication, notes ):
+     pass

@@ -10,8 +10,14 @@ class texBuilder(object):
    llpackage = u"llbook"
    author = u"Hans Georg Schaathun"
    title = ""
+   bibstyle = "plain"
    def __init__(self,file):
-     self.file = codecs.open( file, "w", "UTF-8" )
+      f = file.split( "." )
+      if len(f) > 1: bf = "".join(f[:-1])
+      else: bf = file
+      self.file    = codecs.open( file, "w", "UTF-8" )
+      self.bibfile = codecs.open( bf + ".bib", "w", "UTF-8" )
+      self.basename = bf
 
    def preamble(self,h):
      self.file.write(
@@ -26,8 +32,11 @@ class texBuilder(object):
 
    def postamble(self):
       # TODO: process references here
+      self.file.write( "\\bibliographystyle{%s}\n" % (self.bibstyle,) )
+      self.file.write( "\\bibliography{%s}\n" % (self.basename,) )
       self.file.write( "\\end{document}\n" )
       self.file.close()
+      self.bibfile.close()
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
    def put_cite(self,ref,page=None): 
@@ -91,3 +100,15 @@ class texBuilder(object):
            self.file.write( char_escape(x) )
 	 except:
 	    print x
+   def put_bib( self, xref, author, title, url, publication, notes ):
+      self.bibfile.write( "@misc{" + xref + ",\n" )
+      if author != None:
+         self.bibfile.write( "  author = {" + author + "},\n" )
+      if title != None:
+         self.bibfile.write( "   title = {{" +  title + "}},\n" )
+      if publication != None:
+         self.bibfile.write( "  publisher = {" + publication + "},\n" )
+      if url != None:
+         self.bibfile.write( "     url = {" + url + "},\n" )
+      # TODO: Handle notes and URL
+      self.bibfile.write( "}\n" )
