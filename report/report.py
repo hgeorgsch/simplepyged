@@ -96,12 +96,16 @@ class Report(object):
       if refno == None: self.__history[key] = no
       return self.__history[key] 
 
-   def stamtavle(self,ref,mgen=12,header=None):
+   def stamtavle(self,ref,mgen=12,header=None,abstract=None):
       q = Queue()
       ind = self.__file.get( ref )
       if header == None:
 	 header = "Stamtavle for %s %s" % ind.name()
       self._builder.preamble( header )
+      if abstract != None:
+        self._builder.put_abstract_s( )
+        self._builder.put( abstract )
+        self._builder.put_abstract_e( )
       assert ind != None
       q.put( ( 1, 1, ind ) )
       self.history_add(ind,1)
@@ -124,7 +128,6 @@ class Report(object):
               self.history_add(m,2*no + 1)
 	 self.individual(ind=ind,number=no)
       for s in self.__reflist:
-	 print type(s)
 	 author = s.children_single_val( "AUTH" )
 	 title  = s.children_single_val( "TITL" )
 	 url    = None
@@ -174,7 +177,10 @@ class Report(object):
 	 self._builder.put(n.value_cont())
 	 for s in n.sources(): self.citation(s)
       # TODO distinguish between different kinds of notes.
-      # TODO SOUR/OBJE
+      for n in event.children_tags("SOUR"):
+	 self.citation( n )
+      # TODO clean up presentation of sources
+      # TODO OBJE
    def citation(self,node):
       assert node.tag() == "SOUR"
       val = node.value()
@@ -271,7 +277,7 @@ class Report(object):
       # (2) BIRT
       birt = ind.birth()
       if birt != None:
-        self._builder.put( self._dic["born"] + " " )
+        self._builder.put( " " + self._dic["born"] + " " )
         (d,p) = birt.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
@@ -354,7 +360,6 @@ class Report(object):
       # (5) NOTE
       for n in ind.children_tags("NOTE"):
 	 self._builder.put(n.value_cont())
-	 self._builder.put( "---" )
 	 for s in n.sources(): self.citation(s)
 	 self._builder.put_paragraph()
 
@@ -369,7 +374,7 @@ class Report(object):
 	 short = False
 	 if spouse != None:
            sref = self.__history.get( spouse.xref() )
-	   if sref < ref: short = True
+	   if sref != None and sref < ref: short = True
 	 self.spouse( n, spouse, short )
 	 if short: return
 	 cs = list(n.children())

@@ -106,10 +106,14 @@ class texBuilder(object):
       if author != None:
          self.bibfile.write( "  author = {" + author + "},\n" )
       if title != None:
-         self.bibfile.write( "   title = {{" +  title + "}},\n" )
+         self.bibfile.write( "   title = {{" +  char_escape(title) + "}},\n" )
       if publication != None:
          self.bibfile.write( "  publisher = {" + publication + "},\n" )
       if url != None:
          self.bibfile.write( "     url = {" + url + "},\n" )
       # TODO: Handle notes and URL
       self.bibfile.write( "}\n" )
+   def put_abstract_s( self ):
+      self.file.write( "\\begin{abstract}\n" )
+   def put_abstract_e( self ):
+      self.file.write( "\\end{abstract}\n" )
