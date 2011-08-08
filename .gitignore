@@ -6,3 +6,9 @@ t.sh
 htmlcov
 docs/_build
 docs/examples/simplepyged
+*.aux
+*.blg
+*.log
+*.bbl
+*.idx
+*.out
