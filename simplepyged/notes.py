@@ -64,10 +64,15 @@ class NoteStructure(Line):
        """
        Return an iterator of all sources associated with the note.
        """
+       L = list( self.children_tags("SOUR") )
+       if len(L) > 0: 
+          print "Warning!  Sources attached to Note Structures is not valid GEDCOM"
        if self._record != None:
+          if len(L) > 0: 
+	     print "Sources in note structure are ignored.  Move them to source record"
 	  return self._record.children_tags("SOUR")
        else:
-	  return []
+	  return L
 
     def note_type(self):
         """
