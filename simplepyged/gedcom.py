@@ -186,6 +186,13 @@ class Gedcom(Node):
             self._current_line.add_child(e)
             e.add_parent_line(self._current_line)
 
+	if t == "REFN":
+	   ref = e.value()
+	   if self._record_dict.has_key(ref):
+             print "Warning:  Duplicate REFN:", ref
+	   else:
+             self._record_dict[ref] = e.parent_line()
+
         # finish up
         self._current_level = l
         self._current_line = e
