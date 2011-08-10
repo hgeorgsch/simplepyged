@@ -25,8 +25,13 @@
 #
 # To contact the author, see http://github.com/dijxtra/simplepyged
 
-# __all__ = ["Gedcom", "Line", "GedcomParseError"]
+# __all__ = [ "GedcomParseError" ]
 
+"""
+This module contains all the Exception classes and functions for
+error handling and error checking for all the other submodules
+of the package.
+"""
 
 # Functions for error checking
 

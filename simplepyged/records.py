@@ -23,17 +23,23 @@
 #
 # To contact the author, see http://github.com/dijxtra/simplepyged
 
-# Global imports
+# Standard libraries
 import string
+
+# Other submodules
 from events import Event
 from errors import *
 
 def parse_name(e):
-  name = string.split(e.value(),'/')
-  first = string.strip(name[0])
-  if len(name) == 1: last = ""
-  else: last = string.strip(name[1])
-  return (first,last)
+   """
+   Parse a gedcom NAME value to produce a pair (firstname, lastname).  
+   Any suffix after the lastname will be ignored.
+   """
+   name = string.split(e.value(),'/')
+   first = string.strip(name[0])
+   if len(name) == 1: last = ""
+   else: last = string.strip(name[1])
+   return (first,last)
 
 class Node(object):
     """
@@ -97,7 +103,6 @@ class Node(object):
     def add_parent_line(self,line):
         """ Add a parent line to this line """
         self._parent_line = line
-
 
 class Line(Node):
     """ Line of a GEDCOM file
@@ -205,7 +210,6 @@ class Line(Node):
             result += ' ' + self.value()
         return result
 
-
 class Record(Line):
     """ Gedcom line with level 0 represents a record
 
@@ -233,7 +237,6 @@ class Individual(Record):
     """ Gedcom record representing an individual
 
     Child class of Record
-
     """
 
     def __init__(self,level,xref,tag,value,dict):
@@ -419,7 +422,8 @@ class Individual(Record):
         him['new'] = [relative]
         him['old'] = []
 
-        while(me['new'] != [] or him['new'] != []): #loop until we have no new ancestors to compare
+        while(me['new'] != [] or him['new'] != []):
+	    #loop until we have no new ancestors to compare
             for p in me['new']: #compare new ancestors of both me and him
                 if p in him['new']:
                     return p

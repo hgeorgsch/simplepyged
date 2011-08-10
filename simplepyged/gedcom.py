@@ -25,15 +25,26 @@
 #
 # To contact the author, see http://github.com/dijxtra/simplepyged
 
-# __all__ = ["Gedcom", "Line", "GedcomParseError"]
+"""
+This module defines the Gedcom class which holds the contents of a
+Gedcom file, including a parser to populate the object with data
+from a given file.
 
-# Global imports
+It depends on other modules to define the various records and 
+substructures.
+"""
+
+__all__ = [ "Gedcom", ]
+
+# Standard libraries
 import string
 import codecs
+from traceback import print_exc
+
+# Other submodules
 from records import *
 from errors import *
 from notes import NoteStructure
-from traceback import print_exc
 
 def parse_line(line):
   line = line.strip("\r\n")

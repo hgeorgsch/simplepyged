@@ -23,11 +23,25 @@
 #
 # To contact the author, see http://github.com/dijxtra/simplepyged
 
+"""
+This module handles event structures in Gedcom.
+"""
+
 import date
 
-# Global imports
 class Event(object):
-    """ Class represeting an event """
+    """
+    Class represeting an event.
+
+    Note that this class is totally incompatible with the Gedcom
+    Node or Line classes.  This is not satisfactory, and this class
+    should be redesigned to implement the same interface, either by
+    subclassing or by implementing the Decorator pattern.
+
+    A few essential methods() are provided as a partial implementation
+    of a Decorator pattern, as they have been required by other 
+    packages.
+    """
     def __init__(self, line):
         self.line = line
 

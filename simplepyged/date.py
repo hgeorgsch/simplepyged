@@ -24,19 +24,31 @@
 """
 Classes to represent dates with all the flexibility required for
 GEDCOM, including methods to parse date values from GEDCOM files.
+
+Different classes are used for the different types of dates, such as
+approximate dates, periods, imparsable date phrases, and exact dates.
+The Date class is the common ancestor of all the classes.
+
+Normally, the makeDate() function should be used to create new Date
+objects.  It takes the value from a gedcom DATE field as input, 
+and instantiates an object of the most appropriate class. 
 """
 
-keywords = [ 
-      "BET", "AND", 
-      "BEF", "AFT",
-      "FROM", "TO",
-      "CAL", "EST", "INT",
-      "(B.C.)" ]
+### keywords = [ "BET", "AND", "BEF", "AFT", "FROM", "TO",
+###       "CAL", "EST", "INT", "(B.C.)" ]
 
 class Date(object): 
+   "Superclass for all the different date classes in the module."
    def __init__(self,*a): pass
-   def year(self): return -1
-   def gedcom(self): return ""
+   def year(self):
+      # TODO: check if we can change this to None
+      return -1
+   def gedcom(self):
+      """
+      Return a value string in valid Gedcom format so that it can
+      be written to file.
+      """
+      return ""
 class DateProper(object): 
    def __init__(self,parts):
       self.BC = False
@@ -73,6 +85,10 @@ class DatePhrase(Date):
    def getDate(self): return self.date
    def gedcom(self): return self.date
 class DateApproximate(Date):
+   """
+   An approximate date, as defined in Gedcom by the CAL, EST, and ABT
+   keywords.
+   """
    def __init__(self,dat):
       assert dat[0] in [ "CAL", "EST", "ABT" ]
       self.approximation = dat[0]
@@ -80,6 +96,10 @@ class DateApproximate(Date):
    def getDate(self): return self.date
    def year(self): return self.date.year()
 class DateRange(Date):
+   """
+   A date approximated by a range, as defined in Gedcom by the
+   BET/AND, BEF, and AFT keywords.
+   """
    def getDate(self): return (self.start,self.end)
    def __init__(self,dat):
       assert dat[0] in [ "BET", "BEF", "AFT" ]
@@ -92,6 +112,9 @@ class DateRange(Date):
 	 self.start = makeDate( dat[1:idx] )
 	 self.end   = makeDate( dat[idx+1:] )
 class DatePeriod(Date):
+   """
+   A date period, as defined in Gedcom by the FROM and TO keywords.
+   """
    def getDate(self): return (self.start,self.end)
    def __init__(self,dat):
       assert dat[0] in [ "FROM", "TO" ]
@@ -108,6 +131,10 @@ class DatePeriod(Date):
 	 self.start = None
 
 def makeDate(dat):
+   """
+   Instantiate an object of an appropriate class by parsing the
+   given string dat, which should be a valid Gedcom date value.
+   """
    if isinstance(dat,str): parts = dat.split()
    elif isinstance(dat,unicode): parts = dat.split()
    else: parts = dat
@@ -121,15 +148,18 @@ def makeDate(dat):
    except:
      return DatePhrase( parts )
 
+# The following two dictionaries are used to parse and write
+# Gedcom date values.
 months = [ "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
            "JUL", "AUG", "SEP", "OCT", "NOV", "DEC", ]
-
-
 month_number = {
       "JAN" : 1, "FEB" : 2, "MAR" : 3, "APR" : 4,
       "MAY" : 5, "JUN" : 6, "JUL" : 7, "AUG" : 8,
       "SEP" : 9, "OCT" : 10, "NOV" : 11, "DEC" : 12,
       }
+
+# The following dictionary is not used here.
+# TODO: see if it can be moved to the report package
 
 month_nor = {
       "JAN" : "januar", "FEB" : "februar", "MAR" : "mars",
