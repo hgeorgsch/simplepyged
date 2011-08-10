@@ -81,7 +81,7 @@ class DateInterpreted(Date):
 class DatePhrase(Date):
    def __init__(self,dat):
       self.date = dat
-   def __str__(self): return str(self.date)
+   def __str__(self): return " ".join(self.date)
    def getDate(self): return self.date
    def gedcom(self): return self.date
 class DateApproximate(Date):
