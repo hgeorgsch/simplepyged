@@ -44,7 +44,7 @@ def parse_name(e):
 class Node(object):
     """
     A generic superclass for Gedcom Nodes, including files, records,
-    lines and other structures.  It handles parent and child nodes,
+    lines, and other structures.  It handles parent and child nodes,
     as well as the level.  A file has a level of -1.
     """
     def __init__(self):
@@ -79,25 +79,37 @@ class Node(object):
 	for i in self._children_lines: yield i
 
     def add_child(self,line):
-        """ Add a child line to this line """
+        """Add a child line to this line """
         self._children_lines.append(line)
+	# TODO: this should probably also add a parent pointer
+	#   to the added child, to reduce coupling.
         
     def children_tags(self, tag):
-        """ Returns list of child lines whos tag matches the argument. """
+        """
+	Returns list of child lines whoses tag match the argument.
+	"""
         for c in self.children_lines():
             if c.tag() == tag: yield c
     def children_single_tag(self, tag):
-        """ Returns list of child lines whos tag matches the argument. """
+        """
+	Returns the first child node whose tag matches the argument.
+	None is returned if no such child is found.
+	"""
         for c in self.children_lines():
             if c.tag() == tag: return c
         return None
     def children_single_val(self, tag):
+       """
+       None is returned if no such child is found.
+       Returns the value of the first child node whose tag
+       matches the argument.
+       """
        R = self.children_single_tag(tag)
        if R != None: R = R.value()
        return R
 
     def parent_line(self):
-        """ Return the parent line of this line """
+        """ Return the parent node of this line """
         return self._parent_line
 
     def add_parent_line(self,line):
@@ -127,7 +139,6 @@ class Line(Node):
     family record in which the associated individual is a child.
     
     See a Gedcom file for examples of tags and their values.
-
     """
 
     def __init__(self,level,xref,tag,value,dict):
@@ -144,14 +155,25 @@ class Line(Node):
         self._dict = dict
 
     def is_empty(self):
+       """
+       Return True if the Line has neither a (non-empty) value  nor
+       a child node.  According to the Gedcom standard, such nodes
+       should be ignored.
+       """
        if self.value() != "": return False
        if len(self._children_lines) > 0: return False
        return True
 
     def type(self):
-        """ Return class name of this instance
+        """
+	Return class name of this instance
 
-        Useful for determining if this line is Individual, Family, Note or some other record.
+        This can be used to determe if this line is Individual, Family,
+	Note or some other record.  However, using the tag() method
+	is a better approach if the data, rather than the class, is
+	relevant.
+
+	TODO: consider deprecating this.
         """
         return self.__class__.__name__
 
@@ -183,7 +205,10 @@ class Line(Node):
 	else: return L[0]
 
     def children_tag_records(self, tag):
-        """ Returns list of records which are pointed by child lines with given tag. """
+        """ 
+	Returns list of records which are pointed by child lines
+	with given tag.
+	"""
         lines = []
         for e in self.children_tags(tag):
             try:
@@ -573,34 +598,37 @@ class Individual(Record):
         
 
 class Family(Record):
-    """ Gedcom record representing a family
+    """ 
+    Gedcom record representing a family.
 
-    Child class of Record
-
+    Child class of Record with additional methods to process
+    family relations.
     """
 
     def __init__(self,level,xref,tag,value,dict):
         Record.__init__(self,level,xref,tag,value,dict)
 
     def _init(self):
-        """ Implementing Line._init()
+        """
+	Implementing Line._init()
 
-        Initialise husband, wife and children attributes. """
+        Initialise husband, wife and children attributes.
+	"""
 	Record._init(self)
         
+	# TODO: reconsider the usefulness of the following attributes
         self._husband = self.children_single_record("HUSB")
         self._wife = self.children_single_record("WIFE")
         self._children = self.children_tag_records("CHIL")
-
         self.marriage_events = self._parse_generic_event_list("MARR")
 
 
     def husband(self):
-        """ Return husband this family """
+        """ Return the husband of this family """
         return self._husband
 
     def wife(self):
-        """ Return wife this family """
+        """ Return the wife of this family """
         return self._wife
 
     def parents(self):
@@ -610,6 +638,9 @@ class Family(Record):
     def children_count(self):
         """
 	Return the number of children.
+
+	This uses the NCHI entry of Gedcom if present,
+	otherwise it counts the children registered.
 	"""
         n = self.children_single_tag("NCHI")
 	if n != None: return int(n.value())
