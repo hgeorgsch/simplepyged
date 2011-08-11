@@ -36,31 +36,31 @@ class WrightTest(unittest.TestCase):
     def test_period(self):
         self.assertEqual(
 	      formatdate(makeDate( "FROM 2 APR 1922" )),
-	      "frå 2. april 1922" )
+	      u"frå 2. april 1922" )
         self.assertEqual(
 	      formatdate(makeDate( "TO 12 AUG 1944" )),
-	      "til 12. august 1944" )
+	      u"til 12. august 1944" )
         self.assertEqual(
 	      formatdate(makeDate( "FROM 1777 TO OCT 1779" )),
-	      "1777--oktober 1779" )
+	      u"1777--oktober 1779" )
 
     def test_range(self):
         self.assertEqual(
 	      formatdate(makeDate( "BET MAR 1655 AND JUL 1655" )),
-	      "mellom mars 1655 og juli 1655" )
+	      u"mellom mars 1655 og juli 1655" )
         self.assertEqual(
 	      formatdate(makeDate( "BEF JUL 1450" )),
-	      "før juli 1450" )
+	      u"før juli 1450" )
         self.assertEqual(
 	      formatdate(makeDate( "AFT JUN 1512" )),
-	      "etter juni 1512" )
+	      u"etter juni 1512" )
 
     def test_dates(self):
         self.assertEqual(
 	      formatdate(makeDate( "ABT 1777" )), "omkring 1777" )
         self.assertEqual(
 	      formatdate(makeDate( "FROM ABT 1777 TO 2 SEP 1790" )),
-	      "omkring 1777--2. september 1790" )
+	      u"omkring 1777--2. september 1790" )
 
 if __name__ == '__main__':
     unittest.main()
