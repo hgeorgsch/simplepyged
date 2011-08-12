@@ -23,8 +23,17 @@ from simplepyged.records import parse_name
 from Queue import Queue
 
 class devnull():
+   """
+   A pseudo-list object, implementing the append() method, but
+   does nothing, simply ignoring the data.
+   """
    def append(self,*a): pass
 class unsupport():
+   """
+   A pseudo-list object, similar to the devnull class.
+   It implements the append() method, and will issue a warning
+   whenever an object is appended, but otherwise ignore the data.
+   """
    def append(self,e): 
       print "Warning! Unsupported tag.", e
 
@@ -91,10 +100,34 @@ class Report(object):
       self._dic = dic
 
    def history_add(self,ind,no):
+      """
+      Record the given individual ind as included in the report under
+      Entry no.
+      """
       key = ind.xref()
       refno = self.__history.get( key )
       if refno == None: self.__history[key] = no
       return self.__history[key] 
+
+   # String formatting
+
+   def formatplace(self,plac):
+      """
+      Format the given place plac, specified as a list of strings,
+      and return a single string for printout.  No text is actually
+      printed from this method.  If the place name is missing, 
+      an empty string is returned.
+
+      TODO: In future versions, the output should be abreviated,
+      depending on the state of the report.
+      """
+      # For a missing place, plac could be either None, "", or [].
+      # The following conditional captures all of them, returning
+      # an empty string for a missing place.
+      if not plac: return ""
+      return u"på " + ", ".join(plac)
+
+   # Output production methods
 
    def stamtavle(self,ref,mgen=12,header=None,abstract=None):
       q = Queue()
@@ -168,7 +201,7 @@ class Report(object):
       # DATE/PLAC:
       (d,p) = event.dateplace()
       self._builder.put( date.formatdate( d ) )
-      if d != None and p != None: self._builder.put( " " )
+      if not ( d or p ): self._builder.put( " " )
       self._builder.put( self.formatplace( p ) )
       # Finalise
       self._builder.put( ". " )
@@ -181,7 +214,12 @@ class Report(object):
 	 self.citation( n )
       # TODO clean up presentation of sources
       # TODO OBJE
+
    def citation(self,node):
+      """
+      Process a source citation structure and produce appropriate
+      report output.
+      """
       assert node.tag() == "SOUR"
       val = node.value()
       media = node.children_tags("OBJE")
@@ -229,12 +267,6 @@ class Report(object):
       if mother != None:
 	 mother = self.simplename(mother)
       self._builder.put( ". " )
-
-   def formatplace(self,plac):
-      if plac == None: return ""
-      if plac == "": return ""
-      if plac == []: return ""
-      return u"på " + ", ".join(plac)
 
    def spouse(self,fam,ind,short=False):
       marr = fam.marriage()

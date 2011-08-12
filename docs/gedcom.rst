@@ -5,6 +5,3 @@ Gedcom
 
 .. autoclass:: Gedcom
    :members:
-
-.. autoclass:: GedcomParseError
-   :members:

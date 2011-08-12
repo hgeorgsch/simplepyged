@@ -6,21 +6,33 @@
 .. include:: ../README.rst
 
 
-Classes
--------
+The simplepyged package
+-----------------------
 
-General
-^^^^^^^
+The parser and Gedcom object
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
 
    gedcom.rst
+
+Gedcom nodes and structures
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+
    line.rst
    record.rst
    date.rst
 
 Record types
 ^^^^^^^^^^^^
+
+Family and Individual records naturally require a number of methods
+to process relationships in an easy way, and may include data mining
+methods.  Therefor, seperata subclasses are provided for these two
+record types.  The other record types do not obviously require any
+special methods, but have been created in case this is required later.
 
 .. toctree::
    
@@ -41,8 +53,6 @@ Searching and filtering of records
 .. toctree::
 
    matching.rst
-
-
 
 Indices and tables
 ==================

@@ -31,15 +31,15 @@ from events import Event
 from errors import *
 
 def parse_name(e):
-   """
-   Parse a gedcom NAME value to produce a pair (firstname, lastname).  
-   Any suffix after the lastname will be ignored.
-   """
-   name = string.split(e.value(),'/')
-   first = string.strip(name[0])
-   if len(name) == 1: last = ""
-   else: last = string.strip(name[1])
-   return (first,last)
+    """
+    Parse a gedcom NAME value to produce a pair (firstname, lastname).  
+    Any suffix after the lastname will be ignored.
+    """
+    name = string.split(e.value(),'/')
+    first = string.strip(name[0])
+    if len(name) == 1: last = ""
+    else: last = string.strip(name[1])
+    return (first,last)
 
 class Node(object):
     """
@@ -259,9 +259,10 @@ class Submitter(Record): pass
 
 
 class Individual(Record):
-    """ Gedcom record representing an individual
+    """
+    Gedcom record representing an individual.
 
-    Child class of Record
+    Child class of Record.
     """
 
     def __init__(self,level,xref,tag,value,dict):
@@ -270,6 +271,8 @@ class Individual(Record):
     def _init(self):
         """ Implementing Line._init() """
 	Record._init(self)
+
+	# TODO: reconsider the need for these attributes
         self._parent_family = self.get_parent_family()
         self._families = self.get_families()
 
@@ -277,7 +280,9 @@ class Individual(Record):
         self.death_events = self._parse_generic_event_list("DEAT")
 
     def sex(self):
-        """ Returns 'M' for males, 'F' for females """
+        """
+	Returns 'M' for males, 'F' for females, 'U' for unknown gender.
+	"""
 	s = self.children_single_tag("SEX")
 	if s == None: return "U"
 	else: return s.value()
@@ -289,14 +294,16 @@ class Individual(Record):
         return self._families
 
     def father(self):
-        if self.parent_family() != None:
-            if self.parent_family().husband() != None:
-                return self.parent_family().husband()
+       if self.parent_family() != None:
+          if self.parent_family().husband() != None:
+             return self.parent_family().husband()
+       return None
 
     def mother(self):
-        if self.parent_family() != None:
-            if self.parent_family().wife() != None:
-                return self.parent_family().wife()
+       if self.parent_family() != None:
+          if self.parent_family().wife() != None:
+             return self.parent_family().wife()
+       return None
 
     def children(self):
         retval = []
@@ -325,12 +332,15 @@ class Individual(Record):
         return famc[0]
     
     def name(self):
-        """ Return a person's names as a tuple: (first,last) """
+        """
+	Return a person's names as a tuple: (first,last).
+
+	The GIVN/SURN tags are used if provided, otherwise
+	the name is parsed from the NAME value itself.
+	"""
         first = ""
         last = ""
         e = self.children_single_tag( "NAME" )
-        # some older Gedcom files don't use child tags but instead
-        # place the name in the value of the NAME tag
         if e.value() != "":
            (first,last) = parse_name(e)
         else:
@@ -358,11 +368,15 @@ class Individual(Record):
         return self.father().given_name()
         
     def birth(self):
-        """ Return one randomly chosen birth event
+        """
+	Return the birth event of the individual.
 
-        If a person has only one birth event (which is most common
-        case), return that one birth event. For list of all birth
-        events see self.birth_events.
+        If the person has multiple birth events, then the returned
+	event is the first one entered in the file.  This event
+	should be treated as the `prefered' event according to
+	Gedcom 5.5.1.
+
+        For list of all birth events see self.birth_events().
         """
 
         if len(self.birth_events) == 0:
@@ -375,17 +389,22 @@ class Individual(Record):
 
         if self.birth() == None: return -1
         return self.birth().year()
+        # TODO: reconsider the use of -1 here.
 
     def alive(self):
         "Return True if individual lacks death entry."
 	return self.death() is None
 
     def death(self):
-        """ Return one randomly chosen death event
+        """
+	Return the death event of the individual.
 
-        If a person has only one death event (which is most common
-        case), return that one death event. For list of all death
-        events see self.death_events.
+        If the person has multiple death events, then the returned
+	event is the first one entered in the file.  This event
+	should be treated as the `prefered' event according to
+	Gedcom 5.5.1.
+
+        For list of all death events see self.death_events().
         """
 
         if len(self.death_events) == 0:
