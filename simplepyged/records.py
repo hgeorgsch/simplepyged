@@ -248,6 +248,12 @@ class Record(Line):
 
     """
     
+    def merge(self,other):
+       """
+       Merge the other Record with this one.
+       """
+       raise NotImplementedError
+
     def _parse_generic_event_list(self, tag):
         """ Creates new event for each line with given tag"""
         retval = []
