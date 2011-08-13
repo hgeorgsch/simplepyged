@@ -20,6 +20,16 @@
 #
 # Please see the GPL license at http://www.gnu.org/licenses/gpl.txt
 
+"""
+Adding records to a Gedcom file.
+
+The functions of this module are intended to provide a simple API
+to add individuals and families to a Gedcom file.
+
+It is under construction and will need some refactoring before the
+documentation is presented.
+"""
+
 from .records import *
 import codecs
 
@@ -98,6 +108,10 @@ def parse_ahnentafel(file,*a,**kw):
    return newdict[1]
 
 def mkfam(newdict):
+   """
+   Create the new families required by an ahnentafel.
+   This is an auxiliary function for parse_ahnentafel()
+   """
    for k in newdict.keys():
       ind = newdict[k]
       f = newdict.get(2*k)
