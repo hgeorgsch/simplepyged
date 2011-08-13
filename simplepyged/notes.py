@@ -4,7 +4,6 @@
 # Gedcom 5.5 Parser
 #
 # Copyright (C) 2011 Hans Georg Schaathun (hg [ at ] schaathun.net)
-# Copyright (C) 2010 Nikola Škorić (nskoric [ at ] gmail.com)
 #
 # This program is free software; you can redistribute it and/or
 # modify it under the terms of the GNU General Public License
@@ -21,8 +20,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 # Please see the GPL license at http://www.gnu.org/licenses/gpl.txt
-#
-# To contact the author, see http://github.com/dijxtra/simplepyged
 
 from errors import *
 from records import Line

@@ -20,8 +20,6 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #
 # Please see the GPL license at http://www.gnu.org/licenses/gpl.txt
-#
-# To contact the author, see http://github.com/dijxtra/simplepyged
 
 # Standard libraries
 import string
