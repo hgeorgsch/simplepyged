@@ -20,7 +20,6 @@ def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
    ind.add_child_line( src )
    if page:
       src.add_child_line( Line( level=2, xref=None, tag="PAGE", value=page, dict=dict ) )
-   print "newIndividual: " + str(ind)
    dict.add_record(ind)
    return ind
 
