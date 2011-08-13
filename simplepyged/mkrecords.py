@@ -105,4 +105,3 @@ def mkfam(newdict):
       if not ( f or m ): continue
       ind.add_parents( f, m )
       # TODO: make sure that the source is recorded in the family as well
-      # TODO: add a marriage event by default

@@ -627,7 +627,7 @@ class Individual(Record):
         return full_path
         
     # Modifier methods
-    def add_parents(self,f,m,force=False):
+    def add_parents(self,f,m,force=False,marr=True):
        """
        Record the two individuals f and m as respectively
        father and mother of the individual.  If the individual
@@ -646,6 +646,8 @@ class Individual(Record):
        if fam == None:
 	  ref = self._dict.getxref( "FAM" )
 	  fam = Family( 0, ref, "FAM", None, self._dict )
+	  if marr:
+	     fam.add_child_line( Line( 1, None, "MARR", "Y", self._dict ) )
 	  self._dict.add_record( fam )
        else:
 	  ref = fam.xref() 
