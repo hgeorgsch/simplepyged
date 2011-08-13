@@ -408,7 +408,7 @@ class Report(object):
            sref = self.__history.get( spouse.xref() )
 	   if sref != None and sref < ref: short = True
 	 self.spouse( n, spouse, short )
-	 if short: return
+	 if short: continue
 	 cs = list(n.children())
 	 if len(cs) > 0:
 	   self._builder.put_enum_s()
@@ -437,7 +437,7 @@ class Report(object):
       #    DATA -> deferred -> quotation
       #    OBJE ??
       L = list(ind.children_tags("SOUR"))
-      if len(L) > 1:
+      if len(L) > 0:
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
 

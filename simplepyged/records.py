@@ -217,9 +217,10 @@ class Line(Node):
 	"""
         lines = []
         for e in self.children_tags(tag):
-            try:
-               lines.append(self._dict[e.value()])
-            except KeyError:
+            k = self._dict.get(e.value())
+	    if k != None:
+               lines.append(self._dict.get(e.value()))
+	    else:
 	       raise MissingRecordError, "Undefined pointer.  Missing record."
 
         return lines
@@ -647,7 +648,7 @@ class Individual(Record):
        if fam == None:
 	  ref = self._dict.getxref( "FAM" )
 	  fam = Family( 0, ref, "FAM", None, self._dict )
-	  dict.add_record( fam )
+	  self._dict.add_record( fam )
        else:
 	  ref = fam.xref() 
        fam.add_child( self )
@@ -741,18 +742,18 @@ class Family(Record):
        if t != None:
 	  if force: raise NotImplementedError
 	  else: raise Exception, "The family already has a husband."
-       self.add_child_line( Line( 1, None, "HUSB", ref ) )
-       ind.add_child_line( Line( 1, None, "FAMS", self.xref() ) )
+       self.add_child_line( Line( 1, None, "HUSB", ref, dict=self._dict ) )
+       ind.add_child_line( Line( 1, None, "FAMS", self.xref(), dict=self._dict ) )
     def add_wife(self,ind,force=False):
        ref = ind.xref()
        t = self.children_single_tag( "WIFE" )
        if t != None:
 	  if force: raise NotImplementedError
 	  else: raise Exception, "The family already has a wife."
-       self.add_child_line( Line( 1, None, "WIFE", ref ) )
-       ind.add_child_line( Line( 1, None, "FAMS", self.xref() ) )
+       self.add_child_line( Line( 1, None, "WIFE", ref, dict=self._dict ) )
+       ind.add_child_line( Line( 1, None, "FAMS", self.xref(), dict=self._dict ) )
     def add_child(self,ind,force=False):
        ref = ind.xref()
-       self.add_child_line( Line( 1, None, "CHIL", ref ) )
-       ind.add_child_line( Line( 1, None, "FAMC", self.xref() ) )
+       self.add_child_line( Line( 1, None, "CHIL", ref, dict=self._dict ) )
+       ind.add_child_line( Line( 1, None, "FAMC", self.xref(), dict=self._dict ) )
 

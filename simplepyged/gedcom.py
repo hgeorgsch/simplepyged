@@ -264,7 +264,6 @@ class Gedcom(Node):
 
     # Modifying the data structure
     def add_record(self,node):
-       print "add_record:" + str(node)
        ref = node.xref()
        if self._record_dict.has_key(ref):
 	  raise Exception, "Record with same xref already exists"
@@ -274,13 +273,7 @@ class Gedcom(Node):
        # (1) append record as child node
        tr = self._children_lines.pop()
        self.add_child_line( node )
-       print str(self._children_lines[-2])
-       print str(self._children_lines[-1])
        self._children_lines.append( tr )
-       print str(tr)
        # (2) add record in the dictionary
        self._record_dict[ref] = node
-       print str(self._children_lines[-4])
-       print str(self._children_lines[-3])
-       print str(self._children_lines[-2])
-       print str(self._children_lines[-1])
+       node._init()
