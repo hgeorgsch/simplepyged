@@ -33,6 +33,12 @@ documentation is presented.
 from .records import *
 import codecs
 
+def mkcitation(source,page=None,level=1,dict=None):
+   src = Line( level=level, xref=None, tag="SOUR", value=source, dict=dict )
+   if page:
+      src.add_child_line( Line( level=level+1, xref=None, tag="PAGE", value=page, dict=dict ) )
+   return src
+
 def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
    """
    Create a new individual with specified name, source citation
@@ -46,10 +52,7 @@ def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
      ind.add_child_line( Line( level=1, xref=None, tag="DEAT", value="Y", dict=dict ) )
    if subm:
      ind.add_child_line( Line( level=1, xref=None, tag="SUBM", value=subm, dict=dict) )
-   src = Line( level=1, xref=None, tag="SOUR", value=source, dict=dict )
-   ind.add_child_line( src )
-   if page:
-      src.add_child_line( Line( level=2, xref=None, tag="PAGE", value=page, dict=dict ) )
+   ind.add_child_line( mkcitation( source, page, dict=dict ) )
    dict.add_record(ind)
    return ind
 
@@ -104,10 +107,11 @@ def parse_ahnentafel(file,*a,**kw):
       (no,ind) = parse_ahnen_line(l,*a,**kw)
       newdict[no] = ind
    f.close()
-   mkfam(newdict)
+   if not kw.has_key("page"): kw["page"] = None
+   mkfam(newdict,source=kw["source"],page=kw["page"],dict=kw["dict"])
    return newdict[1]
 
-def mkfam(newdict):
+def mkfam(newdict,source=None,page=None,dict=None):
    """
    Create the new families required by an ahnentafel.
    This is an auxiliary function for parse_ahnentafel()
@@ -117,5 +121,6 @@ def mkfam(newdict):
       f = newdict.get(2*k)
       m = newdict.get(2*k+1)
       if not ( f or m ): continue
-      ind.add_parents( f, m )
+      fam = ind.add_parents( f, m )
+      fam.add_child_line( mkcitation( source, page, dict=dict ) )
       # TODO: make sure that the source is recorded in the family as well

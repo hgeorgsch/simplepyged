@@ -294,6 +294,7 @@ class Report(object):
 	if ref != None and short: return
       # (3) Family events
       # TODO: Family events
+      # TODO: Family sources
 
    def child(self,ind):
       assert ind.tag() == "INDI"
