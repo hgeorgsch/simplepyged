@@ -78,11 +78,11 @@ class Node(object):
         """ Return the child lines of this line """
 	for i in self._children_lines: yield i
 
-    def add_child(self,line):
+    def add_child_line(self,line):
         """Add a child line to this line """
         self._children_lines.append(line)
-	# TODO: this should probably also add a parent pointer
-	#   to the added child, to reduce coupling.
+        line.add_parent_line(self)
+	# TODO: test this
         
     def children_tags(self, tag):
         """
@@ -615,6 +615,17 @@ class Individual(Record):
             
         return full_path
         
+    # Modifier methods
+    def add_parents(self,f,m,force=False):
+       fam = self.parent_family()
+       if fam == None:
+	  ref = self._dict.getxref( "FAM" )
+	  fam = Family( 0, ref, "FAM", None, self._dict )
+       else: ref = fam.xref() 
+       fam.add_child( self )
+       if f != None: fam.add_husband( f, force )
+       if m != None: fam.add_wife( m, force )
+       return fam
 
 class Family(Record):
     """ 
@@ -694,3 +705,13 @@ class Family(Record):
             return True
 
         return False
+        
+    # Modifier methods
+    def add_husband(self,ind,force=False):
+       raise NotImplementedError
+    def add_wife(self,ind,force=False):
+       raise NotImplementedError
+    def add_child(self,ind,force=False):
+       raise NotImplementedError
+
+

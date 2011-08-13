@@ -188,14 +188,12 @@ class Gedcom(Node):
             self._record_dict[p] = e
 
         if l > self._current_level:
-            self._current_line.add_child(e)
-            e.add_parent_line(self._current_line)
+            self._current_line.add_child_line(e)
         else:
             # l.value <= self._current_level:
             while (self._current_line.level() != l - 1):
                 self._current_line = self._current_line.parent_line()
-            self._current_line.add_child(e)
-            e.add_parent_line(self._current_line)
+            self._current_line.add_child_line(e)
 
 	if t == "REFN":
 	   ref = e.value()
@@ -211,6 +209,12 @@ class Gedcom(Node):
     def _error(self,number,text):
         error = "Gedcom format error on line " + unicode(number) + ': ' + text
         raise GedcomParseError(error)
+
+    def getxref(self,tag=None):
+       """
+       Return an unused xref appropriate for the given tag.
+       """
+       raise NotImplementedException
 
     def _print(self,file=None):
        if file != None:
