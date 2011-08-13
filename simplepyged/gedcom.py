@@ -81,8 +81,18 @@ class Gedcom(Node):
     the same as the order of the lines in the GEDCOM file), or a
     dictionary (only lines that represent records: the key to the
     dictionary is a unique identifier of each record).
-
     """
+
+    xref_prefix = {
+	  "INDI" : "I",
+	  "FAM"  : "F",
+	  "SOUR" : "S",
+	  "SUBM" : "X",
+	  "NOTE" : "N",
+	  "OBJE" : "M",
+	  }
+    xref_next = { }
+
 
     def __init__(self,file):
         """ Initialize a Gedcom parser. You must supply a Gedcom file.
@@ -145,6 +155,7 @@ class Gedcom(Node):
             number += 1
 
         self._init()
+        self._assert()
 
     def _parse_line(self,number,line):
         # each line should have: Level SP (Xref SP)? Tag (SP Value)? (SP)? NL
@@ -214,7 +225,24 @@ class Gedcom(Node):
        """
        Return an unused xref appropriate for the given tag.
        """
-       raise NotImplementedException
+       n = self.xref_next.get(tag)
+       p = self.xref_prefix[tag] 
+       if n == None:
+	  assert len(p) == 1, "Prefixes are assumed to be single character"
+	  K = [ k for k in self._record_dict.keys() if len(k) > 2 ]
+	  L = [ k[2:-1] for k in K if k[1] == p ]
+	  n = 0
+	  for i in L: # Search for the maximum, ignoring non-integers
+	     try:
+		m = int(i)
+		if m > n: n = m
+	     except: pass
+	  n += 1
+          self.xref_next[tag] = n + 1
+       else:
+         n = self.xref_next[tag]
+         self.xref_next[tag] += 1
+       return "@" + p + str(n) + "@"
 
     def _print(self,file=None):
        if file != None:
@@ -224,3 +252,35 @@ class Gedcom(Node):
        else:
           for e in self.line_list(): print unicode(e)
 
+    def _assert(self,level=None):
+       """
+       Check standard assertations for a valid Gedcom file.
+       """
+       assert self._children_lines[0].tag() == "HEAD", "File lacks header"
+       assert self._children_lines[-1].tag() == "TRLR", "File lacks trailer"
+       for n in self._children_lines[1:-1]:
+	  assert n.xref()[0] == "@", "Malformed xref"
+	  assert n.xref()[-1] == "@", "Malformed xref"
+
+    # Modifying the data structure
+    def add_record(self,node):
+       print "add_record:" + str(node)
+       ref = node.xref()
+       if self._record_dict.has_key(ref):
+	  raise Exception, "Record with same xref already exists"
+       if ref == None:
+	  ref = self.getxref( node.tag() )
+	  node.set_xref( ref )
+       # (1) append record as child node
+       tr = self._children_lines.pop()
+       self.add_child_line( node )
+       print str(self._children_lines[-2])
+       print str(self._children_lines[-1])
+       self._children_lines.append( tr )
+       print str(tr)
+       # (2) add record in the dictionary
+       self._record_dict[ref] = node
+       print str(self._children_lines[-4])
+       print str(self._children_lines[-3])
+       print str(self._children_lines[-2])
+       print str(self._children_lines[-1])

@@ -82,7 +82,6 @@ class Node(object):
         """Add a child line to this line """
         self._children_lines.append(line)
         line.add_parent_line(self)
-	# TODO: test this
         
     def children_tags(self, tag):
         """
@@ -180,6 +179,13 @@ class Line(Node):
     def xref(self):
         """ Return the xref of this line """
         return self._xref
+    def set_xref(self,ref):
+        """ 
+	Set the xref of this node.  
+	If the xref is already set, an exception will be raised.
+	"""
+	assert self._xref == None
+        self._xref = ref
     
     def tag(self):
         """ Return the tag of this line """
@@ -228,10 +234,10 @@ class Line(Node):
     def __str__(self):
         """ Format this line as its original string """
         result = unicode(self.level())
-        if self.xref() != "":
+        if self.xref():
             result += ' ' + self.xref()
         result += ' ' + self.tag()
-        if self.value() != "":
+        if self.value():
             result += ' ' + self.value()
         return result
 
@@ -617,11 +623,27 @@ class Individual(Record):
         
     # Modifier methods
     def add_parents(self,f,m,force=False):
+       """
+       Record the two individuals f and m as respectively
+       father and mother of the individual.  If the individual
+       previously is not a child of any family, then a new 
+       family object is created.
+
+       If there already is a family with this individual as
+       a child, this family is amended.  Any parent (f or m)
+       which is None will be ignored, thus not removing any
+       previous parent.  If a new parent is given, and one
+       already existed, the behaviour depends on the force
+       argument; see Family.add_husband() and Family.add_wife()
+       for details.
+       """
        fam = self.parent_family()
        if fam == None:
 	  ref = self._dict.getxref( "FAM" )
 	  fam = Family( 0, ref, "FAM", None, self._dict )
-       else: ref = fam.xref() 
+	  dict.add_record( fam )
+       else:
+	  ref = fam.xref() 
        fam.add_child( self )
        if f != None: fam.add_husband( f, force )
        if m != None: fam.add_wife( m, force )
@@ -708,10 +730,23 @@ class Family(Record):
         
     # Modifier methods
     def add_husband(self,ind,force=False):
-       raise NotImplementedError
+       ref = ind.xref()
+       t = self.children_single_tag( "HUSB" )
+       if t != None:
+	  if force: raise NotImplementedError
+	  else: raise Exception, "The family already has a husband."
+       self.add_child_line( Line( 1, None, "HUSB", ref ) )
+       ind.add_child_line( Line( 1, None, "FAMS", self.xref() ) )
     def add_wife(self,ind,force=False):
-       raise NotImplementedError
+       ref = ind.xref()
+       t = self.children_single_tag( "WIFE" )
+       if t != None:
+	  if force: raise NotImplementedError
+	  else: raise Exception, "The family already has a wife."
+       self.add_child_line( Line( 1, None, "WIFE", ref ) )
+       ind.add_child_line( Line( 1, None, "FAMS", self.xref() ) )
     def add_child(self,ind,force=False):
-       raise NotImplementedError
-
+       ref = ind.xref()
+       self.add_child_line( Line( 1, None, "CHIL", ref ) )
+       ind.add_child_line( Line( 1, None, "FAMC", self.xref() ) )
 
