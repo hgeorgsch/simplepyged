@@ -1,4 +1,5 @@
 % $Id: llbook.sty 752 2011-07-31 04:33:01Z georg $
+\RequirePackage{etex}
 
 \RequirePackage[utf8x]{inputenc}
 \RequirePackage[T1]{fontenc}
@@ -99,6 +100,8 @@
   \ifgensection\subsection*{#2 #3 \rm (See #1)}\relax
   \else\section*{#2 #3 \rm (See #1)}\fi
   %\subsection*{#2 #3 \rm (See #1)}
+  \strut\par
+  % TODO: rewrite this to reduce the spacing
 }
 \newcommand{\generation}[2]{
   \ifgensection

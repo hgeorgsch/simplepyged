@@ -3,6 +3,8 @@
 
 import codecs
 
+def bib_escape(x):
+   return x.replace( "&", " and " )
 def char_escape(x):
    return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" ).replace( "#", "\\#" )
 
@@ -32,7 +34,10 @@ class texBuilder(object):
             + u"\\maketitle\n" )
 
    def postamble(self):
-      # TODO: process references here
+      """
+      Write necessary material to complete the report and close
+      the files.
+      """
       self.file.write( "\\bibliographystyle{%s}\n" % (self.bibstyle,) )
       self.file.write( "\\bibliography{%s}\n" % (self.basename,) )
       self.file.write( "\\end{document}\n" )
@@ -104,7 +109,7 @@ class texBuilder(object):
    def put_bib( self, xref, author, title, url, publication, notes ):
       self.bibfile.write( "@misc{" + xref + ",\n" )
       if author != None:
-         self.bibfile.write( "  author = {" + author + "},\n" )
+         self.bibfile.write( "  author = {" + bib_escape(author) + "},\n" )
       if title != None:
          self.bibfile.write( "   title = {{" +  char_escape(title) + "}},\n" )
       if publication != None:

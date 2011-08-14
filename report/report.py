@@ -234,10 +234,14 @@ class Report(object):
 	 self.__reflist.add( source )
 	 self._builder.put_cite( val, page )
 	 # TODO: handle notes and quotes
-	 # TODO: process reference list
       else:
-	 raise NotImplementedError, "Only source records are supported."
-	 quotes = node.children_tags("TEXT")
+	 if node.is_empty():
+	    print "Warning!  Empty source citation"
+	    return
+	 else:
+	    print node.gedcom()
+	    raise NotImplementedError, "Only source records are supported."
+	    quotes = node.children_tags("TEXT")
 
    def simplename(self,node):
       (f,s) = node.name()
