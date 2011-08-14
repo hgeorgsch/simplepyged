@@ -64,6 +64,7 @@ class NoteStructure(Line):
        L = list( self.children_tags("SOUR") )
        if len(L) > 0: 
           print "Warning!  Sources attached to Note Structures is not valid GEDCOM"
+	  print unicode(self)
        if self._record != None:
           if len(L) > 0: 
 	     print "Sources in note structure are ignored.  Move them to source record"

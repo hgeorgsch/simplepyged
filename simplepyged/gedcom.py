@@ -172,28 +172,28 @@ class Gedcom(Node):
 
         if l == 0: #current line is in fact a brand new record
             if t == "INDI":
-                e = Individual(l,p,t,v,self.record_dict())
+                e = Individual(l,p,t,v,self)
             elif t == "FAM":
-                e = Family(l,p,t,v,self.record_dict())
+                e = Family(l,p,t,v,self)
             elif t == "OBJE":
-                e = Multimedia(l,p,t,v,self.record_dict())
+                e = Multimedia(l,p,t,v,self)
             elif t == "NOTE":
-                e = Note(l,p,t,v,self.record_dict())
+                e = Note(l,p,t,v,self)
             elif t == "REPO":
-                e = Repository(l,p,t,v,self.record_dict())
+                e = Repository(l,p,t,v,self)
             elif t == "SOUR":
-                e = Source(l,p,t,v,self.record_dict())
+                e = Source(l,p,t,v,self)
             elif t == "SUBN":
-                e = Submission(l,p,t,v,self.record_dict())
+                e = Submission(l,p,t,v,self)
             elif t == "SUBM":
-                e = Submitter(l,p,t,v,self.record_dict())
+                e = Submitter(l,p,t,v,self)
             else:
-                e = Record(l,p,t,v,self.record_dict())
+                e = Record(l,p,t,v,self)
         else:
             if t == "NOTE":
-              e = NoteStructure(l,p,t,v,self.record_dict())
+              e = NoteStructure(l,p,t,v,self)
 	    else:
-              e = Line(l,p,t,v,self.record_dict())
+              e = Line(l,p,t,v,self)
 
         if p != '':
             self._record_dict[p] = e

@@ -149,6 +149,8 @@ class Line(Node):
         self._xref = xref
         self._tag = tag
         self._value = value
+	if not isinstance( dict, Node ): 
+	   print u"dict:", type(dict), unicode(self)
         self._dict = dict
 
     def is_empty(self):
@@ -219,7 +221,10 @@ class Line(Node):
 	    if k != None:
                lines.append(self._dict.get(e.value()))
 	    else:
-	       raise MissingRecordError, "Undefined pointer.  Missing record."
+	       print str(e)
+	       print str(e.parent_line())
+	       raise GedcomMissingRecordError, \
+		     "Undefined pointer: %s.  Missing record." % (e.value(),)
 
         return lines
 
@@ -644,13 +649,10 @@ class Individual(Record):
        """
        fam = self.parent_family()
        if fam == None:
-	  ref = self._dict.getxref( "FAM" )
-	  fam = Family( 0, ref, "FAM", None, self._dict )
+	  fam = Family( 0, None, "FAM", None, self._dict )
 	  if marr:
 	     fam.add_child_line( Line( 1, None, "MARR", "Y", self._dict ) )
-	  self._dict.add_record( fam )
-       else:
-	  ref = fam.xref() 
+          self._dict.add_record( fam )
        fam.add_child( self )
        if f != None: fam.add_husband( f, force )
        if m != None: fam.add_wife( m, force )

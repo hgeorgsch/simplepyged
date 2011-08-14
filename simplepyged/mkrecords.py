@@ -30,6 +30,8 @@ It is under construction and will need some refactoring before the
 documentation is presented.
 """
 
+# TODO: set CHAN structure
+
 from .records import *
 import codecs
 
@@ -62,7 +64,14 @@ def parse_ahnen_line(line,dict,source,page=None,dead=True,subm=None):
    This is an auxiliary for parse_ahnentafel().
    """
    (no,line) = line.split(".")
+   line = line.strip()
    no = int(no)
+   if line[0] == ">":
+      ref = line[1:].strip() 
+      ind = dict.get( ref ) 
+      print ref
+      print ind
+      return ( no, ind )
    if no == 1: gender = "U"
    elif no % 2 == 0: gender = "M"
    elif no % 2 == 1: gender = "F"
