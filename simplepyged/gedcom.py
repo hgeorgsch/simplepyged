@@ -259,8 +259,12 @@ class Gedcom(Node):
        assert self._children_lines[0].tag() == "HEAD", "File lacks header"
        assert self._children_lines[-1].tag() == "TRLR", "File lacks trailer"
        for n in self._children_lines[1:-1]:
-	  assert n.xref()[0] == "@", "Malformed xref"
-	  assert n.xref()[-1] == "@", "Malformed xref"
+	  ref = n.xref()
+	  if ref:
+	    assert ref[0] == "@", "Malformed xref"
+	    assert ref[-1] == "@", "Malformed xref"
+	  else:
+	     print "Warning!  0-level entry without an xref violates Gedcom"
 
     # Modifying the data structure
     def add_record(self,node):
