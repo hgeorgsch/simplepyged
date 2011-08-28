@@ -12,3 +12,5 @@ docs/examples/simplepyged
 *.bbl
 *.idx
 *.out
+test.tex
+test.bib
