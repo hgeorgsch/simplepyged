@@ -1,3 +1,12 @@
+#! /usr/bin/env python
+
+"""
+This is a simple example of printing a person with its closest
+famiily on stdout.
+
+The output is crude, so it is rather a poor example.
+"""
+
 import os
 from simplepyged.gedcom import *
 

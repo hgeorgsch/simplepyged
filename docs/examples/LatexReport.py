@@ -64,7 +64,10 @@ class LatexReport:
         return retval
 
     def construct_stack(self, stack, depth = None):
-        """ Construct a stack full of depth distant relatives of members of stack (a recursion, obviously) """
+        """
+	Construct a stack full of depth distant relatives of members
+	of stack (a recursion, obviously).
+	"""
         
         if depth == 0:
             return []
