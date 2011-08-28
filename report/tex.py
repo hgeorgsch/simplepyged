@@ -1,6 +1,12 @@
 #-*- coding: utf-8 -*-
 # $Id$
 
+"""
+This module provides the a Builder class for LaTeX output,
+designed to work in a Builder pattern with the report generator
+from the :mod:`report` module.
+"""
+
 import codecs
 
 def bib_escape(x):
