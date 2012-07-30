@@ -79,10 +79,12 @@ class Place(object):
 	 return self.parent.text(local)
       elif self in local:
 	 return self.getName()
-      elif self.getName() == self.parent.getAName():
-	 return self.parent.text(local)
       else:
-	 return self.parent.text(local) + ", " + self.getName()
+	 local.append(self)
+         if self.getName() == self.parent.getAName():
+	    return self.parent.text(local)
+         else:
+	    return self.parent.text(local) + ", " + self.getName()
    def setShort(self,short):
       self.short = short
    def level(self):
