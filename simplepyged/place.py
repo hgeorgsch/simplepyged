@@ -71,7 +71,7 @@ class Place(object):
       return ", ".join(self.asList())
    def isNone(self):
       "Return False if there is no name at this level."
-      return bool(self.name)
+      return not bool(self.name)
    def getAName(self):
       """Get the base name of the place, or the parent place if
       no name is defined."""
@@ -79,22 +79,34 @@ class Place(object):
 	 return self.parent.getAName()
       else: 
 	 return self.getName()
-   def text(self,local=[]):
+   def text(self,prep=False,local=[]):
       "Return the full name as it should be written in prose."
+      if local == None:
+	 local = []
       if self.short != None:
-	 return self.short
+	 R = self.short
+	 print "short:", R
       elif self.parent == None:
-	 return self.getName()
+	 R = self.getName()
+	 print "top level:", R
       elif self.isNone():
-	 return self.parent.text(local)
+	 R = self.parent.text(local=local)
+	 print "none:", R
       elif self in local:
-	 return self.getName()
+	 R = self.getName()
+	 print "local:", R
       else:
 	 local.append(self)
          if self.getName() == self.parent.getAName():
-	    return self.parent.text(local)
+	    R = self.parent.text(local=local)
+	    print "repeated term:", R
          else:
-	    return self.parent.text(local) + ", " + self.getName()
+	    R = self.getName() + ", " + self.parent.text(local=local)
+	    print "full:", R
+      if prep:
+	 return self.preposition() + " " + R
+      else:
+         return R
    def setShort(self,short):
       self.short = short
    def level(self):
@@ -120,26 +132,28 @@ class Place(object):
 	 s = parsePlace(s)
       if not s:
 	 return None
-      c = s[0]
+      c = s[-1]
       if cls.countries.has_key(c):
 	 P = cls.countries[c]
       else:
 	 P = cls( c )
 	 cls.countries[c] = P
-      return P.getPlace( s[1:] )
+      print P
+      return P.getPlace( s[:-1] )
    def getPlace(self,s):
       """Get or create a Place object  for the place defined by s,
       as descendant of self, which may be a string as it is taken 
       from GEDCOM or a list of strings."""
       if len(s) == 0:
 	 return self
-      c = s[0]
+      c = s[-1]
       if self.children.has_key(c):
 	 P = self.children[c]
       else:
 	 P = Place( c, parent=self )
 	 self.children[c] = P
-      return P.getPlace( s[1:] )
+      print P
+      return P.getPlace( s[:-1] )
 
 for (s,p) in defaults:
    P = Place.get(p)

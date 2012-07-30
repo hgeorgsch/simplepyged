@@ -90,11 +90,13 @@ dic_norsk = { "and" : "og",
 	    }
 
 class Report(object):
+   __indicontext = True
 
    def __init__(self,file,builder=None,dic=dic_norsk):
       self.__file = file
       self.__history = {}
       self.__reflist = set()
+      self.__context = []
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
@@ -117,15 +119,13 @@ class Report(object):
       and return a single string for printout.  No text is actually
       printed from this method.  If the place name is missing, 
       an empty string is returned.
-
-      TODO: In future versions, the output should be abreviated,
-      depending on the state of the report.
       """
       # For a missing place, plac could be either None, "", or [].
       # The following conditional captures all of them, returning
       # an empty string for a missing place.
       if not plac: return ""
-      return u" på " + ", ".join(plac)
+      return " " + plac.text(prep=True,local=self.__context)
+      #return u" på " + ", ".join(plac)
 
    # Output production methods
 
@@ -354,6 +354,8 @@ class Report(object):
       # look up the person
       if ind == None: ind = self.__file.get(ref)
       key = ind.xref()
+      if self.__indicontext:
+	 self.__context = []
 
       # check if the person has already been included
       ref = self.__history.get(key)
