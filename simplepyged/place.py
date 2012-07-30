@@ -23,7 +23,10 @@ prepList = [ "i", "i", "i", "i",
             "i", "i", "på", "på", ]
 
 def parsePlace(s):
-   raise NotImplementedError
+   if s == None:
+      return None
+   else:
+      return [ p.strip() for p in self.place.split( "," ) ]
 
 class Place(object):
    countries = {}
