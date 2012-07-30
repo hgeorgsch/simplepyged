@@ -29,6 +29,7 @@ in Gedcom.
 """
 
 import date
+from place import Place
 
 class Event(object):
     """
@@ -49,9 +50,9 @@ class Event(object):
         self.type = self.children_single_val('TYPE')
         self.date = self.children_single_val('DATE')
 	if ( self.date != None): self.date = date.makeDate( self.date )
-        self.place = self.children_single_val('PLAC')
-	if ( self.place != None):
-	   self.place = [ p.strip() for p in self.place.split( "," ) ]
+        self.place = Place.get( self.children_single_val('PLAC') )
+	#if ( self.place != None):
+	   #self.place = [ p.strip() for p in self.place.split( "," ) ]
 
     # The following methods partially implement a Decorator pattern
     def tag(self):

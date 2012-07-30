@@ -25,18 +25,22 @@ prepList = [ "i", "i", "i", "i",
 def parsePlace(s):
    if s == None:
       return None
+   elif s == "":
+      return []
    else:
-      return [ p.strip() for p in self.place.split( "," ) ]
+      print s
+      r = [ p.strip() for p in s.split( u"," ) ]
+      print r
+      return r
 
 class Place(object):
    countries = {}
-   def __init__(self,s):
-      if isinstance(s,name,parent=None,short=None):
-	 s = parsePlace(s)
+   def __init__(self,name,parent=None,short=None):
       self.name = name
       self.children = {}
       self.parent = parent
       self.short = short
+      print "[init]", name, self
    def __iter__(self):
       P = self
       L = [ ]
@@ -44,7 +48,10 @@ class Place(object):
 	 L.append(P)
 	 P = P.parent
       while len(L) > 0:
-	 yield L.pop().getName()
+	 print L
+	 y = L.pop().getName()
+	 print type(y), y
+	 yield y
    def getName(self):
       "Return the base name of the place as a string."
       if self.name:
@@ -102,13 +109,22 @@ class Place(object):
       """Get or create a Place object for the place defined by s,
       which may be a string as it is taken from GEDCOM or a list
       of strings."""
+      if s == None:
+	 return None
+      print "get:", s
+      if isinstance(s,str):
+	 s = unicode(s)
+      if isinstance(s,unicode):
+	 s = parsePlace(s)
       if isinstance(s,str):
 	 s = parsePlace(s)
+      if not s:
+	 return None
       c = s[0]
       if cls.countries.has_key(c):
 	 P = cls.countries[c]
       else:
-	 P = cls( [c] )
+	 P = cls( c )
 	 cls.countries[c] = P
       return P.getPlace( s[1:] )
    def getPlace(self,s):
@@ -121,7 +137,7 @@ class Place(object):
       if self.children.has_key(c):
 	 P = self.children[c]
       else:
-	 P = Place( [c], parent=self )
+	 P = Place( c, parent=self )
 	 self.children[c] = P
       return P.getPlace( s[1:] )
 
