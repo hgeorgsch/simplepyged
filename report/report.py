@@ -125,7 +125,7 @@ class Report(object):
       # The following conditional captures all of them, returning
       # an empty string for a missing place.
       if not plac: return ""
-      return u"på " + ", ".join(plac)
+      return u" på " + ", ".join(plac)
 
    # Output production methods
 
