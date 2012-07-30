@@ -23,26 +23,29 @@
 
 from simplepyged.date import *
 
-def formatdate(dat):
+def formatdate(dat,space=True):
    if dat == None: return ""
    elif dat == "": return ""
    elif isinstance(dat,DateApproximate):
-      return "omkring " + formatdate( dat.getDate() )
+      return " omkring " + formatdate( dat.getDate() )
    elif isinstance(dat,DateRange):
       (d1,d2) = dat.getDate()
       if d2 == None: return u"før " + formatdate(d1)
       elif d1 == None: return u"etter " + formatdate(d2)
-      else: return u"mellom " + formatdate(d1) + " og " + formatdate(d2)
+      else: return u" mellom " + formatdate(d1) + " og " + formatdate(d2)
    elif isinstance(dat,DatePeriod):
       (d1,d2) = dat.getDate()
-      if d2 == None: return u"frå " + formatdate(d1)
-      elif d1 == None: return u"til " + formatdate(d2)
-      else: return formatdate(d1) + "--" + formatdate(d2)
+      if d2 == None: return u" frå " + formatdate(d1)
+      elif d1 == None: return u" til " + formatdate(d2)
+      else: return formatdate(d1) + "--" + formatdate(d2,space=False)
    elif isinstance(dat,DatePhrase):
       return unicode(dat)
    else:
       (y,m,d) = dat.getDate()
-      R = ""
+      if space:
+         R = u" "
+      else:
+         R = u""
       if d != None: R += unicode(d) + ". "
       if m != None: R += month_norsk[m] + " "
       R += unicode(y)
