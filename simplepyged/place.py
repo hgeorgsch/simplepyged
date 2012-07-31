@@ -28,9 +28,7 @@ def parsePlace(s):
    elif s == "":
       return []
    else:
-      print s
       r = [ p.strip() for p in s.split( u"," ) ]
-      print r
       return r
 
 class Place(object):
@@ -40,7 +38,6 @@ class Place(object):
       self.children = {}
       self.parent = parent
       self.short = short
-      print "[init]", name, self
    def __iter__(self):
       P = self
       L = [ ]
@@ -48,9 +45,7 @@ class Place(object):
 	 L.append(P)
 	 P = P.parent
       while len(L) > 0:
-	 print L
 	 y = L.pop().getName()
-	 print type(y), y
 	 yield y
    def getName(self):
       "Return the base name of the place as a string."
@@ -88,24 +83,18 @@ class Place(object):
 	 local = []
       if self.short != None:
 	 R = self.short
-	 print "short:", R
       elif self.parent == None:
 	 R = self.getName()
-	 print "top level:", R
       elif self.isNone():
 	 R = self.parent.text(local=local)
-	 print "none:", R
       elif self in local:
 	 R = self.getName()
-	 print "local:", R
       else:
 	 local.append(self)
          if self.getName() == self.parent.getAName():
 	    R = self.parent.text(local=local)
-	    print "repeated term:", R
          else:
 	    R = self.getName() + ", " + self.parent.text(local=local)
-	    print "full:", R
       if prep:
 	 return self.preposition() + " " + R
       else:
@@ -126,7 +115,6 @@ class Place(object):
       of strings."""
       if s == None:
 	 return None
-      print "get:", s
       if isinstance(s,str):
 	 s = unicode(s)
       if isinstance(s,unicode):
@@ -141,7 +129,6 @@ class Place(object):
       else:
 	 P = cls( c )
 	 cls.countries[c] = P
-      print P
       return P.getPlace( s[:-1] )
    def getPlace(self,s):
       """Get or create a Place object  for the place defined by s,
@@ -155,7 +142,6 @@ class Place(object):
       else:
 	 P = Place( c, parent=self )
 	 self.children[c] = P
-      print P
       return P.getPlace( s[:-1] )
 
 for (s,p) in defaults:
