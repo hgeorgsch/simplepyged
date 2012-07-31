@@ -19,8 +19,8 @@ defaults = [
       ( "Møre og Romsdal", ( "Møre og Romsdal", "", "Norge" ) ),
       ]
 
-prepList = [ "i", "i", "i", "i",
-            "i", "i", "på", "på", ]
+prepList = [ u"i", u"i", u"i", u"i",
+            u"i", u"i", u"på", u"på", ]
 
 def parsePlace(s):
    if s == None:
@@ -76,7 +76,10 @@ class Place(object):
       """Get the base name of the place, or the parent place if
       no name is defined."""
       if self.isNone(): 
-	 return self.parent.getAName()
+	 if self.parent == None:
+	    return ""
+	 else:
+	    return self.parent.getAName()
       else: 
 	 return self.getName()
    def text(self,prep=False,local=[]):
