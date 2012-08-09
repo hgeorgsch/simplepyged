@@ -12,7 +12,7 @@ import codecs
 def bib_escape(x):
    return x.replace( "&", " and " )
 def char_escape(x):
-   return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" ).replace( "#", "\\#" ).replace( ". ", ".\\ " )
+   return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" ).replace( "#", "\\#" ).replace( ". ", ".\\ " ).replace( u"død", u"$\dagger$" )
 
 class texBuilder(object):
    llpackage = u"llbook"

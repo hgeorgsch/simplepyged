@@ -203,8 +203,6 @@ class Report(object):
       self._builder.put( date.formatdate( d ) )
       if not ( d or p ): self._builder.put( " " )
       self._builder.put( self.formatplace( p ) )
-      # Finalise
-      self._builder.put( ". " )
       # NOTE/SOUR/OBJE
       for n in event.children_tags("NOTE"):
 	 self._builder.put(n.value_cont())
@@ -214,6 +212,8 @@ class Report(object):
 	 self.citation( n )
       # TODO clean up presentation of sources
       # TODO OBJE
+      # Finalise
+      self._builder.put( ". " )
 
    def citation(self,node):
       """
@@ -321,7 +321,7 @@ class Report(object):
       # (3) DEAT
       deat = ind.death()
       if deat != None:
-        self._builder.put( self._dic["died"] + " " )
+        self._builder.put( " " + self._dic["died"] + " " )
         (d,p) = deat.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
@@ -340,7 +340,7 @@ class Report(object):
       # (3) DEAT
       deat = ind.death()
       if deat != None:
-        self._builder.put( self._dic["died"] + " " )
+        self._builder.put( " " + self._dic["died"] + " " )
         (d,p) = deat.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
