@@ -73,15 +73,23 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
    name = L[0].strip()
    L = L[1:]
    (b,d) = ("","")
+   ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
    for line in L:
       line = line.strip()
       if line == "": continue
       if line[0] == "(":
          assert line[-1] == ")"
          (b,d) = line[1:-1].split("-")
-      # < : REFN
-      # else : NOTE
-   ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
+      elif line[0] == "<": # REFN
+	 ref = line[1:].strip()
+         e = Line(1,None,"REFN",ref,dict)
+         ind.add_child_line( e )
+         if self._record_dict.has_key(ref):
+	    raise Exception, "Record with same REFN already exists"
+         dict._record_dict[ref] = ind
+      else: # NOTE
+         e = Line(1,None,"NOTE",line,dict)
+         ind.add_child_line( e )
    if b != "":
       e = Line(1,None,"BIRT",None,dict)
       e.add_child_line( Line(2,None,"DATE",b,dict) )
