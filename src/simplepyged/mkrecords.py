@@ -94,7 +94,7 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
    elif dead:
       e = Line(1,None,"DEAT","Y",dict)
       ind.add_child_line( e )
-   return (no,ind)
+   return ind
 
 def parse_ahnen_line(line,dict,source,*a,**kw):
    """
@@ -107,7 +107,8 @@ def parse_ahnen_line(line,dict,source,*a,**kw):
    if no == 1: gender = "U"
    elif no % 2 == 0: gender = "M"
    elif no % 2 == 1: gender = "F"
-   ind = parse_individual(line,dict,source,*a,**kw,gender=gender)
+   kw["gender"] = gender
+   ind = parse_individual(line,dict,source,*a,**kw)
    return (no,ind)
 
 def parse_ahnentafel(file,*a,**kw):
