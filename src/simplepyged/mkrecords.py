@@ -69,19 +69,18 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
       print ref
       print ind
       return ind
-   try:
-     (name,line) = line.split(";")
-   except ValueError:
-      name = line
-      line = None
-   name = name.strip()
-   if line != None:
-     line = line.strip()
-     assert line[0] == "("
-     assert line[-1] == ")"
-     (b,d) = line[1:-1].split("-")
-   else:
-      (b,d) = ("","")
+   L = line.split(";")
+   name = L[0].strip()
+   L = L[1:]
+   (b,d) = ("","")
+   for line in L:
+      line = line.strip()
+      if line == "": continue
+      if line[0] == "(":
+         assert line[-1] == ")"
+         (b,d) = line[1:-1].split("-")
+      # < : REFN
+      # else : NOTE
    ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
    if b != "":
       e = Line(1,None,"BIRT",None,dict)
