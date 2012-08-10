@@ -58,23 +58,17 @@ def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
    dict.add_record(ind)
    return ind
 
-def parse_ahnen_line(line,dict,source,page=None,dead=True,subm=None):
+def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
    """
-   Parse a single line from a simple text file ahnentafel.
-   This is an auxiliary for parse_ahnentafel().
+   Parse the main part of a single line from simple person description.
+   This is an auxiliary for line parsers.
    """
-   (no,line) = line.split(".")
-   line = line.strip()
-   no = int(no)
    if line[0] == ">":
       ref = line[1:].strip() 
       ind = dict.get( ref ) 
       print ref
       print ind
-      return ( no, ind )
-   if no == 1: gender = "U"
-   elif no % 2 == 0: gender = "M"
-   elif no % 2 == 1: gender = "F"
+      return ind
    try:
      (name,line) = line.split(";")
    except ValueError:
@@ -100,6 +94,20 @@ def parse_ahnen_line(line,dict,source,page=None,dead=True,subm=None):
    elif dead:
       e = Line(1,None,"DEAT","Y",dict)
       ind.add_child_line( e )
+   return (no,ind)
+
+def parse_ahnen_line(line,dict,source,*a,**kw):
+   """
+   Parse a single line from a simple text file ahnentafel.
+   This is an auxiliary for parse_ahnentafel().
+   """
+   (no,line) = line.split(".")
+   line = line.strip()
+   no = int(no)
+   if no == 1: gender = "U"
+   elif no % 2 == 0: gender = "M"
+   elif no % 2 == 1: gender = "F"
+   ind = parse_individual(line,dict,source,*a,**kw,gender=gender)
    return (no,ind)
 
 def parse_ahnentafel(file,*a,**kw):
