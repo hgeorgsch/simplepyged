@@ -274,6 +274,24 @@ class Report(object):
 
    def spouse(self,fam,ind,short=False):
       marr = fam.marriage()
+      # Different cases.
+      # 1.  Spouse and children.
+      #     Gift med ... Born:
+      #     Hadde born med ... (:)
+      # 2.  Spouse with no children
+      #     Gift med ... 
+      #     Hadde eit forhold til ...
+      # 3.  Married with children, unknown spouse.
+      #     Gift (...) Born:
+      # 4.  Married w/o children, unknown spouse.
+      #     Gift (...) Born:
+      # 5.  Children.  Unknown partner.
+      #     Born:
+      # 6.  One-person family with non-marriage events only.
+      #     Family.
+      # 7.  One-person family with no information.  Error?
+      #     -
+      #     print error/warning
       # (1) Gift dato (etc)
       if marr == None:
 	 if fam.children_count() > 0:
