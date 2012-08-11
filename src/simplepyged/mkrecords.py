@@ -73,7 +73,8 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
    name = L[0].strip()
    L = L[1:]
    (b,d) = ("","")
-   ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
+   E = []
+   ref = None
    for line in L:
       line = line.strip()
       if line == "": continue
@@ -81,15 +82,22 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
          assert line[-1] == ")"
          (b,d) = line[1:-1].split("-")
       elif line[0] == "<": # REFN
+	 if ref != None:
+	    raise ValueError, "Only one REFN per individual is supported."
 	 ref = line[1:].strip()
-         e = Line(1,None,"REFN",ref,dict)
-         ind.add_child_line( e )
+         E.append( Line(1,None,"REFN",ref,dict) )
          if self._record_dict.has_key(ref):
 	    raise Exception, "Record with same REFN already exists"
-         dict._record_dict[ref] = ind
+      elif line[0] == "(": # gender
+	 l = line[1:].strip()
+	 gender = l[0]
       else: # NOTE
-         e = Line(1,None,"NOTE",line,dict)
-         ind.add_child_line( e )
+         E.append( Line(1,None,"NOTE",line,dict) )
+   ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
+   if ref != None:
+      dict._record_dict[ref] = ind
+   for e in E:
+      ind.add_child_line( e )
    if b != "":
       e = Line(1,None,"BIRT",None,dict)
       e.add_child_line( Line(2,None,"DATE",b,dict) )
