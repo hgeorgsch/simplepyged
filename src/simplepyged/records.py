@@ -657,6 +657,19 @@ class Individual(Record):
        if f != None: fam.add_husband( f, force )
        if m != None: fam.add_wife( m, force )
        return fam
+    def add_family(self,f,spouse=None,marr=True):
+       """
+       Create a new family with the individual as a spouse.
+       """
+       fam = Family( 0, None, "FAM", None, self._dict )
+       if marr:
+	  e = Line( 1, None, "MARR", "Y", self._dict )
+	  if type(marr) == str:
+	     e.add_child_line( Line( 2, None, "DATE", marr, self._dict ) )
+	  fam.add_child_line( e )
+       self._dict.add_record( fam )
+       # fam.add_child( self )
+       return fam
 
 class Family(Record):
     """ 
@@ -738,22 +751,29 @@ class Family(Record):
         return False
         
     # Modifier methods
+    def add_spouse(self,ind,force=False,tag=None):
+       if tag == None:
+	  sex = ind.sex()
+	  if sex == "F":
+	     tag = "WIFE"
+	  elif sex == "M":
+	     tag = "HUSB"
+	  else:
+	     raise ValueError, "Don't know whether spouse is husband or wife."
+       ref = ind.xref()
+       t = self.children_single_tag( tag )
+       if t != None:
+	  if force: raise NotImplementedError
+	  else: raise Exception, "The family already has a %s record." %(tag,)
+       self.add_child_line( Line( 1, None, tag, ref, dict=self._dict ) )
+       ind.add_child_line( Line( 1, None, "FAMS", self.xref(), dict=self._dict ) )
+
     def add_husband(self,ind,force=False):
-       ref = ind.xref()
-       t = self.children_single_tag( "HUSB" )
-       if t != None:
-	  if force: raise NotImplementedError
-	  else: raise Exception, "The family already has a husband."
-       self.add_child_line( Line( 1, None, "HUSB", ref, dict=self._dict ) )
-       ind.add_child_line( Line( 1, None, "FAMS", self.xref(), dict=self._dict ) )
+       return self.add_spouse(ind,force,"HUSB")
+
     def add_wife(self,ind,force=False):
-       ref = ind.xref()
-       t = self.children_single_tag( "WIFE" )
-       if t != None:
-	  if force: raise NotImplementedError
-	  else: raise Exception, "The family already has a wife."
-       self.add_child_line( Line( 1, None, "WIFE", ref, dict=self._dict ) )
-       ind.add_child_line( Line( 1, None, "FAMS", self.xref(), dict=self._dict ) )
+       return self.add_spouse(ind,force,"WIFE")
+
     def add_child(self,ind,force=False):
        ref = ind.xref()
        self.add_child_line( Line( 1, None, "CHIL", ref, dict=self._dict ) )

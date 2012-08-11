@@ -129,12 +129,15 @@ def parse_desc(file,dict,source,*a,**kw):
          last = None
       elif no == "gm" or no == "g":
 	 if last == None:
-	    # add spouse
+            # Add individual as spouse
+	    fam.add_spouse(ind)
 	 else:
 	    # make new family with spouse
+	    pass
          last = None
       else:
-	 # Add child
+         # Add individual as child
+         fam.add_child(ind)
          last = ind
 
 def parse_ahnen_line(line,dict,source,*a,**kw):
