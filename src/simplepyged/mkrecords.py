@@ -103,6 +103,32 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
       ind.add_child_line( e )
    return ind
 
+def parse_desc(file,dict,source,*a,**kw):
+   f = codecs.open( file, "r", "UTF-8" )
+   L = [ l.split(".",1) for l in f ]
+   f.close()
+   fam = None
+   last = None
+   for (no,line) in L:
+      if no == "g":
+	 # Get date of marriage
+	 (md,line) = line.split(";",1)
+	 md = md.strip()
+	 line = line.strip()
+      ind = parse_line(line,dict,source,*a,**kw)
+      if no == "":
+         # Make family with father
+         last = None
+      elif no == "gm" or no == "g":
+	 if last == None:
+	    # add spouse
+	 else:
+	    # make new family with spouse
+         last = None
+      else:
+	 # Add child
+         last = ind
+
 def parse_ahnen_line(line,dict,source,*a,**kw):
    """
    Parse a single line from a simple text file ahnentafel.
@@ -124,7 +150,6 @@ def parse_ahnentafel(file,*a,**kw):
    create a dict of Individual objects, keyed by the individual's
    (integer) number in the ahnentafel.
    """
-   # Find a way to use an existing entry for the first individual
    f = codecs.open( file, "r", "UTF-8" )
    newdict = {}
    for l in f:
