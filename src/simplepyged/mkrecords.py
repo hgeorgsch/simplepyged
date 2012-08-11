@@ -125,16 +125,25 @@ def parse_desc(file,dict,source,*a,**kw):
 	 line = line.strip()
       ind = parse_line(line,dict,source,*a,**kw)
       if no == "":
+	 fam = Family( 0, None, "FAM", None, dict )
+	 fam.add_spouse( ind )
          # Make family with father
          last = None
+	 dict.add_record( fam )
       elif no == "gm" or no == "g":
 	 if last == None:
-            # Add individual as spouse
-	    fam.add_spouse(ind)
+	    # add individual as spouse
+	    fam1 = fam
 	 else:
 	    # make new family with spouse
-	    pass
-         last = None
+	    fam1 = Family( 0, None, "FAM", None, dict )
+	    fam1.add_spouse(last)
+	 fam1.add_spouse(ind)
+	 e = Line( 1, None, "MARR", "Y", dict )
+	 if no == "g":
+	    e.add_child_line( Line( 2, None, "DATE", md, dict ) )
+	 fam1.add_child_line( e )
+	 dict.add_record( fam1 )
       else:
          # Add individual as child
          fam.add_child(ind)
