@@ -390,6 +390,14 @@ class Report(object):
         (d,p) = deat.dateplace()
         self._builder.put( date.formatdate(d) )
         self._builder.put( self.formatplace(p) )
+      # (4) DEAT
+      for n in ind.children_tag_records("FAMS"):
+	 if ind.sex() == "M": spouse = n.wife()
+	 elif ind.sex() == "F": spouse = n.husband() 
+	 if spouse == None: continue
+	 self._builder.put( "g.m. " ) 
+	 self._builder.put( " ".join(spouse.name()) ) 
+	 self._builder.put( "; " ) 
 
    def vitals(self,ind):
       assert ind.tag() == "INDI"
