@@ -329,6 +329,12 @@ class Individual(Record):
              return self.parent_family().wife()
        return None
 
+    def children_count(self):
+        retval = 0
+        for f in self.families():
+           retval += f.children_count()
+        return retval
+
     def children(self):
         retval = []
 
