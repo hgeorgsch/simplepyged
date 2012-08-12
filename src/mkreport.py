@@ -19,8 +19,14 @@ parser.add_option("-I", "--individual",
 parser.add_option("-N", "--max-gen",
                 help="Number of generations to include",
 		default=5, dest="maxgen" )
+parser.add_option("-D", "--descendants",
+                help="Make a descendants report",
+		default=False, dest="desc", action="store_true" )
 (opt,args) = parser.parse_args()
 
 g = Gedcom( opt.gedcom )
 r = Report(g,texBuilder(opt.outfile))
-r.stamtavle(opt.indi,int(opt.maxgen))
+if opt.desc:
+   r.descendants(opt.indi,int(opt.maxgen))
+else:
+   r.stamtavle(opt.indi,int(opt.maxgen))
