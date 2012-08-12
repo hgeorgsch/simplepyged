@@ -10,5 +10,8 @@ ind = parse_desc("moll",dict=g,source="@S587@",page="s. 204",subm="@X33@")
 
 g._print( "desc.ged" )
 g._init()
-r = Report(g,texBuilder("desc.tex"))
+
+r = Report(g,texBuilder("desc0.tex"))
 r.stamtavle( "@I9052@", 9 )
+r = Report(g,texBuilder("desc.tex"))
+r.descendants( "moll", 9 )

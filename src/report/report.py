@@ -174,7 +174,7 @@ class Report(object):
       pgen = 0
       # Header and abstract
       if header == None:
-	 header = "Etterkomarane åt %s %s" % ind.name()
+	 header = u"Etterkomarane åt %s %s" % ind.name()
       self._builder.preamble( header )
       if abstract != None:
         self._builder.put_abstract_s( )
