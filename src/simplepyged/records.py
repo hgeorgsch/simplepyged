@@ -759,6 +759,7 @@ class Family(Record):
 	  elif sex == "M":
 	     tag = "HUSB"
 	  else:
+	     print ind.gedcom()
 	     raise ValueError, "Don't know whether spouse is husband or wife."
        ref = ind.xref()
        t = self.children_single_tag( tag )

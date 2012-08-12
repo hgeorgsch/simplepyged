@@ -63,6 +63,7 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
    Parse the main part of a single line from simple person description.
    This is an auxiliary for line parsers.
    """
+   line = line.strip()
    if line[0] == ">":
       ref = line[1:].strip() 
       ind = dict.get( ref ) 
@@ -86,14 +87,15 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
 	    raise ValueError, "Only one REFN per individual is supported."
 	 ref = line[1:].strip()
          E.append( Line(1,None,"REFN",ref,dict) )
-         if self._record_dict.has_key(ref):
+         if dict._record_dict.has_key(ref):
 	    raise Exception, "Record with same REFN already exists"
-      elif line[0] == "(": # gender
+      elif line[0] == "[": # gender
 	 l = line[1:].strip()
 	 gender = l[0]
       else: # NOTE
          E.append( Line(1,None,"NOTE",line,dict) )
    ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
+   print ind
    if ref != None:
       dict._record_dict[ref] = ind
    for e in E:
@@ -113,19 +115,22 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
 
 def parse_desc(file,dict,source,*a,**kw):
    f = codecs.open( file, "r", "UTF-8" )
-   L = [ l.split(".",1) for l in f ]
-   f.close()
    fam = None
    last = None
-   for (no,line) in L:
+   for l in f:
+      if l.strip() == "": continue
+      print "[parse]", l
+      (no,line) = l.split(".",1)
+      if no == "#": continue
       if no == "g":
 	 # Get date of marriage
 	 (md,line) = line.split(";",1)
 	 md = md.strip()
 	 line = line.strip()
-      ind = parse_line(line,dict,source,*a,**kw)
+      ind = parse_individual(line,dict,source,*a,**kw)
       if no == "":
 	 fam = Family( 0, None, "FAM", None, dict )
+	 # Add source
 	 fam.add_spouse( ind )
          # Make family with father
          last = None
@@ -148,6 +153,7 @@ def parse_desc(file,dict,source,*a,**kw):
          # Add individual as child
          fam.add_child(ind)
          last = ind
+   f.close()
 
 def parse_ahnen_line(line,dict,source,*a,**kw):
    """
