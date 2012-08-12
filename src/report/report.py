@@ -130,6 +130,7 @@ class Report(object):
    # Output production methods
 
    def stamtavle(self,ref,mgen=12,header=None,abstract=None):
+      "Generate a detailed ahnentafel report."
       q = Queue()
       ind = self.__file.get( ref )
       if header == None:
@@ -160,6 +161,43 @@ class Report(object):
 	      q.put( ( cgen+1, 2*no + 1, m ) )
               self.history_add(m,2*no + 1)
 	 self.individual(ind=ind,number=no)
+      self.make_reflist()
+      self._builder.postamble()
+   def descendants(self,ref,mgen=12,header=None,abstract=None):
+      "Generate a detailed ahnentafel report."
+      # Setup
+      q = Queue()
+      ind = self.__file.get( ref )
+      assert ind != None, "Root person not found."
+      q.put( ( 1, 1, ind ) )
+      self.history_add(ind,1)
+      pgen = 0
+      # Header and abstract
+      if header == None:
+	 header = "Etterkomarane åt %s %s" % ind.name()
+      self._builder.preamble( header )
+      if abstract != None:
+        self._builder.put_abstract_s( )
+        self._builder.put( abstract )
+        self._builder.put_abstract_e( )
+      # Main loop
+      while not q.empty():
+	 (cgen, no, ind ) = q.get(False)
+	 if pgen < cgen:
+	    self._builder.put_shead_s()
+	    self._builder.put( "Generasjon " + str(cgen) )
+	    self._builder.put_shead_e()
+	    pgen = cgen
+	 cno = no
+	 for c in ind.children():
+	    cno += 1
+	    q.put( ( cgen+1, cno, c ) )
+            self.history_add(c,cno)
+	 self.individual(ind=ind,number=no)
+      # Tail matter
+      self.make_reflist()
+      self._builder.postamble()
+   def make_reflist(self):
       for s in self.__reflist:
 	 if s == None:
 	    print self
@@ -172,7 +210,8 @@ class Report(object):
 	 notes  = None
 	 xref   = s.xref()
 	 self._builder.put_bib( xref, author, title, url, pub, notes )
-      self._builder.postamble()
+      return
+
    def event(self,ind,event):
       # text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
       # NOTE/SOUR/OBJE
