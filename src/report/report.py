@@ -161,6 +161,10 @@ class Report(object):
               self.history_add(m,2*no + 1)
 	 self.individual(ind=ind,number=no)
       for s in self.__reflist:
+	 if s == None:
+	    print self
+	    print self.__reflist
+	    raise Exception, "None occurs in reference list."
 	 author = s.children_single_val( "AUTH" )
 	 title  = s.children_single_val( "TITL" )
 	 url    = None
@@ -226,6 +230,9 @@ class Report(object):
       notes = node.children_tags("NOTE")
       if valid_pointer(val): 
 	 source = self.__file.get(val)
+	 if source == None:
+	    print node.gedcom()
+	    raise Exception, "Source was not found."
 	 page = node.children_single_tag("PAGE")
 	 if page != None: page = page.value()
 	 data = node.children_single_tag("DATA")

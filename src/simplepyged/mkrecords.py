@@ -33,6 +33,7 @@ documentation is presented.
 # TODO: set CHAN structure
 
 from .records import *
+from .notes import *
 import codecs
 
 def mkcitation(source,page=None,level=1,dict=None):
@@ -94,7 +95,7 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
 	 l = line[1:].strip()
 	 gender = l[0]
       else: # NOTE
-         E.append( Line(1,None,"NOTE",line,dict) )
+         E.append( NoteStructure(1,None,"NOTE",line,dict) )
    ind = newIndividual(name,dict,source,page,gender=gender,dead=False,subm=subm)
    print ind
    if ref != None:
