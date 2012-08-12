@@ -55,6 +55,7 @@ def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
    if subm:
      ind.add_child_line( Line( level=1, xref=None, tag="SUBM", value=subm, dict=dict) )
    ind.add_child_line( mkcitation( source, page, dict=dict ) )
+   ind.add_source(source,page)
    dict.add_record(ind)
    return ind
 
@@ -128,13 +129,16 @@ def parse_desc(file,dict,source,*a,**kw):
 	 md = md.strip()
 	 line = line.strip()
       ind = parse_individual(line,dict,source,*a,**kw)
+      if ind == None:
+         print no,line
+	 raise ValueError, "Non-existent individual referenced."
       if no == "":
+         # Make family with current individual as spouse
 	 fam = Family( 0, None, "FAM", None, dict )
-	 # Add source
-	 fam.add_spouse( ind )
-         # Make family with father
-         last = None
 	 dict.add_record( fam )
+	 fam.add_source(source,kw["page"])
+	 fam.add_spouse( ind )
+         last = None
       elif no == "gm" or no == "g":
 	 if last == None:
 	    # add individual as spouse
@@ -142,13 +146,13 @@ def parse_desc(file,dict,source,*a,**kw):
 	 else:
 	    # make new family with spouse
 	    fam1 = Family( 0, None, "FAM", None, dict )
+	    dict.add_record( fam1 )
 	    fam1.add_spouse(last)
 	 fam1.add_spouse(ind)
 	 e = Line( 1, None, "MARR", "Y", dict )
 	 if no == "g":
 	    e.add_child_line( Line( 2, None, "DATE", md, dict ) )
 	 fam1.add_child_line( e )
-	 dict.add_record( fam1 )
       else:
          # Add individual as child
          fam.add_child(ind)

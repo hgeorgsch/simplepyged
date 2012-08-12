@@ -270,6 +270,8 @@ class Gedcom(Node):
     def add_record(self,node):
        ref = node.xref()
        if self._record_dict.has_key(ref):
+	  print node.gedcom()
+	  print ref
 	  raise Exception, "Record with same xref already exists"
        if ref == None:
 	  ref = self.getxref( node.tag() )

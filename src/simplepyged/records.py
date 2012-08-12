@@ -225,7 +225,6 @@ class Line(Node):
 	       print str(e.parent_line())
 	       raise GedcomMissingRecordError, \
 		     "Undefined pointer: %s.  Missing record." % (e.value(),)
-
         return lines
 
     def gedcom(self):
@@ -265,7 +264,16 @@ class Record(Line):
 	   if not event_line.is_empty(): retval.append(Event(event_line))
 
         return retval
-
+    def add_source(self,sour,page=None):
+       level = self.level()+1
+       src = Line( level=level, xref=None, tag="SOUR",
+	     value=sour, dict=self._dict )
+       if page:
+          src.add_child_line(
+		Line( level=level+1, xref=None, tag="PAGE",
+		   value=page, dict=self._dict ) )
+       self.add_child_line( src )
+       return src
 
 class Multimedia(Record): pass
 class Note(Record): pass
@@ -752,6 +760,8 @@ class Family(Record):
         
     # Modifier methods
     def add_spouse(self,ind,force=False,tag=None):
+       if self.xref() == None:
+	  raise ValueError, "Cannot add spouse to family without xref key."
        if tag == None:
 	  sex = ind.sex()
 	  if sex == "F":
