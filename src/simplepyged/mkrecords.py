@@ -124,7 +124,7 @@ def parse_desc(file,dict,*a,**kw):
       print "[parse]", l
       (no,line) = l.split(".",1)
       if no == "#": continue
-      if no in [ "source", "page", "submitter" ]:
+      if no in [ "source", "page", "subm" ]:
          kw[no] = line.strip()
 	 continue
       if no == "g":
@@ -140,7 +140,7 @@ def parse_desc(file,dict,*a,**kw):
          # Make family with current individual as spouse
 	 fam = Family( 0, None, "FAM", None, dict )
 	 dict.add_record( fam )
-	 fam.add_source(source,kw["page"])
+	 fam.add_source(kw["source"],kw["page"])
 	 fam.add_spouse( ind )
          last = None
       elif no == "gm" or no == "g":
