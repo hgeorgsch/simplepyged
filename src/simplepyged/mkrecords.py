@@ -115,7 +115,7 @@ def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
       ind.add_child_line( e )
    return ind
 
-def parse_desc(file,dict,source,*a,**kw):
+def parse_desc(file,dict,*a,**kw):
    f = codecs.open( file, "r", "UTF-8" )
    fam = None
    last = None
@@ -124,12 +124,15 @@ def parse_desc(file,dict,source,*a,**kw):
       print "[parse]", l
       (no,line) = l.split(".",1)
       if no == "#": continue
+      if no in [ "source", "page", "submitter" ]:
+         kw[no] = line.strip()
+	 continue
       if no == "g":
 	 # Get date of marriage
 	 (md,line) = line.split(";",1)
 	 md = md.strip()
 	 line = line.strip()
-      ind = parse_individual(line,dict,source,*a,**kw)
+      ind = parse_individual(line,dict,*a,**kw)
       if ind == None:
          print no,line
 	 raise ValueError, "Non-existent individual referenced."
