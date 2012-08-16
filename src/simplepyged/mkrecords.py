@@ -55,7 +55,6 @@ def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
      ind.add_child_line( Line( level=1, xref=None, tag="DEAT", value="Y", dict=dict ) )
    if subm:
      ind.add_child_line( Line( level=1, xref=None, tag="SUBM", value=subm, dict=dict) )
-   ind.add_child_line( mkcitation( source, page, dict=dict ) )
    ind.add_source(source,page)
    dict.add_record(ind)
    return ind

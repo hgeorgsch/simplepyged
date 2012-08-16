@@ -283,3 +283,6 @@ class Gedcom(Node):
        # (2) add record in the dictionary
        self._record_dict[ref] = node
        node._init()
+    def del_record(self,node):
+       del(self._record_dict[node.xref()]
+       self.del_child_line(node)

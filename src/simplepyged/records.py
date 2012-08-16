@@ -57,6 +57,8 @@ class Node(object):
 	other Lines at parse time, but after all Lines are parsed. 
 	"""
 	for e in self.children_lines(): e._init()
+    def __iter__(self):
+       return self._children_lines.__iter__()
 
     def line_list(self):
         """
@@ -76,6 +78,8 @@ class Node(object):
         """ Return the child lines of this line """
 	for i in self._children_lines: yield i
 
+    def del_child_line(self,line):
+        self._children_lines.remove(line)
     def add_child_line(self,line):
         """Add a child line to this line """
         self._children_lines.append(line)
@@ -112,6 +116,16 @@ class Node(object):
     def add_parent_line(self,line):
         """ Add a parent line to this line """
         self._parent_line = line
+    def _xref_update(self,old,new):
+       """Change every occurrnce of the old xref value to the
+       new xref value."""
+       if self.level > 0:
+          v = self.value().strip()
+	  if v == old.strip(): 
+	     self.set_value(new)
+       if hasattr(self,"children_lines"):
+          for n in self.children_lines():
+	      n._xref_update(old,new)
 
 class Line(Node):
     """ Line of a GEDCOM file
@@ -255,7 +269,15 @@ class Record(Line):
        """
        Merge the other Record with this one.
        """
-       raise NotImplementedError
+       # 1.  Update all xref of other to point to self.
+       self._dict._xref_update(other.xref(),self.xref())
+       # 2.  Move all sub records of other into self.
+       for n in other:
+	  self.add_child_line(n)
+       # 3.  delete other
+       self._dict.del_record(other)
+       # Should do.
+       # A.  Check for overlapping records, pruning duplicate info
 
     def _parse_generic_event_list(self, tag):
         """ Creates new event for each line with given tag"""
