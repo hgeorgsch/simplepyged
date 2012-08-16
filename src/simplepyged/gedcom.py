@@ -284,5 +284,5 @@ class Gedcom(Node):
        self._record_dict[ref] = node
        node._init()
     def del_record(self,node):
-       del(self._record_dict[node.xref()]
+       del(self._record_dict[node.xref()])
        self.del_child_line(node)

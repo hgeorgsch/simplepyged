@@ -129,7 +129,7 @@ def parse_desc(file,dict,*a,**kw):
       if no == "merge":
 	 L = [ dict.get(l.strip()) for l in line.split() ]
 	 for n in L[1:]:
-	    L[0].merge(L[1:])
+	    L[0].merge(n)
 	 continue
       if no == "g":
 	 # Get date of marriage

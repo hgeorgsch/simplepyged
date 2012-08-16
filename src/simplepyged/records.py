@@ -119,10 +119,10 @@ class Node(object):
     def _xref_update(self,old,new):
        """Change every occurrnce of the old xref value to the
        new xref value."""
-       if self.level > 0:
+       if self._level > 0:
           v = self.value().strip()
 	  if v == old.strip(): 
-	     self.set_value(new)
+	     self._value = new
        if hasattr(self,"children_lines"):
           for n in self.children_lines():
 	      n._xref_update(old,new)
