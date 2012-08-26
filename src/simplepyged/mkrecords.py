@@ -131,6 +131,13 @@ def parse_desc(file,dict,*a,**kw):
 	 for n in L[1:]:
 	    L[0].merge(n)
 	 continue
+      if no == "fam":
+         ref = line.strip()
+         fam = dict.get( ref )
+	 print "Existing family"
+	 print fam.gedcom()
+	 last = None
+         continue
       if no == "g":
 	 # Get date of marriage
 	 (md,line) = line.split(";",1)
