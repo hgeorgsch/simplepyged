@@ -57,6 +57,9 @@ def newIndividual(name,dict,source,page=None,gender="U",dead=True,subm=None):
      ind.add_child_line( Line( level=1, xref=None, tag="SUBM", value=subm, dict=dict) )
    ind.add_source(source,page)
    dict.add_record(ind)
+   print "New individual"
+   print ind.gedcom()
+   print "END"
    return ind
 
 def parse_individual(line,dict,source,page=None,dead=True,subm=None,gender="U"):
