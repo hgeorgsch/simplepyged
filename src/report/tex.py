@@ -95,6 +95,8 @@ class texBuilder(object):
       self.file.write( "$\\dagger" )
    def end_paragraph(self):
       self.file.write( "\n\n" )
+      self.newperiod = True
+      self.newsentence = False
    def end_sentence(self):
       self.newsentence = True
    def end_period(self):

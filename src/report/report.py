@@ -42,7 +42,7 @@ class IndiBins(dict):
       k = e.tag()
       if self.has_key(k): self[k].append(e)
       else: self[None].append(e)
-   def __init__(self):
+   def __init__(self,ind=None):
       # Event records
       self[None] = []
       # Other records
@@ -66,6 +66,8 @@ class IndiBins(dict):
       self["SUBM"] = devnull()
       # ignored records (handled elsewhere)
       self["SEX"] = devnull()
+      if ind != None:
+         for e in ind.children_lines(): rec.add(e)
 
 dic_norsk = { "and" : "og", 
               "daughter" : "dotter til", 
@@ -447,9 +449,8 @@ class Report(object):
       (fn,sn) = ind.name()
       self._builder.put_phead(fn,sn,number,ind.xref())
 
-      # otherwise, we sort all the child nodes for processing
-      rec = IndiBins()
-      for e in ind.children_lines(): rec.add(e)
+      # We sort all the child nodes for processing
+      rec = IndiBins(ind)
 
       # (1) Main name
       self._builder.put_name(fn,sn)
@@ -461,11 +462,15 @@ class Report(object):
       if birt != None: self.event( ind, birt )
       self.parents( ind )
       self._builder.end_period()
+      deat = ind.death()
+      if deat != None: self.event( ind, deat )
+      self._builder.end_period()
       self._builder.end_paragraph()
 
       # (4) biography (events)
       for e in rec[None]:
 	 if e.tag() == "BIRT": continue
+	 elif e.tag() == "DEAT": continue
 	 else: self.event( ind, Event( e ) )
       #self.vitals(ind)
       # CHR
