@@ -147,9 +147,7 @@ class Report(object):
       while not q.empty():
 	 (cgen, no, ind ) = q.get(False)
 	 if pgen < cgen:
-	    self._builder.put_shead_s()
-	    self._builder.put( "Generasjon " + str(cgen) )
-	    self._builder.put_shead_e()
+	    self._builder.put_shead( "Generasjon " + str(cgen) )
 	    pgen = cgen
 	 if cgen < mgen:
            f = ind.father()
@@ -184,9 +182,7 @@ class Report(object):
       while not q.empty():
 	 (cgen, no, ind ) = q.get(False)
 	 if pgen < cgen:
-	    self._builder.put_shead_s()
-	    self._builder.put( "Generasjon " + str(cgen) )
-	    self._builder.put_shead_e()
+	    self._builder.put_shead( "Generasjon " + str(cgen) )
 	    pgen = cgen
 	 cno = no
 	 for c in ind.children():
@@ -213,7 +209,7 @@ class Report(object):
 	 self._builder.put_bib( xref, author, title, url, pub, notes )
       return
 
-   def event(self,ind,event,sentence=True):
+   def event(self,ind,event):
       # text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
       # NOTE/SOUR/OBJE
       tag    = event.tag()
@@ -224,13 +220,12 @@ class Report(object):
       # TYPE/event
       if tag == "EVEN":
 	 if type == None: self._builder.put( "EVEN" )
-	 else: self._builder.put( type.capitalize() )
+	 else: self._builder.put( type )
 
       elif tag == "OCCU":
-	 self._builder.put( val.capitalize() )
+	 self._builder.put( val )
       else:
          tx = self._dic.get(tag,tag)
-         if sentence: tx = tx.capitalize()
          self._builder.put( tx )
 	 if type != None: self._builder.put( "(" + type + ")" )
       self._builder.put( " " )
@@ -259,7 +254,7 @@ class Report(object):
       # TODO clean up presentation of sources
       # TODO OBJE
       # Finalise
-      self._builder.put( ". " )
+      self._builder.end_sentence( )
 
    def citation(self,node):
       """
@@ -319,7 +314,6 @@ class Report(object):
 	 if mother != None: self._builder.put( " "+self._dic["and"]+" " )
       if mother != None:
 	 mother = self.simplename(mother)
-      self._builder.put( ". " )
 
    def spouse(self,fam,ind,short=False):
       marr = fam.marriage()
@@ -350,9 +344,9 @@ class Report(object):
       else:
         (d,p) = marr.dateplace()
 	if not (d or p):
-          self._builder.put( self._dic["married"].capitalize() + " " )
+          self._builder.put( self._dic["married"] + " " )
         else:
-          self._builder.put( self._dic["married"].capitalize() + " " )
+          self._builder.put( self._dic["married"] + " " )
           self._builder.put( date.formatdate(d) )
 	  if d != None and p != None: self._builder.put( " " )
           self._builder.put( self.formatplace(p) )
@@ -412,6 +406,7 @@ class Report(object):
         self._builder.put( self.formatplace(p) )
       # (2) parents
       self.parents(ind)
+      self._builder.end_period()
       # (3) DEAT
       deat = ind.death()
       if deat != None:
@@ -458,13 +453,15 @@ class Report(object):
 
       # (1) Main name
       self._builder.put_name(fn,sn)
-      self._builder.put( " " )
+      self._builder.end_sentence()
 
       # (2) OBJE ??
       # (3) vitals (birth and parents)
       birt = ind.birth()
-      if birt != None: self.event( ind, birt, sentence=False )
+      if birt != None: self.event( ind, birt )
       self.parents( ind )
+      self._builder.end_period()
+      self._builder.end_paragraph()
 
       # (4) biography (events)
       for e in rec[None]:
@@ -476,13 +473,13 @@ class Report(object):
       # DEAT 
       # BURI 
       # PROB
-      self._builder.put_paragraph()
+      self._builder.end_paragraph()
 
       # (5) NOTE
       for n in ind.children_tags("NOTE"):
 	 self._builder.put(n.value_cont())
 	 for s in n.sources(): self.citation(s)
-	 self._builder.put_paragraph()
+	 self._builder.end_paragraph()
 
       # (6) FAMS
       for n in ind.children_tag_records("FAMS"):
@@ -506,7 +503,7 @@ class Report(object):
 	      self.child(c)
 	      self._builder.put_item_e()
 	   self._builder.put_enum_e()
-	 self._builder.put_paragraph()
+	 self._builder.end_paragraph()
 
       # (7) other names (with TYPE) (name pieces, ROMN and FONE ignored)
       L = list(ind.children_tags("NAME"))
@@ -547,10 +544,8 @@ class Builder(object):
       print 
    def put_subheader(self,header): print header + ":"
    def put_book_title(self,h): print " ###    %s    ### " % (h,)
-   def put_shead_s(self): print "*",
-   def put_shead_e(self): print
-   def put_chead_s(self): print "*",
-   def put_chead_e(self): print
+   def put_shead(self,title=""): print "* " + title + "\n"
+   def put_chead(self,title=""): print "*" + title + "\n"
    def put_item_s(self): print "  + ",
    def put_item_e(self): print
    def put_enum_s(self): print
@@ -560,7 +555,9 @@ class Builder(object):
    def put_foot_s(self): print "{",
    def put_foot_e(self): print "}"
    def put_dagger(self): print "d. "
-   def put_paragraph(self): print "\n\n"
+   def end_paragraph(self): print "\n\n"
+   def end_period(self): print ".  "
+   def end_sentence(self): print ", "
    def put(self,x): print x,
    def preamble(self): pass
    def postamble(self): pass
