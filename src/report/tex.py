@@ -19,6 +19,8 @@ class texBuilder(object):
    author = u"Hans Georg Schaathun"
    title = ""
    bibstyle = "plain"
+   newperiod = True
+   newsentence = False
    def __init__(self,file,title=""):
       f = file.split( "." )
       if len(f) > 1: bf = "".join(f[:-1])
@@ -53,11 +55,12 @@ class texBuilder(object):
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
    def put_cite(self,ref,page=None): 
       if page == None: self.file.write( " \\cite{%s}" % (ref,) )
-      else: self.file.write( "\\cite[%s]{%s}" % (page,ref,) )
+      else: self.file.write( " \\cite[%s]{%s}" % (page,ref,) )
    def put_name(self,fn,sn,ref=None): 
       if ref == None: s = "%s \\textsc{%s}" % (fn,sn,)
       else: s =  "%s \\textsc{%s} (\\textsc{%s})" % (fn,sn,ref)
       self.file.write( s )
+      self.newperiod = False
    def put_phead(self,fn,sn,no,key): 
       self.file.write( "\\PersonHeader{%s}{%s %s}{%s}\n\n" % (no,fn,sn,key) )
    def put_phead_repeat(self,fn,sn,no,ref): 
@@ -68,10 +71,10 @@ class texBuilder(object):
       self.file.write( "\\section*{" )
    def put_shead_e(self):
       self.file.write( "}\n" )
-   def put_chead_s(self):
-      self.file.write( "\\chapter{" )
-   def put_chead_e(self):
-      self.file.write( "}\n" )
+   def put_shead(self,title=""):
+      self.file.write( "\\section*{" + title + "}\n" )
+   def put_chead(self):
+      self.file.write( "\\chapter{" + title + "}\n" )
    def put_item_s(self):
       self.file.write( "  \\item " )
    def put_item_e(self): 
@@ -90,8 +93,15 @@ class texBuilder(object):
       self.file.write( "}\n" )
    def put_dagger(self):
       self.file.write( "$\\dagger" )
-   def put_paragraph(self):
+   def end_paragraph(self):
       self.file.write( "\n\n" )
+      self.newperiod = True
+      self.newsentence = False
+   def end_sentence(self):
+      self.newsentence = True
+   def end_period(self):
+      self.file.write( ".\n" )
+      self.newperiod = True
    def put(self,x):
       # TODO: escape
       try:
@@ -99,19 +109,31 @@ class texBuilder(object):
       except:
 	 print x
       if idx >= 0:
-         self.file.write( char_escape(x[:idx]) )
-	 x = x[idx:].split(None,1)
-	 if len(x) > 1:
-	    (url,x) = x
-	    self.put_url(url)
-            self.put( x )
-         else:
-	    self.put_url(x)
+          s = char_escape(x[:idx]) 
+          if self.newperiod: 
+              s = s.capitalize()
+              self.newperiod = False
+          elif self.newsentence:
+              s = ", " + s
+          self.file.write( char_escape(x[:idx]) )
+	  x = x[idx:].split(None,1)
+	  if len(x) > 1:
+	     (url,x) = x
+	     self.put_url(url)
+             self.put( x )
+          else:
+	     self.put_url(x)
       else:
-	 try:
-           self.file.write( char_escape(x) )
-	 except:
-	    print x
+          if self.newperiod: 
+              x = x.capitalize()
+              self.newperiod = False
+          elif self.newsentence:
+              x = ", " + x
+              self.newsentence = False
+	  try:
+              self.file.write( char_escape(x) )
+	  except:
+	      print x
    def put_bib( self, xref, author, title, url, publication, notes ):
       self.bibfile.write( "@misc{" + xref + ",\n" )
       if author != None:
