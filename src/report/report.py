@@ -213,7 +213,7 @@ class Report(object):
 	 self._builder.put_bib( xref, author, title, url, pub, notes )
       return
 
-   def event(self,ind,event):
+   def event(self,ind,event,sentence=True):
       # text TYPE/event CAUS AGE ved AGNC, DATE på/i PLAC
       # NOTE/SOUR/OBJE
       tag    = event.tag()
@@ -229,7 +229,9 @@ class Report(object):
       elif tag == "OCCU":
 	 self._builder.put( val.capitalize() )
       else:
-         self._builder.put( self._dic.get(tag,tag).capitalize() )
+         tx = self._dic.get(tag,tag)
+         if sentence: tx = tx.capitalize()
+         self._builder.put( tx )
 	 if type != None: self._builder.put( "(" + type + ")" )
       self._builder.put( " " )
       # CAUS
@@ -441,7 +443,7 @@ class Report(object):
           # Make a complete new entry
           return self.new_individual(ind,ref)
 
-   def new_individual(self,ind,ref):
+   def new_individual(self,ind,number):
       """
       Generate a report on a single individual object ind, 
       where number is the person's ID number in a longer report.
@@ -461,7 +463,7 @@ class Report(object):
       # (2) OBJE ??
       # (3) vitals (birth and parents)
       birt = ind.birth()
-      if birt != None: self.event( ind, birt )
+      if birt != None: self.event( ind, birt, sentence=False )
       self.parents( ind )
 
       # (4) biography (events)
