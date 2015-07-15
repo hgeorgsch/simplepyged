@@ -164,7 +164,7 @@ class Report(object):
       self.make_reflist()
       self._builder.postamble()
    def descendants(self,ref,mgen=12,header=None,abstract=None):
-      "Generate a detailed ahnentafel report."
+      "Generate a detailed report of descendants of the given individual."
       # Setup
       q = Queue()
       ind = self.__file.get( ref )
@@ -430,18 +430,25 @@ class Report(object):
       if self.__indicontext:
 	 self.__context = []
 
+
       # check if the person has already been included
       ref = self.__history.get(key)
-
-      # find the name and make the header
-      (fn,sn) = ind.name()
       if ref != None and ref < number:
-	 self._builder.put_phead_repeat(fn,sn,number,ref)
+          (fn,sn) = ind.name()
+          self._builder.put_phead_repeat(fn,sn,number,ref)
+          return ref
       else:
-	 self._builder.put_phead(fn,sn,number,key)
+          # Make a complete new entry
+          return self.new_individual(ind,ref)
 
-      # if the person has been processed before, we are done
-      if ref != None and ref < number: return ref
+   def new_individual(self,ind,ref):
+      """
+      Generate a report on a single individual object ind, 
+      where number is the person's ID number in a longer report.
+      """
+
+      (fn,sn) = ind.name()
+      self._builder.put_phead(fn,sn,number,ind.xref())
 
       # otherwise, we sort all the child nodes for processing
       rec = IndiBins()
@@ -480,13 +487,13 @@ class Report(object):
 	 if ind.sex() == "M": spouse = n.wife()
 	 elif ind.sex() == "F": spouse = n.husband() 
          else: 
-	    print "Warning! Unknown gender for individual", key
+	    print "Warning! Unknown gender for individual", ind.xref()
 	    spouse = n.wife()
 	    if spouse == ind: spouse = n.husband() 
 	 short = False
 	 if spouse != None:
            sref = self.__history.get( spouse.xref() )
-	   if sref != None and sref < ref: short = True
+	   if sref != None and sref < number: short = True
 	 self.spouse( n, spouse, short )
 	 if short: continue
 	 cs = list(n.children())
