@@ -67,7 +67,7 @@ class IndiBins(dict):
       # ignored records (handled elsewhere)
       self["SEX"] = devnull()
       if ind != None:
-         for e in ind.children_lines(): rec.add(e)
+         for e in ind.children_lines(): self.add(e)
 
 dic_norsk = { "and" : "og", 
               "daughter" : "dotter til", 
@@ -89,6 +89,7 @@ dic_norsk = { "and" : "og",
               "DEAT" : u"død", 
               "BURI" : "gravlagd", 
               "PROB" : "skifte", 
+              "PROP" : u"åtte", 
 	    }
 
 class Report(object):
@@ -223,7 +224,10 @@ class Report(object):
       if tag == "EVEN":
 	 if type == None: self._builder.put( "EVEN" )
 	 else: self._builder.put( type )
-
+      elif tag == "PROP":
+         tx = self._dic.get(tag,tag)
+         self._builder.put( tx )
+	 self._builder.put( val )
       elif tag == "OCCU":
 	 self._builder.put( val )
       else:
@@ -247,16 +251,27 @@ class Report(object):
       if not ( d or p ): self._builder.put( " " )
       self._builder.put( self.formatplace( p ) )
       # NOTE/SOUR/OBJE
+      noteq = []
       for n in event.children_tags("NOTE"):
-	 self._builder.put(n.value_cont())
-	 for s in n.sources(): self.citation(s)
+	 if n.note_type() == "prose":
+	    noteq.append(n)
+	 else:
+	    self._builder.put(n.value_cont())
+	    for s in n.sources(): self.citation(s)
       # TODO distinguish between different kinds of notes.
       for n in event.children_tags("SOUR"):
 	 self.citation( n )
+      self._builder.end_sentence( )
+      if noteq:
+         self._builder.end_period( )
+	 for n in noteq:
+	    self._builder.put(n.value_cont())
+	    for s in n.sources(): self.citation(s)
+         self._builder.end_period()
+         
       # TODO clean up presentation of sources
       # TODO OBJE
       # Finalise
-      self._builder.end_sentence( )
 
    def citation(self,node):
       """

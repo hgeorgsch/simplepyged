@@ -100,10 +100,11 @@ class texBuilder(object):
    def end_sentence(self):
       self.newsentence = True
    def end_period(self):
-      self.file.write( ".\n" )
-      self.newperiod = True
+      if not self.newperiod:
+         self.file.write( ".\n" )
+         self.newperiod = True
+         self.newsentence = False
    def put(self,x):
-      # TODO: escape
       try:
          idx = x.find( u"http://" )
       except:
@@ -130,6 +131,7 @@ class texBuilder(object):
           elif self.newsentence:
               x = ", " + x
               self.newsentence = False
+          else: x = " " + x
 	  try:
               self.file.write( char_escape(x) )
 	  except:
