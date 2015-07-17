@@ -99,9 +99,9 @@ class texBuilder(object):
       self.newsentence = False
    def end_sentence(self):
       self.newsentence = True
-   def end_period(self):
+   def end_period(self,p="."):
       if not self.newperiod:
-         self.file.write( ".\n" )
+         self.file.write( p + "\n" )
          self.newperiod = True
          self.newsentence = False
    def put(self,x):

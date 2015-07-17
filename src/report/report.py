@@ -267,7 +267,7 @@ class Report(object):
 	 for n in noteq:
 	    self._builder.put(n.value_cont())
 	    for s in n.sources(): self.citation(s)
-         self._builder.end_period()
+         self._builder.end_period("")
          
       # TODO clean up presentation of sources
       # TODO OBJE
@@ -493,6 +493,7 @@ class Report(object):
       # DEAT 
       # BURI 
       # PROB
+      self._builder.end_period()
       self._builder.end_paragraph()
 
       # (5) NOTE
