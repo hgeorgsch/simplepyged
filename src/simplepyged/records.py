@@ -297,8 +297,8 @@ class Record(Line):
        self.add_child_line( src )
        return src
 
-class Multimedia(Record): pass
 class Note(Record): pass
+class Multimedia(Record): pass
 class Repository(Record): pass
 class Source(Record): pass
 class Submitter(Record): pass

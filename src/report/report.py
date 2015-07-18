@@ -472,6 +472,15 @@ class Report(object):
       self._builder.end_sentence()
 
       # (2) OBJE ??
+      for obj in rec["OBJE"]:
+          if obj.get_type() != "photo": continue
+          t = obj.get_title()
+          f = obj.get_file()
+          print t
+          print f
+          if not t: t = ""
+          self._builder.put_image(t,f)
+
       # (3) vitals (birth and parents)
       birt = ind.birth()
       if birt != None: self.event( ind, birt )

@@ -35,6 +35,7 @@ class texBuilder(object):
 	    u"\\documentclass[pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
+            + u"\\usepackage{graphicx}\n"
             + u"\\xdef\AncDec{Ancestors}\n\n"
             + u"\\begin{document}\n\n"
             + u"\\author{" + self.author + "}\n"
@@ -136,6 +137,14 @@ class texBuilder(object):
               self.file.write( char_escape(x) )
 	  except:
 	      print x
+   def put_image( self, title, file ):
+      self.file.write( "\\begin{figure}\n" )
+      self.file.write( "\\begin{center}\n" )
+      self.file.write( "\\includegraphics[width=\\columnwidth]{" + file + "}\n" )
+      self.file.write( "\\end{center}\n" )
+      self.file.write( "\\caption{" + title + "}\n" )
+      self.file.write( "\\end{figure}\n" )
+
    def put_bib( self, xref, author, title, url, publication, notes ):
       self.bibfile.write( "@misc{" + xref + ",\n" )
       if author != None:
