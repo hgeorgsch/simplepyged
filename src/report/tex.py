@@ -140,7 +140,7 @@ class texBuilder(object):
    def put_image( self, title, file ):
       self.file.write( "\\begin{figure}\n" )
       self.file.write( "\\begin{center}\n" )
-      self.file.write( "\\includegraphics[width=\\columnwidth]{" + file + "}\n" )
+      self.file.write( "\\includegraphics[width=0.84\\columnwidth]{" + file + "}\n" )
       self.file.write( "\\end{center}\n" )
       self.file.write( "\\caption{" + title + "}\n" )
       self.file.write( "\\end{figure}\n" )
