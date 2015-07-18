@@ -374,6 +374,7 @@ class Report(object):
 	ref = self.__history.get(ind.xref())
         self._builder.put_name(fn,sn,ref)
 	if ref != None and short: return
+      self._builder.end_period()
       # (3) Family events
       # TODO: Family events
       # TODO: Family sources
@@ -526,9 +527,9 @@ class Report(object):
 	 self.spouse( n, spouse, short )
 	 if short: continue
          cc = n.children_count_exact()
-         # TODO: End period here.  Check examples
-         # TODO: Special case for no children
-         # TODO: Discuss missing children in records
+         # TODO: Check examples
+         # TODO: -> Special case for no children
+         # TODO: -> Discuss missing children in records
          if cc:
             self._builder.put( "Dei hadde " + str(cc) + " born:" )
          else:
