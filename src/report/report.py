@@ -525,6 +525,14 @@ class Report(object):
 	   if sref != None and sref < number: short = True
 	 self.spouse( n, spouse, short )
 	 if short: continue
+         cc = n.children_count_exact()
+         # TODO: End period here.  Check examples
+         # TODO: Special case for no children
+         # TODO: Discuss missing children in records
+         if cc:
+            self._builder.put( "Dei hadde " + str(cc) + " born:" )
+         else:
+            self._builder.put( "Born:" )
 	 cs = list(n.children())
 	 if len(cs) > 0:
 	   self._builder.put_enum_s()
