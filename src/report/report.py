@@ -528,13 +528,22 @@ class Report(object):
 	 if short: continue
          cc = n.children_count_exact()
          # TODO: Check examples
-         # TODO: -> Special case for no children
          # TODO: -> Discuss missing children in records
-         if cc:
-            self._builder.put( "Dei hadde " + str(cc) + " born:" )
-         else:
-            self._builder.put( "Born:" )
 	 cs = list(n.children())
+         if cc:
+             print "NCHI: ", cc
+             if len(cs) > cc:
+                 print "Warning! Inconsistency.  Too many children recorded."
+             if cc == 0:
+               self._builder.put( "Dei hadde ingen born\n" )
+               self._builder.end_period()
+             elif len(cs) > 0:
+               self._builder.put( "Dei hadde " + str(cc) + " born:\n" )
+             else:
+               self._builder.put( "Dei hadde " + str(cc) + " born" )
+               self._builder.end_period()
+         else:
+             self._builder.put( "Born:" )
 	 if len(cs) > 0:
 	   self._builder.put_enum_s()
 	   for c in cs:

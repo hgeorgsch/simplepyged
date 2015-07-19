@@ -751,7 +751,7 @@ class Family(Record):
 	"""
         n = self.children_single_tag("NCHI")
         try:
-           return int(n)
+           return int(n.value())
         except:
            return None
 
