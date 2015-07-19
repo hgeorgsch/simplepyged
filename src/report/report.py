@@ -373,7 +373,9 @@ class Report(object):
         (fn,sn) = ind.name()
 	ref = self.__history.get(ind.xref())
         self._builder.put_name(fn,sn,ref)
-	if ref != None and short: return
+	if ref != None and short: 
+            self._builder.end_period()
+            return
       self._builder.end_period()
       # (3) Family events
       # TODO: Family events
