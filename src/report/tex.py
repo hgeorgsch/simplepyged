@@ -113,7 +113,7 @@ class texBuilder(object):
       if idx >= 0:
           s = char_escape(x[:idx]) 
           if self.newperiod: 
-              s = s.capitalize()
+              s = capFirst(s)
               self.newperiod = False
           elif self.newsentence:
               s = ", " + s
@@ -127,7 +127,7 @@ class texBuilder(object):
 	     self.put_url(x)
       else:
           if self.newperiod: 
-              x = x.capitalize()
+              x = capFirst(x)
               self.newperiod = False
           elif self.newsentence:
               x = ", " + x
@@ -161,3 +161,7 @@ class texBuilder(object):
       self.file.write( "\\begin{abstract}\n" )
    def put_abstract_e( self ):
       self.file.write( "\\end{abstract}\n" )
+
+def capFirst(s):
+    if len(s) < 2: return s.capitalize()
+    else: return s[0].capitalize() + s[1:]
