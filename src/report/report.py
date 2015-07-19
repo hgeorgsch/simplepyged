@@ -228,6 +228,8 @@ class Report(object):
          tx = self._dic.get(tag,tag)
          self._builder.put( tx )
 	 self._builder.put( val )
+      elif tag == "EDUC":
+	 self._builder.put( val )
       elif tag == "OCCU":
 	 self._builder.put( val )
       else:
