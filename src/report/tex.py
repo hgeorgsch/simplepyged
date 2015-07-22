@@ -112,7 +112,7 @@ class texBuilder(object):
       if idx >= 0:
           s = char_escape(x[:idx]) 
           if self.newperiod: 
-              s = s.capitalize()
+	      s = s[0].capitalize() + s[1:]
               self.newperiod = False
           elif self.newsentence:
               s = ", " + s
@@ -126,7 +126,7 @@ class texBuilder(object):
 	     self.put_url(x)
       else:
           if self.newperiod: 
-              x = x.capitalize()
+	      x = x[0].capitalize() + x[1:]
               self.newperiod = False
           elif self.newsentence:
               x = ", " + x
