@@ -314,11 +314,11 @@ class Report(object):
       by = node.birth_year()
       dy = node.death_year()
       if by < 0 and dy < 0: return
-      self._builder.put( "(" )
-      if by >= 0: self._builder.put( str(by) )
-      self._builder.put( "--" )
-      if dy >= 0: self._builder.put( str(dy) )
-      self._builder.put( ")" )
+      r = "("
+      if by >= 0: r +=str(by)
+      r += "--" 
+      if dy >= 0: r += str(dy) 
+      self._builder.put( r + ")" )
 
    def parents(self,node):
       father = node.father()
