@@ -297,8 +297,8 @@ class Record(Line):
        self.add_child_line( src )
        return src
 
-class Multimedia(Record): pass
 class Note(Record): pass
+class Multimedia(Record): pass
 class Repository(Record): pass
 class Source(Record): pass
 class Submitter(Record): pass
@@ -745,6 +745,16 @@ class Family(Record):
         """ Return list of parents in this family """
         return [self._husband, self._wife]
 
+    def children_count_exact(self):
+        """
+	Return the number of children using the NCHI tag.
+	"""
+        n = self.children_single_tag("NCHI")
+        try:
+           return int(n.value())
+        except:
+           return None
+
     def children_count(self):
         """
 	Return the number of children.
@@ -752,8 +762,8 @@ class Family(Record):
 	This uses the NCHI entry of Gedcom if present,
 	otherwise it counts the children registered.
 	"""
-        n = self.children_single_tag("NCHI")
-	if n != None: return int(n.value())
+        n = self.children_count_exact()
+	if n != None: return n.value()
         else: return len(self._children)
 
     def children(self):

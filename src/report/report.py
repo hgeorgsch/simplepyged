@@ -228,6 +228,8 @@ class Report(object):
          tx = self._dic.get(tag,tag)
          self._builder.put( tx )
 	 self._builder.put( val )
+      elif tag == "EDUC":
+	 self._builder.put( val )
       elif tag == "OCCU":
 	 self._builder.put( val )
       else:
@@ -267,7 +269,7 @@ class Report(object):
 	 for n in noteq:
 	    self._builder.put(n.value_cont())
 	    for s in n.sources(): self.citation(s)
-         self._builder.end_period()
+         self._builder.end_period("")
          
       # TODO clean up presentation of sources
       # TODO OBJE
@@ -373,7 +375,10 @@ class Report(object):
         (fn,sn) = ind.name()
 	ref = self.__history.get(ind.xref())
         self._builder.put_name(fn,sn,ref)
-	if ref != None and short: return
+	if ref != None and short: 
+            self._builder.end_period()
+            return
+      self._builder.end_period()
       # (3) Family events
       # TODO: Family events
       # TODO: Family sources
@@ -472,6 +477,15 @@ class Report(object):
       self._builder.end_sentence()
 
       # (2) OBJE ??
+      for obj in rec["OBJE"]:
+          if obj.get_type() != "photo": continue
+          t = obj.get_title()
+          f = obj.get_file()
+          print t
+          print f
+          if not t: t = ""
+          self._builder.put_image(t,f)
+
       # (3) vitals (birth and parents)
       birt = ind.birth()
       if birt != None: self.event( ind, birt )
@@ -493,6 +507,7 @@ class Report(object):
       # DEAT 
       # BURI 
       # PROB
+      self._builder.end_period()
       self._builder.end_paragraph()
 
       # (5) NOTE
@@ -515,7 +530,24 @@ class Report(object):
 	   if sref != None and sref < number: short = True
 	 self.spouse( n, spouse, short )
 	 if short: continue
+         cc = n.children_count_exact()
+         # TODO: Check examples
+         # TODO: -> Discuss missing children in records
 	 cs = list(n.children())
+         if cc:
+             print "NCHI: ", cc
+             if len(cs) > cc:
+                 print "Warning! Inconsistency.  Too many children recorded."
+             if cc == 0:
+               self._builder.put( "Dei hadde ingen born\n" )
+               self._builder.end_period()
+             elif len(cs) > 0:
+               self._builder.put( "Dei hadde " + str(cc) + " born:\n" )
+             else:
+               self._builder.put( "Dei hadde " + str(cc) + " born" )
+               self._builder.end_period()
+         else:
+             self._builder.put( "Born:" )
 	 if len(cs) > 0:
 	   self._builder.put_enum_s()
 	   for c in cs:

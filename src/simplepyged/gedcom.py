@@ -40,6 +40,7 @@ __all__ = [ "Gedcom", ]
 import string
 import codecs
 from traceback import print_exc
+from media import MediaObject
 
 # Other submodules
 from records import *
@@ -192,6 +193,8 @@ class Gedcom(Node):
         else:
             if t == "NOTE":
               e = NoteStructure(l,p,t,v,self)
+            elif t == "OBJE":
+              e = MediaObject(l,p,t,v,self)
 	    else:
               e = Line(l,p,t,v,self)
 

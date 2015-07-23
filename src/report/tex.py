@@ -35,6 +35,7 @@ class texBuilder(object):
 	    u"\\documentclass[pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
+            + u"\\usepackage{graphicx}\n"
             + u"\\xdef\AncDec{Ancestors}\n\n"
             + u"\\begin{document}\n\n"
             + u"\\author{" + self.author + "}\n"
@@ -99,9 +100,9 @@ class texBuilder(object):
       self.newsentence = False
    def end_sentence(self):
       self.newsentence = True
-   def end_period(self):
+   def end_period(self,p="."):
       if not self.newperiod:
-         self.file.write( ".\n" )
+         self.file.write( p + "\n" )
          self.newperiod = True
          self.newsentence = False
    def put(self,x):
@@ -112,7 +113,7 @@ class texBuilder(object):
       if idx >= 0:
           s = char_escape(x[:idx]) 
           if self.newperiod: 
-	      s = s[0].capitalize() + s[1:]
+              s = capFirst(s)
               self.newperiod = False
           elif self.newsentence:
               s = ", " + s
@@ -126,7 +127,7 @@ class texBuilder(object):
 	     self.put_url(x)
       else:
           if self.newperiod: 
-	      x = x[0].capitalize() + x[1:]
+              x = capFirst(x)
               self.newperiod = False
           elif self.newsentence:
               x = ", " + x
@@ -136,6 +137,14 @@ class texBuilder(object):
               self.file.write( char_escape(x) )
 	  except:
 	      print x
+   def put_image( self, title, file ):
+      self.file.write( "\\begin{figure}\n" )
+      self.file.write( "\\begin{center}\n" )
+      self.file.write( "\\includegraphics[width=0.84\\columnwidth]{" + file + "}\n" )
+      self.file.write( "\\end{center}\n" )
+      self.file.write( "\\caption{" + title + "}\n" )
+      self.file.write( "\\end{figure}\n" )
+
    def put_bib( self, xref, author, title, url, publication, notes ):
       self.bibfile.write( "@misc{" + xref + ",\n" )
       if author != None:
@@ -152,3 +161,7 @@ class texBuilder(object):
       self.file.write( "\\begin{abstract}\n" )
    def put_abstract_e( self ):
       self.file.write( "\\end{abstract}\n" )
+
+def capFirst(s):
+    if len(s) < 2: return s.capitalize()
+    else: return s[0].capitalize() + s[1:]
