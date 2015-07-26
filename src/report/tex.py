@@ -159,7 +159,7 @@ def makeBibtexMisc( xref, author=None, title=None, url=None, publication=None, n
       if title != None:
          r += "   title = {{" +  char_escape(title) + "}},\n"
       if publication != None:
-         r += "  publisher = {" + publication + "},\n"
+         r += "  note = {" + char_escape(publication) + "},\n"
       if url != None:
          r += "     url = {" + url + "},\n"
       # TODO: Handle notes and URL
