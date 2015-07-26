@@ -166,7 +166,7 @@ def makeBibtexMisc( xref, author=None, title=None, url=None, publication=None, n
       r += "}\n" 
       return r
 def makeBibtex( source ):
-    bibtex = source.children_single_val( "_TEX" )
+    bibtex = source.children_single_tag( "_TEX" )
     if bibtex == None:
         author = source.children_single_val( "AUTH" )
         title  = source.children_single_val( "TITL" )
