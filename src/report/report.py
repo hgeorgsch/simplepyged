@@ -366,6 +366,8 @@ class Report(object):
           self._builder.put( date.formatdate(d) )
 	  if d != None and p != None: self._builder.put( " " )
           self._builder.put( self.formatplace(p) )
+	for cit in marr.children_tags("SOUR"):
+	   self.citation(cit)
       # (2) Spouse name (and details)
       if ind != None:
         self._builder.put( " " + self._dic["with"] + " " )
@@ -376,9 +378,11 @@ class Report(object):
             self._builder.end_period()
             return
       self._builder.end_period()
-      # (3) Family events
+      # (3) Family sources
+      for cit in fam.children_tags("SOUR"):
+         self.citation(cit)
+      # (4) Family events
       # TODO: Family events
-      # TODO: Family sources
 
    def child(self,ind):
       assert ind.tag() == "INDI"
