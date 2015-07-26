@@ -381,6 +381,7 @@ class Report(object):
       # (3) Family sources
       for cit in fam.children_tags("SOUR"):
          self.citation(cit)
+      self._builder.put(" ")
       # (4) Family events
       # TODO: Family events
 
@@ -473,11 +474,7 @@ class Report(object):
       # We sort all the child nodes for processing
       rec = IndiBins(ind)
 
-      # (1) Main name
-      self._builder.put_name(fn,sn)
-      self._builder.end_sentence()
-
-      # (2) OBJE ??
+      # (1) OBJE ??
       for obj in rec["OBJE"]:
           if obj.get_type() != "photo": continue
           t = obj.get_title()
@@ -486,6 +483,10 @@ class Report(object):
           print f
           if not t: t = ""
           self._builder.put_image(t,f)
+
+      # (2) Main name
+      self._builder.put_name(fn,sn)
+      self._builder.end_sentence()
 
       # (3) vitals (birth and parents)
       birt = ind.birth()
