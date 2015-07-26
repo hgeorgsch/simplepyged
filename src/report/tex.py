@@ -145,15 +145,14 @@ class texBuilder(object):
       self.file.write( "\\caption{" + title + "}\n" )
       self.file.write( "\\end{figure}\n" )
 
-   def put_bib( self, xref, author, title, url, publication, notes ):
-      self.bibfile.write( 
-	    makeBibtexMisc( xref, author, title, url, publication, notes ) )
+   def put_bib( self, source ):
+      self.bibfile.write( makeBibtex( source ) )
    def put_abstract_s( self ):
       self.file.write( "\\begin{abstract}\n" )
    def put_abstract_e( self ):
       self.file.write( "\\end{abstract}\n" )
 
-def makeBibtexMisc( xref, author, title, url, publication, notes ):
+def makeBibtexMisc( xref, author=None, title=None, url=None, publication=None, notes=None ):
       r = "@misc{" + xref + ",\n" 
       if author != None:
          r += "  author = {" + bib_escape(author) + "},\n"
@@ -171,11 +170,9 @@ def makeBibtex( source ):
     if bibtex == None:
         author = source.children_single_val( "AUTH" )
         title  = source.children_single_val( "TITL" )
-        url    = None
         pub    = source.children_single_val( "PUBL" )
-        notes  = None
         xref   = source.xref()
-	return makeBibtexMisc( xref, author, title, url, publication, notes )
+	return makeBibtexMisc( xref, author=author, title=title, publication=pub )
     else:
 	return bibtex.value_cont()
 

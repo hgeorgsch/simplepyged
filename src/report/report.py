@@ -204,13 +204,7 @@ class Report(object):
 	    print self
 	    print self.__reflist
 	    raise Exception, "None occurs in reference list."
-	 author = s.children_single_val( "AUTH" )
-	 title  = s.children_single_val( "TITL" )
-	 url    = None
-	 pub    = s.children_single_val( "PUBL" )
-	 notes  = None
-	 xref   = s.xref()
-	 self._builder.put_bib( xref, author, title, url, pub, notes )
+	 self._builder.put_bib( s )
       return
 
    def event(self,ind,event):
