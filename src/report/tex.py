@@ -146,21 +146,38 @@ class texBuilder(object):
       self.file.write( "\\end{figure}\n" )
 
    def put_bib( self, xref, author, title, url, publication, notes ):
-      self.bibfile.write( "@misc{" + xref + ",\n" )
-      if author != None:
-         self.bibfile.write( "  author = {" + bib_escape(author) + "},\n" )
-      if title != None:
-         self.bibfile.write( "   title = {{" +  char_escape(title) + "}},\n" )
-      if publication != None:
-         self.bibfile.write( "  publisher = {" + publication + "},\n" )
-      if url != None:
-         self.bibfile.write( "     url = {" + url + "},\n" )
-      # TODO: Handle notes and URL
-      self.bibfile.write( "}\n" )
+      self.bibfile.write( 
+	    makeBibtexMisc( xref, author, title, url, publication, notes ) )
    def put_abstract_s( self ):
       self.file.write( "\\begin{abstract}\n" )
    def put_abstract_e( self ):
       self.file.write( "\\end{abstract}\n" )
+
+def makeBibtexMisc( xref, author, title, url, publication, notes ):
+      r = "@misc{" + xref + ",\n" 
+      if author != None:
+         r += "  author = {" + bib_escape(author) + "},\n"
+      if title != None:
+         r += "   title = {{" +  char_escape(title) + "}},\n"
+      if publication != None:
+         r += "  publisher = {" + publication + "},\n"
+      if url != None:
+         r += "     url = {" + url + "},\n"
+      # TODO: Handle notes and URL
+      r += "}\n" 
+      return r
+def makeBibtex( source ):
+    bibtex = source.children_single_val( "_TEX" )
+    if bibtex == None:
+        author = source.children_single_val( "AUTH" )
+        title  = source.children_single_val( "TITL" )
+        url    = None
+        pub    = source.children_single_val( "PUBL" )
+        notes  = None
+        xref   = source.xref()
+	return makeBibtexMisc( xref, author, title, url, publication, notes )
+    else:
+	return bibtex.value_cont()
 
 def capFirst(s):
     if len(s) < 2: return s.capitalize()

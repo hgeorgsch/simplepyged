@@ -80,6 +80,7 @@ dic_norsk = { "and" : "og",
               "sources" : "kjelder", 
               "BIRT" : u"fødd", 
               "CHR" : u"døypt", 
+              "CONF" : "konfirmert", 
               "GRAD" : "eksamen", 
               "OCCU" : "yrke", 
               "CENS" : "registrert i folketeljing", 
@@ -229,6 +230,8 @@ class Report(object):
          self._builder.put( tx )
 	 self._builder.put( val )
       elif tag == "EDUC":
+	 self._builder.put( val )
+      elif tag == "TITL":
 	 self._builder.put( val )
       elif tag == "OCCU":
 	 self._builder.put( val )
