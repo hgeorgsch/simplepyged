@@ -247,7 +247,7 @@ class Report(object):
       # DATE/PLAC:
       (d,p) = event.dateplace()
       if d: self._builder.put( date.formatdate( d ) )
-      if not ( d or p ): self._builder.put( " " )
+      # if not ( d or p ): self._builder.put( " " )
       if p: self._builder.put( self.formatplace( p ) )
       self._builder.end_sentence()
       # NOTE/SOUR/OBJE
@@ -288,12 +288,15 @@ class Report(object):
 	    print node.gedcom()
 	    raise Exception, "Source was not found."
 	 page = node.children_single_tag("PAGE")
-	 if page != None: page = page.value()
+	 if page != None: 
+	     pl = formatPage( page.value() )
+	 else:
+	     pl = []
 	 data = node.children_single_tag("DATA")
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
 	 self.__reflist.add( source )
-	 self._builder.put_cite( val, page )
+	 self._builder.put_cite( val, pl )
 	 # TODO: handle notes and quotes
       else:
 	 if node.is_empty():
@@ -582,6 +585,16 @@ class Report(object):
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
 
+def formatPageElement( p ):
+   l = [ x.strip() for x in p.split(":") ]
+   if len(l) == 1: return l[0]
+   if len(l) != 2: raise Exception, "Malformed page reference (" + p + ")."
+   if l[0] == "page": return "s. " + l[1]
+   elif l[0] == "number": return "nr. " + l[1]
+   elif l[0] == "street": return l[1]
+   return l[0] + " " + l[1]
+def formatPage( p ):
+   return [ formatPageElement(x) for x in p.split(",") ]
 class Builder(object):
    def put_url(self,url,text=None): 
       if text == None: print "<URL:%s>" % (url,)
