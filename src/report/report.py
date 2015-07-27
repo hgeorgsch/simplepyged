@@ -216,6 +216,7 @@ class Report(object):
       if type != None: type   = type.value()
       gender = ind.sex()
       # TYPE/event
+      agncprep = u"ved"
       if tag == "EVEN":
 	 if type == None: self._builder.put( "EVEN" )
 	 else: self._builder.put( type )
@@ -225,6 +226,10 @@ class Report(object):
 	 self._builder.put( val )
       elif tag == "EDUC":
 	 self._builder.put( val )
+      elif tag == "GRAD":
+	 assert not val
+	 self._builder.put( type )
+	 agncprep = u"frå"
       elif tag == "TITL":
 	 self._builder.put( val )
       elif tag == "OCCU":
@@ -243,7 +248,7 @@ class Report(object):
       # AGNC
       c = event.children_single_tag("AGNC")
       if c != None:
-	 self._builder.put( "ved " + c.value() )
+	 self._builder.put( agncprep + " " + c.value() )
       # DATE/PLAC:
       (d,p) = event.dateplace()
       if d: self._builder.put( date.formatdate( d ) )
@@ -591,6 +596,7 @@ def formatPageElement( p ):
    if len(l) != 2: raise Exception, "Malformed page reference (" + p + ")."
    if l[0] == "page": return "s. " + l[1]
    elif l[0] == "number": return "nr. " + l[1]
+   elif l[0] == "entry": return "oppslag " + l[1]
    elif l[0] == "street": return l[1]
    return l[0] + " " + l[1]
 def formatPage( p ):
