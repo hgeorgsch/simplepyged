@@ -20,7 +20,8 @@ defaults = [
       ]
 
 prepList = [ u"i", u"i", u"i", u"i",
-            u"i", u"i", u"på", u"på", ]
+            u"i", u"i", u"på", u"på", 
+	    u"i", ]
 
 def parsePlace(s):
    if s == None:

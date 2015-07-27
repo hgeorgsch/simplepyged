@@ -246,9 +246,10 @@ class Report(object):
 	 self._builder.put( "ved " + c.value() )
       # DATE/PLAC:
       (d,p) = event.dateplace()
-      self._builder.put( date.formatdate( d ) )
+      if d: self._builder.put( date.formatdate( d ) )
       if not ( d or p ): self._builder.put( " " )
-      self._builder.put( self.formatplace( p ) )
+      if p: self._builder.put( self.formatplace( p ) )
+      self._builder.end_sentence()
       # NOTE/SOUR/OBJE
       noteq = []
       for n in event.children_tags("NOTE"):
