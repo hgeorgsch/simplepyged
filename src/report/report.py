@@ -597,6 +597,7 @@ def formatPageElement( p ):
    if l[0] == "page": return "s. " + l[1]
    elif l[0] == "number": return "nr. " + l[1]
    elif l[0] == "entry": return "oppslag " + l[1]
+   elif l[0] == "list": return "liste " + l[1]
    elif l[0] == "street": return l[1]
    return l[0] + " " + l[1]
 def formatPage( p ):
