@@ -485,8 +485,7 @@ class Report(object):
 
       # (1) OBJE ??
       for obj in rec["OBJE"]:
-	  if ( not obj.get_use() and
-             obj.get_type() != "photo" ): continue
+	  if not obj.get_use(): continue
           t = obj.get_title()
           f = obj.get_file()
           print t

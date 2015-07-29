@@ -35,10 +35,13 @@ class MediaObject(Line):
        self._title = None
        self._type = None
        v = self.value()
-       self._use = False
        u = self.children_single_tag("_USE")
-       if u != None and u.value().strip() == "Y":
-	  self._use = True
+       if u == None: 
+	   self._use = None
+       elif u.value().strip() == "Y":
+	   self._use = True
+       else:
+           self._use = False
        if valid_pointer(v):
 	  self._record = self._dict.get(v)
 	  if self._record == None: 
@@ -64,6 +67,10 @@ class MediaObject(Line):
 
     def get_file(self): return self._file
     def get_form(self): return self._form
-    def get_use(self): return self._use
+    def get_use(self): 
+       if self._use == None:
+	  return (self.get_type() == "photo")
+       else:
+          return self._use
     def get_type(self): return self._type
     def get_title(self): return self._title
