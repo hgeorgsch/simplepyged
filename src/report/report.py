@@ -387,11 +387,18 @@ class Report(object):
             self._builder.end_period()
             return
       self._builder.end_period()
-      # (3) Family sources
+      # (3) Images
+      for obj in fam.children_tags("OBJE"):
+	  if not obj.get_use(): continue
+          t = obj.get_title()
+          f = obj.get_file()
+          if not t: t = ""
+          self._builder.put_image(t,f,obj.xref())
+      # (4) Family sources
       for cit in fam.children_tags("SOUR"):
          self.citation(cit)
       self._builder.put(" ")
-      # (4) Family events
+      # (5) Family events
       # TODO: Family events
 
    def child(self,ind):
@@ -483,19 +490,17 @@ class Report(object):
       # We sort all the child nodes for processing
       rec = IndiBins(ind)
 
-      # (1) OBJE ??
+      # (1) Main name
+      self._builder.put_name(fn,sn)
+      self._builder.end_sentence()
+
+      # (2) OBJE ??
       for obj in rec["OBJE"]:
 	  if not obj.get_use(): continue
           t = obj.get_title()
           f = obj.get_file()
-          print t
-          print f
           if not t: t = ""
-          self._builder.put_image(t,f)
-
-      # (2) Main name
-      self._builder.put_name(fn,sn)
-      self._builder.end_sentence()
+          self._builder.put_image(t,f,obj.xref())
 
       # (3) vitals (birth and parents)
       birt = ind.birth()

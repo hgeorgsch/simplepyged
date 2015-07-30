@@ -32,10 +32,9 @@ class texBuilder(object):
 
    def preamble(self,h):
      self.file.write(
-	    u"\\documentclass[pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
+	    u"\\documentclass[nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
-            + u"\\usepackage{graphicx}\n"
             + u"\\xdef\AncDec{Ancestors}\n\n"
             + u"\\begin{document}\n\n"
             + u"\\author{" + self.author + "}\n"
@@ -145,13 +144,15 @@ class texBuilder(object):
               self.file.write( char_escape(x) )
 	  except:
 	      print x
-   def put_image( self, title, file ):
-      self.file.write( "\\begin{figure}\n" )
+   def put_image( self, title, file, label=None ):
+      self.file.write( "\\begin{imagefloat}\n" )
       self.file.write( "\\begin{center}\n" )
       self.file.write( "\\includegraphics[width=0.84\\columnwidth]{" + file + "}\n" )
       self.file.write( "\\end{center}\n" )
       self.file.write( "\\caption{" + title + "}\n" )
-      self.file.write( "\\end{figure}\n" )
+      if label: self.file.write( "\\label{" + label + "}\n" )
+      self.file.write( "\\end{imagefloat}\n" )
+      if label: self.file.write( "\\imgref{" + label + "}" )
 
    def put_bib( self, source ):
       self.bibfile.write( makeBibtex( source ) )

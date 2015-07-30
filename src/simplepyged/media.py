@@ -65,6 +65,9 @@ class MediaObject(Line):
            self._title = None
 
 
+    def xref(self): 
+       if self._record: return self._record.xref()
+       else: return None
     def get_file(self): return self._file
     def get_form(self): return self._form
     def get_use(self): 

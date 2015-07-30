@@ -7,6 +7,11 @@
 % Font and encoding
 \RequirePackage[utf8x]{inputenc}
 \RequirePackage[T1]{fontenc}
+\RequirePackage{babel}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{caption}
+\RequirePackage[space]{grffile}
 
 % Handle URL-s and hyperlinks in PDF
 \RequirePackage{hyperref}
@@ -127,3 +132,9 @@
   \else\chapter*{#2 \AncDec\  \mbox{Generation~#1}}\fi
   \setcounter{footnote}{0}
 }
+
+\DeclareFloatingEnvironment[fileext=img,name=Bilet]{imagefloat}
+
+\def\theimagefloat{%
+    \colorbox{blue}{\textbf{\textcolor{white}{\footnotesize\arabic{imagefloat}}}}}
+\def\imgref#1{\ref{#1}}
