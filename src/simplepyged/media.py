@@ -23,6 +23,7 @@
 
 from errors import *
 from records import Line
+from notes import valid_url
 
 class MediaObject(Line):
     """
@@ -50,15 +51,20 @@ class MediaObject(Line):
        else:
            rec = self
        print rec
-       file = rec.children_single_tag("FILE")
+       fs = list(rec.children_tags("FILE"))
+       if len(fs) == 0:
+	  raise Exception, "Media object with no file given"
+       if len(fs) > 1:
+	  print "Warning: Media object with multiple files is not supported."
+       file = fs[0]
        self._file = file.value()
        try: 
           form = file.children_single_tag("FORM")
           self._form = form.value()
           self._type = form.children_single_tag("TYPE").value()
        except: 
-          self._form = NONE
-          self._type = NONE
+          self._form = None
+          self._type = None
        try:
           self._title = file.children_single_tag("TITL").value()
        except:
@@ -67,6 +73,11 @@ class MediaObject(Line):
 
     def xref(self): 
        if self._record: return self._record.xref()
+       else: return None
+    def is_url(self): 
+       return valid_url(self._file)
+    def get_url(self):
+       if self.is_url(): return self._file
        else: return None
     def get_file(self): return self._file
     def get_form(self): return self._form
