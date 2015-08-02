@@ -553,7 +553,6 @@ class Report(object):
          # TODO: -> Discuss missing children in records
 	 cs = list(n.children())
          if cc:
-             print "NCHI: ", cc
              if len(cs) > cc:
                  print "Warning! Inconsistency.  Too many children recorded."
              if cc == 0:
