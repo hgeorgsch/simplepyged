@@ -53,7 +53,7 @@ class texBuilder(object):
       self.bibfile.close()
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
-   def put_cite(self,ref,page=None): 
+   def put_cite(self,ref,page=None,media=[]): 
       if not page:
 	 self.file.write( " \\cite{%s}" % (ref,) )
 	 return
@@ -64,6 +64,8 @@ class texBuilder(object):
 	 self.file.write( " \\footnote{\\cite{%s} " % (ref,) )
 	 self.file.write( ps )
 	 self.file.write( ".}\n") 
+      for m in media:
+	 self.put_url(m,"\\textcolor{blue}{URL}")
    def put_name(self,fn,sn,ref=None): 
       if ref == None: s = "%s \\textsc{%s}" % (fn,sn,)
       else: s =  "%s \\textsc{%s} (\\textsc{%s})" % (fn,sn,ref)

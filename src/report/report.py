@@ -297,11 +297,13 @@ class Report(object):
 	     pl = formatPage( page.value() )
 	 else:
 	     pl = []
+	 ml = node.children_tags("OBJE")
+	 ml = filter( lambda x : x, [ x.get_url() for x in ml ] )
 	 data = node.children_single_tag("DATA")
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
 	 self.__reflist.add( source )
-	 self._builder.put_cite( val, pl )
+	 self._builder.put_cite( val, pl, ml )
 	 # TODO: handle notes and quotes
       else:
 	 if node.is_empty():
