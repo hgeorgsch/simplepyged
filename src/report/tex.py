@@ -54,18 +54,22 @@ class texBuilder(object):
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
    def put_cite(self,ref,page=None,media=[]): 
-      if not page:
+      ms = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
+             for m in media ]
+      if page:
+         ps = ", ".join(page)
+      else: 
+	 ps = ""
+      s = "".join( ms )
+      if not ps:
 	 self.file.write( " \\cite{%s}" % (ref,) )
-	 return
-      ps = ", ".join(page)
-      if len(ps) < 20:
+	 if ms: self.file.write( s ) ;
+      elif len(ps) < 20:
 	 self.file.write( " \\cite[%s]{%s}" % (ps,ref,) )
+	 if ms: self.file.write( s ) ;
       else:
-	 self.file.write( " \\footnote{\\cite{%s} " % (ref,) )
-	 self.file.write( ps )
-	 self.file.write( ".}\n") 
-      for m in media:
-	 self.put_url(m,"\\textcolor{blue}{URL}")
+	 self.file.write( " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) )
+      return
    def put_name(self,fn,sn,ref=None): 
       if ref == None: s = "%s \\textsc{%s}" % (fn,sn,)
       else: s =  "%s \\textsc{%s} (\\textsc{%s})" % (fn,sn,ref)
