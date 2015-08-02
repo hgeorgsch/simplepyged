@@ -167,14 +167,16 @@ class texBuilder(object):
    def put_abstract_e( self ):
       self.file.write( "\\end{abstract}\n" )
 
-def makeBibtexMisc( xref, author=None, title=None, url=None, publication=None, notes=None ):
+def makeBibtexMisc( xref, author=None, title=None, url=None, publication=None, notes=None, media=[] ):
       r = "@misc{" + xref + ",\n" 
       if author != None:
          r += "  author = {" + bib_escape(author) + "},\n"
       if title != None:
          r += "   title = {{" +  char_escape(title) + "}},\n"
-      if publication != None:
-         r += "  note = {" + char_escape(publication) + "},\n"
+      if publication != None: n = char_escape(publication) 
+      else: n = ""
+      n += "".join( media )
+      if n: r += "  note = {" + n + "},\n"
       if url != None:
          r += "     url = {" + url + "},\n"
       # TODO: Handle notes and URL
@@ -182,12 +184,16 @@ def makeBibtexMisc( xref, author=None, title=None, url=None, publication=None, n
       return r
 def makeBibtex( source ):
     bibtex = source.children_single_tag( "_TEX" )
+    ms = source.children_tags( "OBJE" )
+    ms = filter( lambda x : x, [ x.get_url() for x in ms ] )
+    media = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
+             for m in ms ]
     if bibtex == None:
         author = source.children_single_val( "AUTH" )
         title  = source.children_single_val( "TITL" )
         pub    = source.children_single_val( "PUBL" )
         xref   = source.xref()
-	return makeBibtexMisc( xref, author=author, title=title, publication=pub )
+	return makeBibtexMisc( xref, author=author, title=title, publication=pub, media=media )
     else:
 	return bibtex.value_cont()
 
