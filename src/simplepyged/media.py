@@ -30,11 +30,14 @@ class MediaObject(Line):
     A class for MultiMedia objects, whether containing text or an xref. 
     """
 
-    def _init(self):
+    def __init__(self,*a,**kw):
+       Line.__init__(self,*a,**kw)
        self._record = None
        self._file = None
        self._title = None
        self._type = None
+
+    def _init(self):
        v = self.value()
        u = self.children_single_tag("_USE")
        if u == None: 
@@ -71,9 +74,11 @@ class MediaObject(Line):
            self._title = None
 
 
-    def xref(self): 
-       if self._record: return self._record.xref()
-       else: return None
+    # Comment out the following to avoid printing the xref
+    # when outputting gedcom
+    ## def xref(self): 
+       ## if self._record: return self._record.xref()
+       ## else: return None
     def is_url(self): 
        return valid_url(self._file)
     def get_url(self):
