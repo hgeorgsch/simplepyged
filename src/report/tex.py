@@ -119,6 +119,7 @@ class texBuilder(object):
          self.newperiod = True
          self.newsentence = False
    def put(self,x):
+      if x == None: return 
       try:
          idx = x.find( u"http://" )
       except:

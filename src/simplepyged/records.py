@@ -763,7 +763,7 @@ class Family(Record):
 	otherwise it counts the children registered.
 	"""
         n = self.children_count_exact()
-	if n != None: return n.value()
+	if n != None: return n
         else: return len(self._children)
 
     def children(self):
