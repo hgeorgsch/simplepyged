@@ -172,6 +172,7 @@ class Report(object):
       ind = self.__file.get( ref )
       assert ind != None, "Root person not found."
       q.put( ( 1, 1, ind ) )
+      cno = 1
       self.history_add(ind,1)
       pgen = 0
       # Header and abstract
@@ -188,7 +189,7 @@ class Report(object):
 	 if pgen < cgen:
 	    self._builder.put_shead( "Generasjon " + str(cgen) )
 	    pgen = cgen
-	 cno = no
+	 # cno = no
 	 for c in ind.children():
 	    if c.children_count() == 0: continue
 	    cno += 1
