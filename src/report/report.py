@@ -368,7 +368,7 @@ class Report(object):
 	 if fam.children_count() > 0:
            self._builder.put( "Hadde barn med " )
 	 else:
-           self._builder.put( "Hadde eit forhold til " )
+           self._builder.put( "Sambuar med " )
       else:
         (d,p) = marr.dateplace()
 	if not (d or p):
