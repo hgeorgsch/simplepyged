@@ -193,7 +193,8 @@ class Report(object):
 	 for c in ind.children():
 	    if c.children_count() == 0: continue
 	    cno += 1
-	    q.put( ( cgen+1, cno, c ) )
+            if cgen < mgen:
+	       q.put( ( cgen+1, cno, c ) )
             self.history_add(c,cno)
 	 self.individual(ind=ind,number=no)
       # Tail matter
