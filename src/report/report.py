@@ -220,8 +220,13 @@ class Report(object):
       # TYPE/event
       agncprep = u"ved"
       if tag == "EVEN":
-	 if type == None: self._builder.put( "EVEN" )
-	 else: self._builder.put( type )
+	 if type != None:
+             self._builder.put( type )
+	     if val != None: self._builder.put( " (" + val + ")" )
+	 elif val != None:
+             self._builder.put( val )
+	 else:
+             self._builder.put( "EVEN" )
       elif tag == "PROP":
          tx = self._dic.get(tag,tag)
          self._builder.put( tx )
