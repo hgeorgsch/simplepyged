@@ -32,7 +32,7 @@ class texBuilder(object):
 
    def preamble(self,h):
      self.file.write(
-	    u"\\documentclass[nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
+	    u"\\documentclass[combine,nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
             + u"\\xdef\AncDec{Ancestors}\n\n"
@@ -201,3 +201,15 @@ def makeBibtex( source ):
 def capFirst(s):
     if len(s) < 2: return s.capitalize()
     else: return s[0].capitalize() + s[1:]
+
+class texChapterBuilder(texBuilder):
+   def preamble(self,h):
+     self.file.write( u"\\chapter{" + h + "}\n")
+
+   def postamble(self):
+      """
+      Write necessary material to complete the report and close
+      the files.
+      """
+      self.file.close()
+      self.bibfile.close()

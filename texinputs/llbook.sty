@@ -5,6 +5,7 @@
 % \RequirePackage{etex}
 
 % Font and encoding
+%\RequirePackage[combine]{ucs}
 \RequirePackage[utf8x]{inputenc}
 \RequirePackage[T1]{fontenc}
 \RequirePackage{babel}
@@ -140,3 +141,11 @@
 \def\theimagefloat{%
     \colorbox{blue}{\textbf{\textcolor{white}{\footnotesize\arabic{imagefloat}}}}}
 \def\imgref#1{\ref{#1}}
+
+\PrerenderUnicode{æ}
+\PrerenderUnicode{ø}
+\PrerenderUnicode{å}
+\PrerenderUnicode{Æ}
+\PrerenderUnicode{Ø}
+\PrerenderUnicode{Å}
+\PrerenderUnicode{ü}
