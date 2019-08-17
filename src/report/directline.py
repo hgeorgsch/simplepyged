@@ -1,11 +1,11 @@
-#-*- coding: utf-8 -*-
+#16i-*- coding: utf-8 -*-
 # $Id: report.py 768 2011-08-01 19:09:45Z georg $
 
 """
 Find direct line relationships via a depth first search.
 """
 
-__all__ = [ "finddescendant", "printline" ]
+__all__ = [ "finddescendant", "printline", "mklines" ]
 from . import date 
 
 def finddescendant(file,ref1,ref2):
@@ -31,22 +31,21 @@ def depthfirst(file,ind1,ind2):
        return (ind1,r)
 
 def simplename(node):
-      (f,s) = node.name()
-      fn = f + " " + s
+      fn = u"%s %s" % node.name()
       by = node.birth_year()
       dy = node.death_year()
       if by < 0 and dy < 0: return fn
       r = ""
-      if by >= 0: r +=str(by)
+      if by >= 0: r += unicode(by)
       r += "--"
-      if dy >= 0: r += str(dy)
-      return fn + " (" + r + ")"
+      if dy >= 0: r += unicode(dy)
+      return unicode(fn + u" (" + r + u")")
 
 def printlineaux(n,r):
     if len(r) == 0: 
         print "No line found"
     else:
-        print str(n) + ". " + simplename(r[0]) 
+        print u"" + unicode(n) + u". " + simplename(r[0]) 
         nx = r[1]
         if len(nx) > 0: 
            printlineaux(n+1,nx[0])
@@ -58,3 +57,15 @@ def printlineaux(n,r):
 
 def printline(r):
     return printlineaux(1,r)
+def mklinesaux(l,n,r):
+        l.append( u"" + unicode(n) + u". " + simplename(r[0]) )
+        nx = r[1]
+        if len(nx) == 0: 
+            l.append("")
+        for i in nx:
+            mklinesaux(l,n+1,i)
+
+def mklines(r):
+    l = []
+    mklinesaux(l,1,r)
+    return l
