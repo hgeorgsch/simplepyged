@@ -200,6 +200,33 @@ class Report(object):
       # Tail matter
       self.make_reflist()
       self._builder.postamble()
+   def list(self,q,header=None,abstract=None):
+      "Generate a report of a given list (queue) of individuals."
+
+      no = 0
+      ln = 999999
+
+      # Abstract
+      self._builder.preamble( )
+      if abstract != None:
+        self._builder.put_abstract_s( )
+        self._builder.put( abstract )
+        self._builder.put_abstract_e( )
+      # Main loop
+      while not q.empty():
+          pn = ln
+	  (ln, ind ) = q.get(False)
+          no += 1
+          print no, ln, ind.name()
+          if ln <= pn:
+              t = u"Frå %s %s" % ind.name()
+              print t
+	      self._builder.put_chead( t )
+          self.history_add(ind,no)
+	  self.individual(ind=ind,number=no)
+      # Tail matter
+      self.make_reflist()
+      self._builder.postamble()
    def make_reflist(self):
       for s in self.__reflist:
 	 if s == None:
@@ -476,7 +503,6 @@ class Report(object):
       if self.__indicontext:
 	 self.__context = []
 
-
       # check if the person has already been included
       ref = self.__history.get(key)
       if ref != None and ref < number:
@@ -485,7 +511,7 @@ class Report(object):
           return ref
       else:
           # Make a complete new entry
-          return self.new_individual(ind,ref)
+          return self.new_individual(ind,number)
 
    def new_individual(self,ind,number):
       """

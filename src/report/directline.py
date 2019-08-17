@@ -5,8 +5,9 @@
 Find direct line relationships via a depth first search.
 """
 
-__all__ = [ "finddescendant", "printline", "mklines" ]
+__all__ = [ "finddescendant", "printline", "mklines", "mkqueue" ]
 from . import date 
+from Queue import Queue
 
 def finddescendant(file,ref1,ref2):
       "Find direct descendance from one individual to another."
@@ -66,6 +67,17 @@ def mklinesaux(l,n,r):
             mklinesaux(l,n+1,i)
 
 def mklines(r):
-    l = []
-    mklinesaux(l,1,r)
-    return l
+   l = []
+   mklinesaux(l,1,r)
+   return l
+
+def mkqueueaux(q,n,r):
+   q.put( (n, r[0]) )
+   nx = r[1]
+   for i in nx:
+      mkqueueaux(q,n+1,i)
+
+def mkqueue(r):
+    q = Queue()
+    mkqueueaux(q,1,r)
+    return q

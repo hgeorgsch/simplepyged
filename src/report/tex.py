@@ -30,7 +30,7 @@ class texBuilder(object):
       self.basename = bf
       self.title = title
 
-   def preamble(self,h):
+   def preamble(self,h=None):
      self.file.write(
 	    u"\\documentclass[combine,nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
@@ -87,7 +87,7 @@ class texBuilder(object):
       self.file.write( "}\n" )
    def put_shead(self,title=""):
       self.file.write( "\\section*{" + title + "}\n" )
-   def put_chead(self):
+   def put_chead(self,title=""):
       self.file.write( "\\chapter{" + title + "}\n" )
    def put_item_s(self):
       self.file.write( "  \\item " )
@@ -203,8 +203,9 @@ def capFirst(s):
     else: return s[0].capitalize() + s[1:]
 
 class texChapterBuilder(texBuilder):
-   def preamble(self,h):
-     self.file.write( u"\\chapter{" + h + "}\n")
+   def preamble(self,h=None):
+       if h:
+          self.file.write( u"\\chapter{" + h + "}\n")
 
    def postamble(self):
       """
