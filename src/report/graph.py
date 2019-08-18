@@ -14,11 +14,13 @@ from simplepyged.records import parse_name
 
 from Queue import Queue
 
-graphpreamble = (u"\\documentclass{standalone}\n"
+graphpreamble = (u"\\documentclass[10pt]{standalone}\n"
               + u"\\usepackage{tikz}\n"
+              + u"\\usepackage{luatex85}\n"
               + u"\\usetikzlibrary{graphs,graphdrawing,quotes}\n"
               + u"\\usegdlibrary{force}\n"
-              + u"\\begin{document}\n"
+              + u"\\usegdlibrary{layered}\n"
+              + u"\\begin{document}\n\\tiny\n"
               + u"  \\begin{tikzpicture}\n")
 graphpostamble = u"  \\end{tikzpicture}\n\\end{document}\n"
 
@@ -42,7 +44,7 @@ class Graph(object):
       ln = 999999
 
       self._builder.preamble( preamble=graphpreamble )
-      self._builder.put( "\\graph[spring layout] {\n" )
+      self._builder.put( "\\graph[layered layout,grow down,node distance=20mm] {\n" )
 
       # Main loop
       while not q.empty():
@@ -54,7 +56,7 @@ class Graph(object):
               self._builder.put( ",\n" ) 
           else:
               self._builder.put( " -> " ) 
-          self._builder.put( '"\\parbox{16mm}{' ) 
+          self._builder.put( '"\\parbox{25mm}{' ) 
           self.simplename(ind) 
           self._builder.put( '}"' ) 
 
