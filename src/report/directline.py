@@ -81,19 +81,3 @@ def mkqueue(r):
     q = Queue()
     mkqueueaux(q,1,r)
     return q
-
-def mkgq1(q,n,r):
-   nx = r[1]
-   if nx:
-     for i in nx:
-         print n, r[0].name()
-         q.put( (n, r[0]) )
-         mkgq1(q,n+1,i)
-   else:
-      print n, r[0].name()
-      q.put( (n, r[0]) )
-
-def mkgq(r):
-    q = Queue()
-    mkgq1(q,1,r)
-    return q
