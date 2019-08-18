@@ -40,42 +40,12 @@ def buildchildren(b,gs):
           if not cdict.get(p,False):
               cdict[p] = True
               putnode(b,p) 
-              # if len(cl) == 1:
-              if False:
-                 c = cl[0]
-                 b.put( " ->  [orient=down] " )
-                 putnode(b,c[0]) 
-                 b.put( ",\n " ) 
-                 q.put((n+1,c)) 
-              else:
-                 b.put( " -> { " ) 
-                 for c in cl:
+              b.put( " -> { " ) 
+              for c in cl:
                     putnode(b,c[0]) 
                     b.put( ", " )
                     q.put((n+1,c)) 
-                 b.put( " }, \n " ) 
-###           for c in cl:
-###               d[c[0]] = max(d.get(c[0],0),n+1)
-###               q.put((n+1,c)) 
-###     putsamelayer(b,root,d)
-
-def putsamelayer(b,root,d):
-    l = dict()
-    for k in d.keys():
-        v = d[k]
-        l[v] = l.get(v,[])
-        l[v].append( k )
-    maxl = 0
-    for k in l.keys():
-        if maxl < k: maxl = k
-        b.put( " { [same layer] " ) 
-        for n in l[k]:
-           print k, n.name()
-           putnode(b,n)
-           b.put( ", " ) 
-        b.put( " }; " ) 
-        b.put_comment( k ) 
-
+              b.put( " }, \n " ) 
 
 def putnode(b,node):
       print node.name()
