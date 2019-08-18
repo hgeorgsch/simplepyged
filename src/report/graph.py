@@ -29,29 +29,33 @@ graphpostamble = u"  \\end{tikzpicture}\n\\end{document}\n"
 def buildchildren(b,gs):
     q = Queue()
     d = dict()
+    cdict = dict()
     q.put( (1,gs) )
     root = gs[0]
     while not q.empty():
        (n,gs) = q.get(False)
        if gs[1]:
           p = gs[0]
-          putnode(b,p) 
-          cl = gs[1]
-          if len(cl) == 1:
-             c = cl[0]
-             b.put( " ->  [orient=down] " )
-             putnode(b,c[0]) 
-             b.put( ",\n " ) 
-             q.put((n+1,c)) 
-             d[c[0]] = max(d.get(c[0],0),n+1)
-          else:
-             b.put( " -> { " ) 
-             for c in cl:
-                putnode(b,c[0]) 
-                b.put( ", " )
-                q.put((n+1,c)) 
-                d[c[0]] = max(d.get(c[0],0),n+1)
-             b.put( " }, \n " ) 
+          if not cdict.get(p,False):
+              cdict[p] = True
+              putnode(b,p) 
+              cl = gs[1]
+              # if False:
+              if len(cl) == 1:
+                 c = cl[0]
+                 b.put( " ->  [orient=down] " )
+                 putnode(b,c[0]) 
+                 b.put( ",\n " ) 
+                 q.put((n+1,c)) 
+                 d[c[0]] = max(d.get(c[0],0),n+1)
+              else:
+                 b.put( " -> { " ) 
+                 for c in cl:
+                    putnode(b,c[0]) 
+                    b.put( ", " )
+                    q.put((n+1,c)) 
+                    d[c[0]] = max(d.get(c[0],0),n+1)
+                 b.put( " }, \n " ) 
     putsamelayer(b,root,d)
 
 def putsamelayer(b,root,d):
