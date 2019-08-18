@@ -29,20 +29,19 @@ class Graph(object):
 
    def __init__(self,file,builder=None,dic=dic_norsk):
       self.__file = file
-      self.__history = {}
       self.__reflist = set()
       self.__context = []
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
 
-   def list(self,q,header=None,abstract=None):
+   def mkgraph(self,q,header=None,abstract=None):
       "Generate a report of a given list (queue) of individuals."
 
       no = 0
       ln = 999999
 
-      self._builder.preamble( graphpreamble )
+      self._builder.preamble( preamble=graphpreamble )
       self._builder.put( "\\graph[spring layout] {\n" )
 
       # Main loop
@@ -59,16 +58,13 @@ class Graph(object):
           self.simplename(ind) 
           self._builder.put( '}"' ) 
 
-          self.history_add(ind,no)
-	  self.individual(ind=ind,number=no)
-
       # Tail matter
       self._builder.put( "}; \n" )
       self._builder.postamble(graphpostamble)
 
    def simplename(self,node):
       (f,s) = node.name()
-      self._builder.put_name(f,s,ref)
+      self._builder.put_name(f,s)
       by = node.birth_year()
       dy = node.death_year()
       if by < 0 and dy < 0: return

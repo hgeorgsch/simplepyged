@@ -30,8 +30,9 @@ class texBuilder(object):
       self.basename = bf
       self.title = title
 
-   def preamble(self,h=None):
-     self.file.write(
+   def preamble(self,h=None,preamble=None):
+       if preamble: self.file.write( preamble )
+       else: self.file.write(
 	    u"\\documentclass[combine,nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
@@ -41,14 +42,17 @@ class texBuilder(object):
             + u"\\title{" + h + "}\n"
             + u"\\maketitle\n" )
 
-   def postamble(self):
+   def postamble(self,txt=None):
       """
       Write necessary material to complete the report and close
       the files.
       """
-      self.file.write( "\\bibliographystyle{%s}\n" % (self.bibstyle,) )
-      self.file.write( "\\bibliography{%s}\n" % (self.basename,) )
-      self.file.write( "\\end{document}\n" )
+      if txt:
+         self.file.write( txt )
+      else:
+         self.file.write( "\\bibliographystyle{%s}\n" % (self.bibstyle,) )
+         self.file.write( "\\bibliography{%s}\n" % (self.basename,) )
+         self.file.write( "\\end{document}\n" )
       self.file.close()
       self.bibfile.close()
    def put_url(self,url,text="link"): 
