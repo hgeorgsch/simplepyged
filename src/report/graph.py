@@ -8,6 +8,7 @@ Graph generators for GEDCOM files.
 __all__ = [ "Graph" ]
 from . import date 
 from report import devnull, unsupport, IndiBins, dic_norsk, Builder
+from directline import finddescendant, mkgq
 from simplepyged.errors import * 
 from simplepyged.events import Event
 from simplepyged.records import parse_name
@@ -37,7 +38,11 @@ class Graph(object):
       else: self._builder = builder
       self._dic = dic
 
-   def mkgraph(self,q,header=None,abstract=None):
+   def mkgraph(self,ref1,ref2,header=None,abstract=None):
+       a = finddescendant( self.__file, ref1, ref2 )
+       q = mkgq(a)
+       self.mkgraphaux(q,header,abstract)
+   def mkgraphaux(self,q,header=None,abstract=None):
       "Generate a report of a given list (queue) of individuals."
 
       no = 0
