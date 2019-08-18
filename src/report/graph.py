@@ -34,29 +34,30 @@ def buildchildren(b,gs):
     root = gs[0]
     while not q.empty():
        (n,gs) = q.get(False)
-       if gs[1]:
+       cl = gs[1]
+       if cl:
           p = gs[0]
           if not cdict.get(p,False):
               cdict[p] = True
               putnode(b,p) 
-              cl = gs[1]
-              # if False:
-              if len(cl) == 1:
+              # if len(cl) == 1:
+              if False:
                  c = cl[0]
                  b.put( " ->  [orient=down] " )
                  putnode(b,c[0]) 
                  b.put( ",\n " ) 
                  q.put((n+1,c)) 
-                 d[c[0]] = max(d.get(c[0],0),n+1)
               else:
                  b.put( " -> { " ) 
                  for c in cl:
                     putnode(b,c[0]) 
                     b.put( ", " )
                     q.put((n+1,c)) 
-                    d[c[0]] = max(d.get(c[0],0),n+1)
                  b.put( " }, \n " ) 
-    putsamelayer(b,root,d)
+###           for c in cl:
+###               d[c[0]] = max(d.get(c[0],0),n+1)
+###               q.put((n+1,c)) 
+###     putsamelayer(b,root,d)
 
 def putsamelayer(b,root,d):
     l = dict()
@@ -108,7 +109,7 @@ class Graph(object):
 
       self._builder.preamble( preamble=graphpreamble )
       self._builder.put( "\\tikzstyle{every node}=[fill=blue!10,opacity=50]\n" )
-      self._builder.put( "\\graph[,layered layout,grow=down] {\n" )
+      self._builder.put( "\\graph[layered layout,grow=down] {\n" )
       buildchildren(self._builder,gs)
 
       # Tail matter
