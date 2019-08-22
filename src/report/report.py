@@ -647,6 +647,8 @@ class Builder(object):
       else: print "%s <URL:%s>" % (text,url,)
    def put_cite(self,ref): 
       print "[%s]" % (ref,)
+   def put_comment(self,x):
+       pass
    def put_name(self,fn,sn,ref=None): 
       if ref == None: print "%s %s" % (fn,sn),
       else: print "%s %s (sjå %s)" % (fn,sn,ref),
