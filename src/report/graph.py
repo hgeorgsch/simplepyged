@@ -8,13 +8,19 @@ Graph generators for GEDCOM files.
 __all__ = [ "Graph" ]
 from . import date 
 from report import devnull, unsupport, IndiBins, dic_norsk, Builder
-from directline import finddescendant
 from simplepyged.errors import * 
 from simplepyged.events import Event
-from simplepyged.records import parse_name
 
 from Queue import Queue
 
+def finddescendant(file,ref1,ref2):
+      "Find direct descendance from one individual to another."
+      # Setup
+      ind1 = file.get( ref1 )
+      assert ind1 != None, "Root person not found."
+      ind2 = file.get( ref2 )
+      assert ind2 != None, "Target person not found."
+      return depthfirst(file,ind1,ind2)
 
 graphpreamble = (u"\\documentclass[10pt]{standalone}\n"
               + u"\\usepackage{tikz}\n"
