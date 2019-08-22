@@ -5,7 +5,7 @@
 Find direct line relationships via a depth first search.
 """
 
-__all__ = [ "finddescendant", "printline", "mklines", "mkqueue" ]
+__all__ = [ "finddescendant", "mklines", "mkqueue" ]
 from . import date 
 from Queue import Queue
 
@@ -42,22 +42,6 @@ def simplename(node):
       if dy >= 0: r += unicode(dy)
       return unicode(fn + u" (" + r + u")")
 
-def printlineaux(n,r):
-    if len(r) == 0: 
-        print "No line found"
-    else:
-        print u"" + unicode(n) + u". " + simplename(r[0]) 
-        nx = r[1]
-        if len(nx) > 0: 
-           printlineaux(n+1,nx[0])
-
-        if len(nx) > 1: 
-            print
-            for i in nx[1:]:
-                 printlineaux(n+1,i)
-
-def printline(r):
-    return printlineaux(1,r)
 def mklinesaux(l,n,r):
         l.append( u"" + unicode(n) + u". " + simplename(r[0]) )
         nx = r[1]
