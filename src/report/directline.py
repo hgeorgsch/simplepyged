@@ -6,17 +6,9 @@ Find direct line relationships via a depth first search.
 """
 
 __all__ = [ "finddescendant", "mklines", "mkqueue" ]
+from graph import finddescendant
 from . import date 
 from Queue import Queue
-
-def finddescendant(file,ref1,ref2):
-      "Find direct descendance from one individual to another."
-      # Setup
-      ind1 = file.get( ref1 )
-      assert ind1 != None, "Root person not found."
-      ind2 = file.get( ref2 )
-      assert ind2 != None, "Target person not found."
-      return depthfirst(file,ind1,ind2)
 
 def depthfirst(file,ind1,ind2):
    r = [] ;
