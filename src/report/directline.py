@@ -10,19 +10,6 @@ from graph import finddescendant
 from . import date 
 from Queue import Queue
 
-def depthfirst(file,ind1,ind2):
-   r = [] ;
-   for c in ind1.children():
-       if c == ind2:
-           r = [(c,[])]
-       else:
-           a = depthfirst(file,c,ind2) 
-           if a != None:
-               r.append(a)
-   if r == []: return None
-   else: 
-       return (ind1,r)
-
 def simplename(node):
       fn = u"%s %s" % node.name()
       by = node.birth_year()

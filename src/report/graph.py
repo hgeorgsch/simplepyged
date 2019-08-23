@@ -21,6 +21,19 @@ def finddescendant(file,ref1,ref2):
       ind2 = file.get( ref2 )
       assert ind2 != None, "Target person not found."
       return depthfirst(file,ind1,ind2)
+def depthfirst(file,ind1,ind2):
+   r = [] ;
+   for c in ind1.children():
+       if c == ind2:
+           r = [(c,[])]
+       else:
+           a = depthfirst(file,c,ind2) 
+           if a != None:
+               r.append(a)
+   if r == []: return None
+   else: 
+       return (ind1,r)
+
 
 graphpreamble = (u"\\documentclass[10pt]{standalone}\n"
               + u"\\usepackage{tikz}\n"
