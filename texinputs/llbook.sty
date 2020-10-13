@@ -8,13 +8,15 @@
 \RequirePackage{babel}
 \RequirePackage[utf8x]{inputenc}
 \RequirePackage[T1]{fontenc}
-\RequirePackage{ucs}
+%\RequirePackage{ucs}
 \RequirePackage{graphicx}
 \RequirePackage{xcolor}
 \RequirePackage{caption}
 \IfFileExists{newfloat.sty}{\RequirePackage{newfloat}}{}
-\RequirePackage[space]{grffile}
 \RequirePackage{pifont}
+
+\RequirePackage[encoding,filenameencoding=utf8x,space]{grffile}
+
 
 % Handle URL-s and hyperlinks in PDF
 \RequirePackage{hyperref}
