@@ -203,7 +203,7 @@ def makeBibtex( source ):
         xref   = source.xref()
 	return makeBibtexMisc( xref, author=author, title=title, publication=pub, media=media )
     else:
-	return bibtex.value_cont()
+	return "@" + bibtex.value_cont()
 
 def capFirst(s):
     if len(s) < 2: return s.capitalize()
