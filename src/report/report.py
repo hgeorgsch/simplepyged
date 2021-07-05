@@ -52,6 +52,7 @@ class IndiBins(dict):
       self["SOUR"] = []
       self["FAMS"] = []
       self["FAMC"] = []
+      self["ASSO"] = []
       # Unsupported records
       self["ALIA"] = unsupport()
       # Ignore records
@@ -77,6 +78,7 @@ dic_norsk = { "and" : "og",
               "died" : u"død", 
               "married" : "gift", 
               "with" : "med", 
+              "associates" : "andre relevante personar", 
               "sources" : "kjelder", 
               "BIRT" : u"fødd", 
               "CHR" : u"døypt", 
@@ -344,6 +346,27 @@ class Report(object):
       # TODO clean up presentation of sources
       # TODO OBJE
       # Finalise
+
+   def associate(self,node):
+      """
+      Process a source citation structure and produce appropriate
+      report output.
+      """
+      assert node.tag() == "ASSO"
+      ind = node._record
+      t = node._type
+
+      (fn,sn) = ind.name()
+      ref = self.__history.get(ind.xref())
+      self._builder.put_name(fn,sn,ref)
+
+      if t: self._builder.put( "(" + t + ")" )
+      self._builder.end_period()
+
+      for n in node.children_tags("NOTE"):
+	 self._builder.put(n.value_cont())
+	 for s in n.sources(): self.citation(s)
+	 self._builder.end_paragraph()
 
    def citation(self,node):
       """
@@ -652,7 +675,13 @@ class Report(object):
 	 (f,s) = parse_name( L[-1] )
 	 self._builder.put_name( f,s )
 
-      # (8) SOUR (with PAGE) (ignore EVEN, QUAY)
+      # (8) ASSO
+      L = list(ind.children_tags("ASSO"))
+      if len(L) > 0:
+        self._builder.put_subheader( self._dic.get("associates").capitalize() )
+        for a in L: self.associate(a)
+
+      # (9) SOUR (with PAGE) (ignore EVEN, QUAY)
       #    NOTE (url only) -> link
       #    NOTE (other) -> footnote
       #    DATA -> deferred -> quotation
