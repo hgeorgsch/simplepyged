@@ -136,10 +136,10 @@ class Graph(object):
       gs = finddescendant( self.__file, ref1, ref2 )
       self.printgraph(gs,header,abstract)
 
-   def printgraph(self,gs,header=None,abstract=None):
+   def printgraph(self,gs,header=None,abstract=None,grow="down"):
       self._builder.preamble( preamble=self._preamble )
       self._builder.put( "\\tikzstyle{every node}=[fill=blue!10,opacity=50]\n" )
-      self._builder.put( "\\graph[layered layout,grow=down] {\n" )
+      self._builder.put( "\\graph[layered layout,grow=" + grow + "] {\n" )
       buildchildren(self._builder,gs)
 
       # Tail matter
@@ -153,4 +153,4 @@ class Graph(object):
    def mkpedigree(self,ref1,ngen=4,header=None,abstract=None):
       "Generate a graph of individuals."
       gs = pedigree( self.__file, ref1, ngen )
-      self.printgraph(gs,header,abstract)
+      self.printgraph(gs,header,abstract,grow="up")
