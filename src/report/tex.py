@@ -22,13 +22,16 @@ class texBuilder(object):
    newperiod = True
    newsentence = False
    def __init__(self,file,title=""):
+      self._parsefilename(file)
+      self.title = title
+
+   def _parsefilename(self,file):
       f = file.split( "." )
       if len(f) > 1: bf = "".join(f[:-1])
       else: bf = file
       self.file    = codecs.open( file, "w", "UTF-8" )
       self.bibfile = codecs.open( bf + ".bib", "w", "UTF-8" )
       self.basename = bf
-      self.title = title
 
    def preamble(self,h=None,preamble=None):
        if preamble: self.file.write( preamble )
@@ -210,9 +213,13 @@ def capFirst(s):
     else: return s[0].capitalize() + s[1:]
 
 class texChapterBuilder(texBuilder):
-   def preamble(self,h=None,ht=chapter):
+   def __init__(self,file,title="",headertype="chapter"):
+      self._parsefilename(file)
+      self.title = title
+      self.headertype = headertype
+   def preamble(self,h=None):
        if h:
-          self.file.write( u"\\" + ht + "{" + h + "}\n")
+          self.file.write( u"\\" + self.headertype + "{" + h + "}\n")
 
    def postamble(self):
       """

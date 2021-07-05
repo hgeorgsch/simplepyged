@@ -134,6 +134,29 @@ class Report(object):
 
    # Output production methods
 
+   def indireport(self,reflist,header=None,abstract=None):
+      "Generate a detailed ahnentafel report."
+      q = Queue()
+      i = 1
+      for ref in reflist:
+         ind = self.__file.get( ref )
+         assert ind != None
+         q.put( ( 1, i, ind ) )
+         self.history_add(ind,i)
+         i += 1
+      if header == None:
+	 header = "Stamtavle for %s %s" % ind.name()
+      self._builder.preamble( header )
+      if abstract != None:
+        self._builder.put_abstract_s( )
+        self._builder.put( abstract )
+        self._builder.put_abstract_e( )
+      pgen = 0
+      while not q.empty():
+	 (cgen, no, ind ) = q.get(False)
+	 self.individual(ind=ind,number=no)
+      self.make_reflist()
+      self._builder.postamble()
    def stamtavle(self,ref,mgen=12,header=None,abstract=None):
       "Generate a detailed ahnentafel report."
       q = Queue()
