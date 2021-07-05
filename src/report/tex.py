@@ -79,7 +79,6 @@ class texBuilder(object):
           qs = [ q.value() for q in quot ]
           qs = [ q for q in qs if q[:7] != "http://" ]
           qs = [ q for q in qs if q[:7] != "Http://" ]
-          print(qs)
           for q in qs:
               self.put_quot_s()
               self.file.write( char_escape(q) )
