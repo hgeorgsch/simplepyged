@@ -153,4 +153,4 @@ class Graph(object):
    def mkpedigree(self,ref1,ngen=4,header=None,abstract=None):
       "Generate a graph of individuals."
       gs = pedigree( self.__file, ref1, ngen )
-      self.printgraph(gs,header,abstract,grow="up")
+      self.printgraph(gs,header,abstract,grow="right")
