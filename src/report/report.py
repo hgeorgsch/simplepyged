@@ -581,6 +581,7 @@ class Report(object):
 
       # (4) biography (events)
       evs = [ Event(e) for e in rec[None] if ( e.tag() != "BIRT" and e.tag() != "DEAT" ) ]
+      evs.sort()
       for e in evs:
 	 self.event( ind, e )
       #self.vitals(ind)
