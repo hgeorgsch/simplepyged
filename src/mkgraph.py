@@ -22,8 +22,16 @@ parser.add_option("-I", "--individual",
 parser.add_option("-T", "--target",
                 help="Key for the individual to search.",
 		dest="target" )
+parser.add_option("-N", "--ngen",
+                help="Number of generations.",
+		dest="ngen" )
 (opt,args) = parser.parse_args()
 
 g = Gedcom( opt.gedcom )
 r = Graph(g,texBuilder(opt.outfile))
-r.mkgraph(opt.indi,opt.target)
+if opt.indi and opt.target:
+   r.mkgraph(opt.indi,opt.target)
+elif opt.indi and opt.ngen:
+   r.mkpedigree(opt.indi,int(opt.ngen))
+elif opt.target and opt.ngen:
+   r.mkdescendants(opt.target,int(opt.ngen))

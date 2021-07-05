@@ -10,8 +10,36 @@ from . import date
 from report import devnull, unsupport, IndiBins, dic_norsk, Builder
 from simplepyged.errors import * 
 from simplepyged.events import Event
+from Queue import Queue
 
 from Queue import Queue
+
+def pedigree(file,ref1,ngen=4):
+      "Find direct descendance from one individual to another."
+      # Setup
+      ind1 = file.get( ref1 )
+      assert ind1 != None, "Root person not found."
+      return mkpedigree(ind1,ngen)
+def mkpedigree(ind1,ngen):
+   if ngen == 1:
+       return (ind1,[])
+   else:
+       r = []
+       if ind1.father(): r.append(ind1.father())
+       if ind1.mother(): r.append(ind1.mother())
+       return (ind1,[mkpedigree(c,ngen-1) for c in r ])
+def descendants(file,ref1,ngen=4):
+      "Find direct descendance from one individual to another."
+      # Setup
+      ind1 = file.get( ref1 )
+      assert ind1 != None, "Root person not found."
+      return mkdescendants(ind1,ngen)
+def mkdescendants(ind1,ngen):
+   if ngen == 1:
+       return (ind1,[])
+   else:
+       return (ind1,[mkdescendants(c,ngen-1) for c in ind1.children() ])
+
 
 def finddescendant(file,ref1,ref2):
       "Find direct descendance from one individual to another."
@@ -50,6 +78,7 @@ def buildchildren(b,gs):
     d = dict()
     cdict = dict()
     q.put( (1,gs) )
+    print(1,gs)
     root = gs[0]
     while not q.empty():
        (n,gs) = q.get(False)
@@ -67,12 +96,13 @@ def buildchildren(b,gs):
               b.put( " }, \n " ) 
 
 def putnode(b,node):
-      print node.name()
+      # print node.name()
       b.put( '"\\parbox{24mm}{\\raggedright ' ) 
       (f,s) = node.name()
       b.put_name(f,s)
       by = node.birth_year()
       dy = node.death_year()
+      print(f,s,by,dy)
       if not (by < 0 and dy < 0): 
          r = "("
          if by >= 0: r +=str(by)
@@ -95,7 +125,9 @@ class Graph(object):
    def mkgraph(self,ref1,ref2,header=None,abstract=None):
       "Generate a graph of individuals."
       gs = finddescendant( self.__file, ref1, ref2 )
+      self.printgraph(gs,header,abstract)
 
+   def printgraph(self,gs,header=None,abstract=None):
       self._builder.preamble( preamble=graphpreamble )
       self._builder.put( "\\tikzstyle{every node}=[fill=blue!10,opacity=50]\n" )
       self._builder.put( "\\graph[layered layout,grow=down] {\n" )
@@ -105,3 +137,11 @@ class Graph(object):
       self._builder.put( "}; \n" )
       self._builder.postamble(graphpostamble)
 
+   def mkdescendants(self,ref1,ngen=4,header=None,abstract=None):
+      "Generate a graph of individuals."
+      gs = descendants( self.__file, ref1, ngen )
+      self.printgraph(gs,header,abstract)
+   def mkpedigree(self,ref1,ngen=4,header=None,abstract=None):
+      "Generate a graph of individuals."
+      gs = pedigree( self.__file, ref1, ngen )
+      self.printgraph(gs,header,abstract)
