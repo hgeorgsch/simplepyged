@@ -75,7 +75,7 @@ graphpostamble = u"  \\end{tikzpicture}\n\\end{document}\n"
 figurepreamble = (u"\\begin{tikzpicture}\n")
 figurepostamble = u"\\end{tikzpicture}\n"
 
-def buildchildren(b,gs):
+def buildchildren(b,gs,edge="->"):
     q = Queue()
     d = dict()
     cdict = dict()
@@ -90,7 +90,7 @@ def buildchildren(b,gs):
           if not cdict.get(p,False):
               cdict[p] = True
               putnode(b,p) 
-              b.put( " -> { " ) 
+              b.put( " " + edge + " { " ) 
               for c in cl:
                     putnode(b,c[0]) 
                     b.put( ", " )
@@ -136,11 +136,11 @@ class Graph(object):
       gs = finddescendant( self.__file, ref1, ref2 )
       self.printgraph(gs,header,abstract)
 
-   def printgraph(self,gs,header=None,abstract=None,grow="down"):
+   def printgraph(self,gs,header=None,abstract=None,grow="down",edge="->"):
       self._builder.preamble( preamble=self._preamble )
       self._builder.put( "\\tikzstyle{every node}=[fill=blue!10,opacity=50]\n" )
       self._builder.put( "\\graph[layered layout,grow=" + grow + "] {\n" )
-      buildchildren(self._builder,gs)
+      buildchildren(self._builder,gs,edge)
 
       # Tail matter
       self._builder.put( "}; \n" )
@@ -153,4 +153,4 @@ class Graph(object):
    def mkpedigree(self,ref1,ngen=4,header=None,abstract=None):
       "Generate a graph of individuals."
       gs = pedigree( self.__file, ref1, ngen )
-      self.printgraph(gs,header,abstract,grow="right")
+      self.printgraph(gs,header,abstract,grow="right",edge="<-")
