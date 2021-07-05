@@ -166,7 +166,7 @@ class texBuilder(object):
       self.file.write( "\\begin{center}\n" )
       self.file.write( "\\includegraphics[width=0.84\\columnwidth]{" + file + "}\n" )
       self.file.write( "\\end{center}\n" )
-      self.file.write( "\\caption{" + title + "}\n" )
+      self.file.write( "\\caption{" + char_escape( title ) + "}\n" )
       if label: self.file.write( "\\label{" + label + "}\n" )
       self.file.write( "\\end{imagefloat}\n" )
       if label: self.file.write( "\\imgref{" + label + "}" )
