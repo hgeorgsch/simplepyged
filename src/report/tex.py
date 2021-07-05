@@ -76,9 +76,13 @@ class texBuilder(object):
 	 texstring = " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) 
       if ms: texstring += s 
       if quot:
-          for q in quot:
+          qs = [ q.value() for q in quot ]
+          qs = [ q for q in qs if q[:7] != "http://" ]
+          qs = [ q for q in qs if q[:7] != "Http://" ]
+          print(qs)
+          for q in qs:
               self.put_quot_s()
-              self.file.write( char_escape(q.value()) )
+              self.file.write( char_escape(q) )
               self.put_quot_m()
               self.file.write( texstring )
               self.put_quot_e()
