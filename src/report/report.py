@@ -278,6 +278,14 @@ class Report(object):
              self._builder.put( val )
 	 else:
              self._builder.put( "EVEN" )
+      elif tag == "FACT":
+	 if type != None:
+             self._builder.put( type )
+	     if val != None: self._builder.put( " (" + val + ")" )
+	 elif val != None:
+             self._builder.put( val )
+	 else:
+             self._builder.put( "FACT" )
       elif tag == "PROP":
          tx = self._dic.get(tag,tag)
          self._builder.put( tx )
