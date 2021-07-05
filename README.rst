@@ -14,10 +14,10 @@ Documentation is in docs/. Examples of how to use this parser are at
 docs/examples. If you find documentation and/or examples confusing,
 let me know and I'll try to fix it.
 
-Licence
+License
 --------
 
-All code is licenced under GPL v.3 or newer.
+All code is licensed under GPL v.3 or newer.
 
 First commit to this repository was based on source from here:
 http://ilab.cs.byu.edu/cs460/2006w/assignments/program1.html
