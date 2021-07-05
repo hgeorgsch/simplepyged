@@ -118,7 +118,7 @@ class texBuilder(object):
    def put_quot_s(self): 
       self.file.write( u"\\begin{quoting}\n«" )
    def put_quot_m(self): 
-      self.file.write( u"»\n\\raggedleft\n" )
+      self.file.write( u"»\n" )
    def put_quot_e(self): 
       self.file.write( u"\\end{quoting}\n" )
    def put_foot_s(self):
