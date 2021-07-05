@@ -210,9 +210,9 @@ def capFirst(s):
     else: return s[0].capitalize() + s[1:]
 
 class texChapterBuilder(texBuilder):
-   def preamble(self,h=None):
+   def preamble(self,h=None,ht=chapter):
        if h:
-          self.file.write( u"\\chapter{" + h + "}\n")
+          self.file.write( u"\\" + ht + "{" + h + "}\n")
 
    def postamble(self):
       """
