@@ -60,7 +60,7 @@ class texBuilder(object):
       self.bibfile.close()
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
-   def put_cite(self,ref,page=None,media=[]): 
+   def put_cite(self,ref,page=None,media=[],quot=[]): 
       ms = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
              for m in media ]
       if page:
@@ -69,13 +69,21 @@ class texBuilder(object):
 	 ps = ""
       s = "".join( ms )
       if not ps:
-	 self.file.write( " \\cite{%s}" % (ref,) )
-	 if ms: self.file.write( s ) ;
+	 texstring = " \\cite{%s}" % (ref,)
       elif len(ps) < 20:
-	 self.file.write( " \\cite[%s]{%s}" % (ps,ref,) )
-	 if ms: self.file.write( s ) ;
+	 texstring = " \\cite[%s]{%s}" % (ps,ref,) 
       else:
-	 self.file.write( " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) )
+	 texstring = " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) 
+      if ms: texstring += s 
+      if quot:
+          for q in quot:
+              self.put_quot_s()
+              self.file.write( char_escape(q.value()) )
+              self.put_quot_m()
+              self.file.write( texstring )
+              self.put_quot_e()
+      else:
+         self.file.write( texstring )
       return
    def put_comment(self,x):
       if x == None: return 
@@ -108,9 +116,11 @@ class texBuilder(object):
    def put_enum_e(self): 
       self.file.write( "\\end{enumerate}\n" )
    def put_quot_s(self): 
-      self.file.write( u"\\begin{quotation}\n«" )
+      self.file.write( u"\\begin{quoting}\n«" )
+   def put_quot_m(self): 
+      self.file.write( u"»\n\\raggedleft\n" )
    def put_quot_e(self): 
-      self.file.write( u"»\\end{quotation}\n" )
+      self.file.write( u"\\end{quoting}\n" )
    def put_foot_s(self):
       self.file.write( "\\footnote{" )
    def put_foot_e(self): 

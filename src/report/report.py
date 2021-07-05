@@ -361,7 +361,7 @@ class Report(object):
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
 	 self.__reflist.add( source )
-	 self._builder.put_cite( val, pl, ml )
+	 self._builder.put_cite( val, pl, ml, quot=quotes )
 	 # TODO: handle notes and quotes
       else:
 	 if node.is_empty():
@@ -649,6 +649,7 @@ class Report(object):
       #    DATA -> deferred -> quotation
       #    OBJE ??
       L = list(ind.children_tags("SOUR"))
+
       if len(L) > 0:
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
