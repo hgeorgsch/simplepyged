@@ -39,26 +39,85 @@ and instantiates an object of the most appropriate class.
 
 class Date(object): 
    "Superclass for all the different date classes in the module."
-   def __init__(self,*a): pass
-   def year(self):
-      # TODO: check if we can change this to None
-      return -1
+   def __init__(self,*a): 
+      self.year = None
+      self.month = None
+      self.day = None
    def gedcom(self):
       """
       Return a value string in valid Gedcom format so that it can
       be written to file.
       """
       return ""
-class DateProper(object): 
+   def refdate(self):
+       return self
+   def __lt__(self,other):
+       date0 = self.refdate()
+       try:
+          date1 = other.refdate()
+       except:
+           return False
+       if date0.year == None: return False
+       if date1.year == None: return False
+       if date0.year < date1.year: return True
+       if date0.year > date1.year: return False
+       if date0.month == None: return False
+       if date1.month == None: return False
+       if date0.month < date1.month: return True
+       if date0.month > date1.month: return False
+       if date0.day == None: return False
+       if date1.day == None: return False
+       if date0.day < date1.day: return True
+       if date0.day > date1.day: return False
+       return False
+   def __gt__(self,other):
+       date0 = self.refdate()
+       try:
+          date1 = other.refdate()
+       except:
+           return False
+       if date0.year == None: return False
+       if date1.year == None: return False
+       if date0.year < date1.year: return False
+       if date0.year > date1.year: return True
+       if date0.month == None: return False
+       if date1.month == None: return False
+       if date0.month < date1.month: return False
+       if date0.month > date1.month: return True
+       if date0.day == None: return False
+       if date1.day == None: return False
+       if date0.day < date1.day: return False
+       if date0.day > date1.day: return True
+       return False
+   def __eq__(self,other):
+       date0 = self.refdate()
+       try:
+          date1 = other.refdate()
+       except:
+           return False
+       if date0.year == None: return False
+       if date1.year == None: return False
+       if date0.year != date1.year: return False
+       if date0.month == None: return True
+       if date1.month == None: return True
+       if date0.month != date1.month: return False
+       if date0.day == None: return True
+       if date1.day == None: return True
+       if date0.day != date1.day: return False
+       return True
+   def __le__(self,other):
+       return self.__lt__(other) or self.__eq__(other)
+   def __ge__(self,other):
+       return self.__gt__(other) or self.__eq__(other)
+class DateProper(Date): 
    def __init__(self,parts):
+      super(DateProper,self).__init__()
       self.BC = False
       dat = list(parts)
       if dat[-1] in [ "B.C.", "BC", "(B.C.)" ]:
          self.bc = True
          dat = dat[:-1]
-      self._year = int(dat.pop())
-      self.month = None
-      self.day = None
+      self.year = int(dat.pop())
       if len(dat) > 0: self.month = month_number[dat.pop().upper()]
       if len(dat) > 0: self.day = int(dat.pop())
       assert len(dat) == 0
@@ -66,20 +125,20 @@ class DateProper(object):
       R = ""
       if self.day != None: R += unicode(self.day) + " "
       if self.month != None: R += months[self.month-1] + " "
-      if self._year != None: R += unicode(self._year)
+      if self.year != None: R += unicode(self.year)
       return R
 
-   def getDate(self): return (self._year,self.month,self.day)
-   def year(self): 
-      return self._year
+   def getDate(self): return (self.year,self.month,self.day)
    def isBC(self): return self.BC
 
 class DateInterpreted(Date):
    def __init__(self,dat):
+      super(DateInterpreted,self).__init__()
       assert dat[0] == "INT"
       raise NotImplementedError, "Interpreted dates not supported."
 class DatePhrase(Date):
    def __init__(self,dat):
+      super(DatePhrase,self).__init__()
       self.date = dat
    def __str__(self): return " ".join(self.date)
    def getDate(self): return self.date
@@ -90,18 +149,26 @@ class DateApproximate(Date):
    keywords.
    """
    def __init__(self,dat):
+      super(DateApproximate,self).__init__()
       assert dat[0] in [ "CAL", "EST", "ABT" ]
       self.approximation = dat[0]
       self.date = makeDate( dat[1:] )
    def getDate(self): return self.date
-   def year(self): return self.date.year()
-class DateRange(Date):
+class DateInterval(Date):
+   def getDate(self): return (self.start,self.end)
+   def refdate(self): 
+       if self.start != None: return self.start
+       else: return self.end
+class DateRange(DateInterval):
    """
    A date approximated by a range, as defined in Gedcom by the
    BET/AND, BEF, and AFT keywords.
    """
-   def getDate(self): return (self.start,self.end)
+   def refdate(self): 
+       if self.start != None: return self.start
+       else: return self.end
    def __init__(self,dat):
+      super(DateRange,self).__init__()
       assert dat[0] in [ "BET", "BEF", "AFT" ]
       self.start = None
       self.end   = None
@@ -111,12 +178,12 @@ class DateRange(Date):
 	 idx = dat.index("AND")
 	 self.start = makeDate( dat[1:idx] )
 	 self.end   = makeDate( dat[idx+1:] )
-class DatePeriod(Date):
+class DatePeriod(DateInterval):
    """
    A date period, as defined in Gedcom by the FROM and TO keywords.
    """
-   def getDate(self): return (self.start,self.end)
    def __init__(self,dat):
+      super(DatePeriod,self).__init__()
       assert dat[0] in [ "FROM", "TO" ]
       if dat[0] == "FROM":
 	 try:

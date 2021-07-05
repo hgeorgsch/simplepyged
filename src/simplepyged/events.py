@@ -49,11 +49,30 @@ class Event(object):
 
         self.type = self.children_single_val('TYPE')
         self.date = self.children_single_val('DATE')
-	if ( self.date != None): self.date = date.makeDate( self.date )
+        if ( self.date != None): self.date = date.makeDate( self.date )
         self.place = Place.get( self.children_single_val('PLAC') )
-	#if ( self.place != None):
-	   #self.place = [ p.strip() for p in self.place.split( "," ) ]
+        #if ( self.place != None):
+           #self.place = [ p.strip() for p in self.place.split( "," ) ]
 
+    def __lt__(self,other):
+        if other == None: return False
+        elif self.date == None: return False
+        elif other.date == None: return False
+        else: return self.date.__lt__(other.date)
+    def __gt__(self,other):
+        if other == None: return False
+        elif self.date == None: return False
+        elif other.date == None: return False
+        else: return self.date.__gt__(other.date)
+    def __eq__(self,other):
+        if other == None: return False
+        elif self.date == None: return False
+        elif other.date == None: return False
+        else: return self.date.__eq__(other.date)
+    def __le__(self,other):
+       return self.__lt__(other) or self.__eq__(other)
+    def __ge__(self,other):
+       return self.__gt__(other) or self.__eq__(other)
     # The following methods partially implement a Decorator pattern
     def tag(self):
        return self.line.tag()
@@ -70,14 +89,14 @@ class Event(object):
     # Other methods
     def year(self):
        if self.date == None: R = -1
-       else: R = self.date.year()
+       else: R = self.date.year
        return R
 
     def dateplace(self):
         """
-	Returns a pair (date, place), where Date is a Date object
-	and place is a list of strings.
-	"""
+        Returns a pair (date, place), where Date is a Date object
+        and place is a list of strings.
+        """
         date = ''
         place = ''
 

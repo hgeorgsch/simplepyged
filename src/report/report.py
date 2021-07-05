@@ -580,10 +580,9 @@ class Report(object):
       self._builder.end_paragraph()
 
       # (4) biography (events)
-      for e in rec[None]:
-	 if e.tag() == "BIRT": continue
-	 elif e.tag() == "DEAT": continue
-	 else: self.event( ind, Event( e ) )
+      evs = [ Event(e) for e in rec[None] if ( e.tag() != "BIRT" and e.tag() != "DEAT" ) ]
+      for e in evs:
+	 self.event( ind, e )
       #self.vitals(ind)
       # CHR
       # other
