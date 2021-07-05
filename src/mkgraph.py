@@ -25,10 +25,13 @@ parser.add_option("-T", "--target",
 parser.add_option("-N", "--ngen",
                 help="Number of generations.",
 		dest="ngen" )
+parser.add_option("-F", "--figure",
+                help="Make a figure, as opposed to a standalone document.",
+		default=False,dest="figure",action="store_true" )
 (opt,args) = parser.parse_args()
 
 g = Gedcom( opt.gedcom )
-r = Graph(g,texBuilder(opt.outfile))
+r = Graph(g,texBuilder(opt.outfile),figure=opt.figure)
 if opt.indi and opt.target:
    r.mkgraph(opt.indi,opt.target)
 elif opt.indi and opt.ngen:

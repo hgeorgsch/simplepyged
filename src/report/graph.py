@@ -72,6 +72,8 @@ graphpreamble = (u"\\documentclass[10pt]{standalone}\n"
               + u"\\begin{document}\n\\tiny\n"
               + u"  \\begin{tikzpicture}\n")
 graphpostamble = u"  \\end{tikzpicture}\n\\end{document}\n"
+figurepreamble = (u"\\begin{tikzpicture}\n")
+figurepostamble = u"\\end{tikzpicture}\n"
 
 def buildchildren(b,gs):
     q = Queue()
@@ -114,13 +116,20 @@ def putnode(b,node):
 class Graph(object):
    __indicontext = True
 
-   def __init__(self,file,builder=None,dic=dic_norsk):
+   def __init__(self,file,builder=None,dic=dic_norsk,figure=False):
       self.__file = file
       self.__reflist = set()
       self.__context = []
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
+      if figure:
+          self._postamble = figurepostamble
+          self._preamble = figurepreamble
+      else:
+          self._postamble = graphpostamble
+          self._preamble = graphpreamble
+      print(self._preamble)
 
    def mkgraph(self,ref1,ref2,header=None,abstract=None):
       "Generate a graph of individuals."
@@ -128,14 +137,14 @@ class Graph(object):
       self.printgraph(gs,header,abstract)
 
    def printgraph(self,gs,header=None,abstract=None):
-      self._builder.preamble( preamble=graphpreamble )
+      self._builder.preamble( preamble=self._preamble )
       self._builder.put( "\\tikzstyle{every node}=[fill=blue!10,opacity=50]\n" )
       self._builder.put( "\\graph[layered layout,grow=down] {\n" )
       buildchildren(self._builder,gs)
 
       # Tail matter
       self._builder.put( "}; \n" )
-      self._builder.postamble(graphpostamble)
+      self._builder.postamble(self._postamble)
 
    def mkdescendants(self,ref1,ngen=4,header=None,abstract=None):
       "Generate a graph of individuals."
