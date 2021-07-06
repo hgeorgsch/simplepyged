@@ -28,6 +28,7 @@ class devnull():
    does nothing, simply ignoring the data.
    """
    def append(self,*a): pass
+
 class unsupport():
    """
    A pseudo-list object, similar to the devnull class.
@@ -101,6 +102,13 @@ class Report(object):
    __indicontext = True
 
    def __init__(self,file,builder=None,dic=dic_norsk):
+      """
+      Instantiate a report.
+
+      :param str file:  Output file name
+      :param Builder builder:  The Builder object producing output
+      :param dict dic:  The dictionary defining the output language
+      """
       self.__file = file
       self.__history = {}
       self.__reflist = set()
@@ -111,8 +119,7 @@ class Report(object):
 
    def history_add(self,ind,no):
       """
-      Record the given individual ind as included in the report under
-      Entry no.
+      Record the given individual ind as included in the report under Entry no.
       """
       key = ind.xref()
       refno = self.__history.get( key )
@@ -704,6 +711,7 @@ def formatPageElement( p ):
    return l[0] + " " + l[1]
 def formatPage( p ):
    return [ formatPageElement(x) for x in p.split(",") ]
+
 class Builder(object):
    def put_url(self,url,text=None): 
       if text == None: print "<URL:%s>" % (url,)

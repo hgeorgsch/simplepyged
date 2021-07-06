@@ -21,6 +21,13 @@
 #
 # Please see the GPL license at http://www.gnu.org/licenses/gpl.txt
 
+"""
+This module provides the single :func:`formatdate` which takes a 
+:class:`Date` object to return a human readable string.
+"""
+
+__all__ = [ "formatdate" ]
+
 from simplepyged.date import *
 
 def formatdate(dat,space=True):
