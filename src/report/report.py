@@ -19,84 +19,9 @@ from . import date
 from simplepyged.errors import * 
 from simplepyged.events import Event
 from simplepyged.records import parse_name
+from aux import *
 
 from Queue import Queue
-
-class devnull():
-   """
-   A pseudo-list object, implementing the append() method, but
-   does nothing, simply ignoring the data.
-   """
-   def append(self,*a): pass
-
-class unsupport():
-   """
-   A pseudo-list object, similar to the devnull class.
-   It implements the append() method, and will issue a warning
-   whenever an object is appended, but otherwise ignore the data.
-   """
-   def append(self,e): 
-      print "Warning! Unsupported tag.", e
-
-class IndiBins(dict):
-   def add(self,e):
-      k = e.tag()
-      if self.has_key(k): self[k].append(e)
-      else: self[None].append(e)
-   def __init__(self,ind=None):
-      # Event records
-      self[None] = []
-      # Other records
-      self["NAME"] = []
-      self["NOTE"] = []
-      self["OBJE"] = []
-      self["SOUR"] = []
-      self["FAMS"] = []
-      self["FAMC"] = []
-      self["ASSO"] = []
-      # Unsupported records
-      self["ALIA"] = unsupport()
-      # Ignore records
-      self["CHAN"] = devnull()
-      self["ANCI"] = devnull()
-      self["DESI"] = devnull()
-      self["RESN"] = devnull()
-      self["RIN"]  = devnull()
-      self["RFN"]  = devnull()
-      self["AFN"]  = devnull()
-      self["REFN"] = devnull()
-      self["SUBM"] = devnull()
-      # ignored records (handled elsewhere)
-      self["SEX"] = devnull()
-      if ind != None:
-         for e in ind.children_lines(): self.add(e)
-
-dic_norsk = { "and" : "og", 
-              "daughter" : "dotter til", 
-              "son" : "son til", 
-              "child" : "barn av", 
-              "born" : u"fødd", 
-              "died" : u"død", 
-              "married" : "gift", 
-              "with" : "med", 
-              "associates" : "andre relevante personar", 
-              "sources" : "kjelder", 
-              "BIRT" : u"fødd", 
-              "CHR" : u"døypt", 
-              "BAPM" : u"døypt", 
-              "CONF" : "konfirmert", 
-              "GRAD" : "eksamen", 
-              "OCCU" : "yrke", 
-              "CENS" : "registrert i folketeljing", 
-              "EMIG" : "utvandra", 
-              "IMMI" : "innvandra", 
-              "RESI" : u"busett", 
-              "RETI" : u"pensjonert", 
-              "DEAT" : u"død", 
-              "BURI" : "gravlagd", 
-              "PROB" : "skifte", 
-              "PROP" : u"åtte", 
-	    }
 
 class Report(object):
    __indicontext = True
@@ -116,6 +41,16 @@ class Report(object):
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
+   def setbuilder(self,builder=None,dic=None):
+      """Change builder.
+
+      This is useful if the report should be split between several
+      files while allowing cross-referencing between them.
+      """
+      self.__context = []
+      if builder == None: self._builder = Builder()
+      else: self._builder = builder
+      if dic != None: self._dic = dic
 
    def history_add(self,ind,no):
       """
@@ -163,15 +98,19 @@ class Report(object):
          i += 1
       if header == None:
 	 header = "Stamtavle for %s %s" % ind.name()
+      # Abstract
       self._builder.preamble( header )
       if abstract != None:
         self._builder.put_abstract_s( )
         self._builder.put( abstract )
         self._builder.put_abstract_e( )
+      # Main loop
       pgen = 0
       while not q.empty():
 	 (cgen, no, ind ) = q.get(False)
+         self.history_add(ind,no)
 	 self.individual(ind=ind,number=no)
+      # Tail matter
       self.make_reflist()
       self._builder.postamble()
    def stamtavle(self,ref,mgen=12,header=None,abstract=None):
@@ -238,33 +177,6 @@ class Report(object):
 	       q.put( ( cgen+1, cno, c ) )
             self.history_add(c,cno)
 	 self.individual(ind=ind,number=no)
-      # Tail matter
-      self.make_reflist()
-      self._builder.postamble()
-   def list(self,q,header=None,abstract=None):
-      "Generate a report of a given list (queue) of individuals."
-
-      no = 0
-      ln = 999999
-
-      # Abstract
-      self._builder.preamble( )
-      if abstract != None:
-        self._builder.put_abstract_s( )
-        self._builder.put( abstract )
-        self._builder.put_abstract_e( )
-      # Main loop
-      while not q.empty():
-          pn = ln
-	  (ln, ind ) = q.get(False)
-          no += 1
-          print no, ln, ind.name()
-          if ln <= pn:
-              t = u"Frå %s %s" % ind.name()
-              print t
-	      self._builder.put_chead( t )
-          self.history_add(ind,no)
-	  self.individual(ind=ind,number=no)
       # Tail matter
       self.make_reflist()
       self._builder.postamble()
@@ -709,19 +621,6 @@ class Report(object):
       if len(L) > 0:
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
-
-def formatPageElement( p ):
-   l = [ x.strip() for x in p.split(":") ]
-   if len(l) == 1: return l[0]
-   if len(l) != 2: raise Exception, "Malformed page reference (" + p + ")."
-   if l[0] == "page": return "s. " + l[1]
-   elif l[0] == "number": return "nr. " + l[1]
-   elif l[0] == "entry": return "oppslag " + l[1]
-   elif l[0] == "list": return "liste " + l[1]
-   elif l[0] == "street": return l[1]
-   return l[0] + " " + l[1]
-def formatPage( p ):
-   return [ formatPageElement(x) for x in p.split(",") ]
 
 class Builder(object):
    def put_url(self,url,text=None): 
