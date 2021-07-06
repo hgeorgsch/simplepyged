@@ -22,6 +22,7 @@ class texBuilder(object):
    newperiod = True
    newsentence = False
    def __init__(self,file,title=""):
+      self._sectiontype = "section"
       self._parsefilename(file)
       self.title = title
 
@@ -103,11 +104,11 @@ class texBuilder(object):
    def put_subheader(self,header):
       self.file.write( "\\paragraph{%s}\n" % (header,) )
    def put_shead_s(self):
-      self.file.write( "\\section*{" )
+      self.file.write( "\\" + self._sectiontype + "*{" )
    def put_shead_e(self):
       self.file.write( "}\n" )
    def put_shead(self,title=""):
-      self.file.write( "\\section*{" + title + "}\n" )
+      self.file.write( "\\" + self._sectiontype + "*{" + title + "}\n" )
    def put_chead(self,title=""):
       self.file.write( "\\chapter{" + title + "}\n" )
    def put_item_s(self):
@@ -230,6 +231,7 @@ class texChapterBuilder(texBuilder):
       self._parsefilename(file)
       self.title = title
       self.headertype = headertype
+      if headertype != "chapter": self._sectiontype = "subsection"
    def preamble(self,h=None):
        if h:
           self.file.write( u"\\" + self.headertype + "{" + h + "}\n")
