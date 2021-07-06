@@ -29,7 +29,7 @@ def valid_url(s):
    if len(t.split()) > 1: return False
    if t[:7] == "http://": return True
    if t[:8] == "https://": return True
-   if t[:8] == "ftp://": return True
+   if t[:6] == "ftp://": return True
    return False
 
 class NoteStructure(Line):
