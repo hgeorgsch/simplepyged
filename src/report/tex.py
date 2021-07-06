@@ -92,7 +92,7 @@ class texBuilder(object):
    def put_comment(self,x):
       if x == None: return 
       self.file.write( "% " + str(x) + "\n" )
-   def put_name(self,fn,sn,ref=None): 
+   def put_name(self,fn,sn,key=None,ref=None): 
       if ref == None: s = "%s \\textsc{%s}" % (fn,sn,)
       else: s =  "%s \\textsc{%s} (\\textsc{%s})" % (fn,sn,ref)
       self.file.write( s )

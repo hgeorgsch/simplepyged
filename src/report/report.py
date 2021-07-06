@@ -113,6 +113,31 @@ class Report(object):
       # Tail matter
       self.make_reflist()
       self._builder.postamble()
+   def swordline(self,ref,mgen=12,header=None,abstract=None):
+      "Generate a sword line listing."
+      q = Queue()
+      ind = self.__file.get( ref )
+      if header == None:
+	 header = u"Sverdlina åt %s %s" % ind.name()
+      self._builder.preamble( header )
+      if abstract != None:
+        self._builder.put_abstract_s( )
+        self._builder.put( abstract )
+        self._builder.put_abstract_e( )
+      assert ind != None
+      q.put( ( 1, 1, ind ) )
+      self.history_add(ind,1)
+      pgen = 0
+      while not q.empty():
+	 (cgen, no, ind ) = q.get(False)
+	 if cgen < mgen:
+           f = ind.father()
+	   if f != None: 
+	      q.put( ( cgen+1, no+1, f ) )
+              self.history_add(f,no+1)
+	 self.individual(ind=ind,number=no)
+      self.make_reflist()
+      self._builder.postamble()
    def stamtavle(self,ref,mgen=12,header=None,abstract=None):
       "Generate a detailed ahnentafel report."
       q = Queue()
@@ -284,7 +309,7 @@ class Report(object):
 
       (fn,sn) = ind.name()
       ref = self.__history.get(ind.xref())
-      self._builder.put_name(fn,sn,ref)
+      self._builder.put_name(fn,sn,ind.xref(),ref)
 
       if t: self._builder.put( "(" + t + ")" )
       self._builder.end_period()
@@ -333,7 +358,7 @@ class Report(object):
    def simplename(self,node):
       (f,s) = node.name()
       ref = self.__history.get( node.xref() )
-      self._builder.put_name(f,s,ref)
+      self._builder.put_name(f,s,node.xref(),ref)
       if ref != None: return
       by = node.birth_year()
       dy = node.death_year()
@@ -401,7 +426,7 @@ class Report(object):
         self._builder.put( " " + self._dic["with"] + " " )
         (fn,sn) = ind.name()
 	ref = self.__history.get(ind.xref())
-        self._builder.put_name(fn,sn,ref)
+        self._builder.put_name(fn,sn,ind.xref(),ref)
 	if ref != None and short: 
             self._builder.end_period()
             return
@@ -426,7 +451,7 @@ class Report(object):
       key = ind.xref()
       ref = self.__history.get(key)
       (fn,sn) = ind.name()
-      self._builder.put_name(fn,sn,ref)
+      self._builder.put_name(fn,sn,key,ref)
 
       # If the child has his/her own entry, we are done.
       if ref != None: return 
@@ -630,7 +655,7 @@ class Builder(object):
       print "[%s]" % (ref,)
    def put_comment(self,x):
        pass
-   def put_name(self,fn,sn,ref=None): 
+   def put_name(self,fn,sn,key=None,ref=None): 
       if ref == None: print "%s %s" % (fn,sn),
       else: print "%s %s (sjå %s)" % (fn,sn,ref),
    def put_phead(self,fn,sn,no,key): 
