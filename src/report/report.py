@@ -105,7 +105,7 @@ class Report(object):
       """
       Instantiate a report.
 
-      :param str file:  Output file name
+      :param Gedcom file:  :class:`Gedcom` object containing the family tree
       :param Builder builder:  The Builder object producing output
       :param dict dic:  The dictionary defining the output language
       """
@@ -145,7 +145,14 @@ class Report(object):
    # Output production methods
 
    def indireport(self,reflist,header=None,abstract=None):
-      "Generate a detailed ahnentafel report."
+      """Report on selected individuals.
+
+      Keyword parameters
+      ------------------
+      :param list reflist: List of xref keys for the individuals to report
+      :param list header: Title for the report
+      :param list abstract: Abstract for the report
+      """
       q = Queue()
       i = 1
       for ref in reflist:
@@ -580,6 +587,9 @@ class Report(object):
       """
       Generate a report on a single individual object ind, 
       where number is the person's ID number in a longer report.
+      This should only be called from :func:`individual`,
+      which determines if the individual needs to be reported
+      or can simply be cross-referenced.
       """
 
       (fn,sn) = ind.name()
@@ -611,7 +621,8 @@ class Report(object):
       self._builder.end_paragraph()
 
       # (4) biography (events)
-      evs = [ Event(e) for e in rec[None] if ( e.tag() != "BIRT" and e.tag() != "DEAT" ) ]
+      evs = [ Event(e) for e in rec[None] 
+              if ( e.tag() != "BIRT" and e.tag() != "DEAT" ) ]
       evs.sort()
       for e in evs:
 	 self.event( ind, e )
