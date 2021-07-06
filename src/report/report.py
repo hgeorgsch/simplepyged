@@ -489,7 +489,7 @@ class Report(object):
       ref = self.__history.get(key)
       if ref != None and ref < number:
           (fn,sn) = ind.name()
-          self._builder.put_phead_repeat(fn,sn,number,ref)
+          self._builder.put_phead_repeat(fn,sn,number,ref,key)
           return ref
       else:
           # Make a complete new entry
@@ -636,7 +636,7 @@ class Builder(object):
    def put_phead(self,fn,sn,no,key): 
       print "%s\t%s %s" % (no,fn,sn)
       print
-   def put_phead_repeat(self,fn,sn,no,ref): 
+   def put_phead_repeat(self,fn,sn,no,ref,key): 
       print "%s\t%s %s (sjå %s)" % (no,fn,sn,ref)
       print 
    def put_subheader(self,header): print header + ":"

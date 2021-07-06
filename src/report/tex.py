@@ -99,7 +99,7 @@ class texBuilder(object):
       self.newperiod = False
    def put_phead(self,fn,sn,no,key): 
       self.file.write( "\\PersonHeader{%s}{%s %s}{%s}\n\n" % (no,fn,sn,key) )
-   def put_phead_repeat(self,fn,sn,no,ref): 
+   def put_phead_repeat(self,fn,sn,no,ref,key): 
       self.file.write( "\\PersonRepeat{%s}{%s}{%s %s}\n\n" % (ref,no,fn,sn) )
    def put_subheader(self,header):
       self.file.write( "\\paragraph{%s}\n" % (header,) )
