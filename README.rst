@@ -1,32 +1,37 @@
-simplepyged - A simple Python GEDCOM parser
-===========================================
+pyged - GEDCOM parser and report generator
+==========================================
 
-Status of parser
-----------------
+This project consists of two parts:
+`simplepyged` which is a simple GEDCOM parser library,
+and `report` which is a report generator depending on 
+`simplepyged`.
 
-Recognises a subset of GEDCOM 5.5 tags. If you need support for an
-unsupported tag, submit an issue (or implement it and send a patch).
+The report generator is original work, but `simplepyged` 
+is a fork of
+`dijxtra's project <https://github.com/dijxtra/simplepyged>`_,
+which in turn was based on 
+`another project <http://ilab.cs.byu.edu/cs460/2006w/assignments/program1.html>`_.
+
+Several changes have been made to the parser, with an object
+oriented data model mirroring the GEDCOM model.
+It still only recognises a subset of GEDCOM 5.5 tags.
 
 Documentation and Examples
 --------------------------
 
-Documentation is in docs/. Examples of how to use this parser are at
-docs/examples. If you find documentation and/or examples confusing,
-let me know and I'll try to fix it.
+Documentation is in docs/, but it is generally out of date.
+Examples of how to use this parser are at docs/examples.
+If you want to use `pyged`, please get in touch and I'll see
+what I can do in terms of documentation.
 
 License
 --------
 
 All code is licensed under GPL v.3 or newer.
 
-First commit to this repository was based on source from here:
-http://ilab.cs.byu.edu/cs460/2006w/assignments/program1.html
 
-This branch
------------
-
-Several changes have been made in this branch of development,
-compared to the work of the previous authors.
+Some comments on design
+-----------------------
 
 First of all, many attempts have been made to simplify the
 code.
