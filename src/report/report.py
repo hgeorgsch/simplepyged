@@ -380,10 +380,11 @@ class Report(object):
       #     print error/warning
       # (1) Gift dato (etc)
       if marr == None:
-	 if fam.children_count() > 0:
-           self._builder.put( "Hadde barn med " )
-	 else:
-           self._builder.put( "Sambuar med " )
+          if ind != None:
+	     if fam.children_count() > 0:
+               self._builder.put( "Hadde barn med " )
+	     else:
+               self._builder.put( "Sambuar med " )
       else:
         (d,p) = marr.dateplace()
 	if not (d or p):
@@ -582,9 +583,8 @@ class Report(object):
              else:
                self._builder.put( "Dei hadde " + str(cc) + " born" )
                self._builder.end_period()
-         else:
-             self._builder.put( "Born:" )
 	 if len(cs) > 0:
+           if not cc: self._builder.put( "Born:" )
 	   self._builder.put_enum_s()
 	   for c in cs:
 	      self._builder.put_item_s()
