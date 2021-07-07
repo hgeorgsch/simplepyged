@@ -281,7 +281,7 @@ class Report(object):
 	 if n.note_type() == "prose":
 	    noteq.append(n)
 	 else:
-	    self._builder.put(n.value_cont())
+	    self._builder.put(n.gettext())
 	    for s in n.sources(): self.citation(s)
       # TODO distinguish between different kinds of notes.
       for n in event.children_tags("SOUR"):
@@ -290,7 +290,7 @@ class Report(object):
       if noteq:
          self._builder.end_period( )
 	 for n in noteq:
-	    self._builder.put(n.value_cont())
+	    self._builder.put(n.gettext())
 	    for s in n.sources(): self.citation(s)
          self._builder.end_period("")
          
@@ -315,7 +315,7 @@ class Report(object):
       self._builder.end_period()
 
       for n in node.children_tags("NOTE"):
-	 self._builder.put(n.value_cont())
+	 self._builder.put(n.gettext())
 	 for s in n.sources(): self.citation(s)
 	 self._builder.end_paragraph()
 
@@ -575,7 +575,7 @@ class Report(object):
 
       # (5) NOTE
       for n in ind.children_tags("NOTE"):
-	 self._builder.put(n.value_cont())
+	 self._builder.put(n.gettext())
 	 for s in n.sources(): self.citation(s)
 	 self._builder.end_paragraph()
 

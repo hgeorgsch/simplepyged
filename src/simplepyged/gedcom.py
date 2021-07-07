@@ -111,7 +111,7 @@ class Gedcom(Node):
         """
         return self._record_dict
 
-    def get(self,*a): return self._record_dict.get(*a)
+    def get(self,xref,*a): return self._record_dict.get(xref.strip(),*a)
     def individual_list(self):
         """ Return a list of all the individuals in the Gedcom file.  The
         individuals are in the same order as they appeared in the file.

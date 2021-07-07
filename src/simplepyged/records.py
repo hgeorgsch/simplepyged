@@ -171,6 +171,12 @@ class Line(Node):
 	   print u"dict:", type(dict), unicode(self)
         self._dict = dict
 
+    def sources(self):
+       """
+       Return an iterator of all sources associated with the note.
+       """
+       return list( self.children_tags("SOUR") )
+
     def is_empty(self):
        """
        Return True if the Line has neither a (non-empty) value  nor

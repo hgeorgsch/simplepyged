@@ -35,9 +35,10 @@ of the package.
 
 # Functions for error checking
 
-def valid_pointer(s):
-   if len(s) < 3: return False
-   else: return s[0] == "@" and s[-1] == "@"
+def valid_pointer(st):
+    s = st.strip()
+    if len(s) < 3: return False
+    else: return s[0] == "@" and s[-1] == "@"
 
 # Exception classes
 
