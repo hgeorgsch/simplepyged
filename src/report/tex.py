@@ -61,7 +61,7 @@ class texBuilder(object):
       self.bibfile.close()
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
-   def put_cite(self,ref,page=None,media=[],quot=[]): 
+   def put_cite(self,ref,page=None,media=[],quot=[],fq=[]): 
       ms = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
              for m in media ]
       if page:
@@ -86,6 +86,14 @@ class texBuilder(object):
               self.put_quot_m()
               self.file.write( texstring )
               self.put_quot_e()
+      elif fq:
+          qs = [ q.value() for q in quot ]
+          qs = [ q for q in qs if q[:7] != "http://" ]
+          qs = [ q for q in qs if q[:7] != "Http://" ]
+          for q in qs:
+              self.file.write("\\footnote{«%\n" )
+              self.file.write( char_escape(q)+"»\n" )
+              self.file.write( texstring + "}" )
       else:
          self.file.write( texstring )
       return
@@ -175,7 +183,12 @@ class texBuilder(object):
               self.file.write( char_escape(x) )
 	  except:
 	      print x
-   def put_image( self, title, file, label=None ):
+   def put_image( self, obj ):
+          t = obj.get_title()
+          f = obj.get_file()
+          if not t: t = ""
+          self.put_imagefloat(t,f,obj.xref())
+   def put_imagefloat( self, title, file, label=None ):
       self.file.write( "\\begin{imagefloat}\n" )
       self.file.write( "\\begin{center}\n" )
       self.file.write( "\\includegraphics[width=0.84\\columnwidth]{" + file + "}\n" )

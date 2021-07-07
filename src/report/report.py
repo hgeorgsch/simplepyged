@@ -275,7 +275,7 @@ class Report(object):
       # if not ( d or p ): self._builder.put( " " )
       if p: self._builder.put( self.formatplace( p ) )
       self._builder.end_sentence()
-      # NOTE/SOUR/OBJE
+      # NOTE/SOUR
       noteq = []
       for n in event.children_tags("NOTE"):
 	 if n.note_type() == "prose":
@@ -285,7 +285,7 @@ class Report(object):
 	    for s in n.sources(): self.citation(s)
       # TODO distinguish between different kinds of notes.
       for n in event.children_tags("SOUR"):
-	 self.citation( n )
+	 self.citation( n,footnotequote=True )
       self._builder.end_sentence( )
       if noteq:
          self._builder.end_period( )
@@ -295,7 +295,11 @@ class Report(object):
          self._builder.end_period("")
          
       # TODO clean up presentation of sources
-      # TODO OBJE
+      # OBJE
+      for obj in event.children_tags("OBJE"):
+          print obj.get_title()
+	  if not obj.get_use(): continue
+          self._builder.put_image(obj)
       # Finalise
 
    def associate(self,node):
@@ -319,7 +323,7 @@ class Report(object):
 	 for s in n.sources(): self.citation(s)
 	 self._builder.end_paragraph()
 
-   def citation(self,node):
+   def citation(self,node,footnotequote=False):
       """
       Process a source citation structure and produce appropriate
       report output.
@@ -344,7 +348,10 @@ class Report(object):
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
 	 self.__reflist.add( source )
-	 self._builder.put_cite( val, pl, ml, quot=quotes )
+         if footnotequote:
+	     self._builder.put_cite( val, pl, ml, fq=quotes )
+         else:
+	     self._builder.put_cite( val, pl, ml, quot=quotes )
 	 # TODO: handle notes and quotes
       else:
 	 if node.is_empty():
@@ -420,7 +427,7 @@ class Report(object):
 	  if d != None and p != None: self._builder.put( " " )
           self._builder.put( self.formatplace(p) )
 	for cit in marr.children_tags("SOUR"):
-	   self.citation(cit)
+	   self.citation(cit,footnotequote=True)
       # (2) Spouse name (and details)
       if ind != None:
         self._builder.put( " " + self._dic["with"] + " " )
@@ -434,10 +441,7 @@ class Report(object):
       # (3) Images
       for obj in fam.children_tags("OBJE"):
 	  if not obj.get_use(): continue
-          t = obj.get_title()
-          f = obj.get_file()
-          if not t: t = ""
-          self._builder.put_image(t,f,obj.xref())
+          self._builder.put_image(obj)
       # (4) Family sources
       for cit in fam.children_tags("SOUR"):
          self.citation(cit)
@@ -543,10 +547,7 @@ class Report(object):
       # (2) OBJE ??
       for obj in rec["OBJE"]:
 	  if not obj.get_use(): continue
-          t = obj.get_title()
-          f = obj.get_file()
-          if not t: t = ""
-          self._builder.put_image(t,f,obj.xref())
+          self._builder.put_image(obj)
 
       # (3) vitals (birth and parents)
       birt = ind.birth()
@@ -651,7 +652,7 @@ class Builder(object):
    def put_url(self,url,text=None): 
       if text == None: print "<URL:%s>" % (url,)
       else: print "%s <URL:%s>" % (text,url,)
-   def put_cite(self,ref): 
+   def put_cite(self,ref,quot=[],fq=[]): 
       print "[%s]" % (ref,)
    def put_comment(self,x):
        pass
@@ -668,6 +669,7 @@ class Builder(object):
    def put_book_title(self,h): print " ###    %s    ### " % (h,)
    def put_shead(self,title=""): print "* " + title + "\n"
    def put_chead(self,title=""): print "*" + title + "\n"
+   def put_image(self,*a): pass
    def put_item_s(self): print "  + ",
    def put_item_e(self): print
    def put_enum_s(self): print
