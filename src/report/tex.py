@@ -87,7 +87,7 @@ class texBuilder(object):
               self.file.write( texstring )
               self.put_quot_e()
       elif fq:
-          qs = [ q.value() for q in quot ]
+          qs = [ q.value() for q in fq ]
           qs = [ q for q in qs if q[:7] != "http://" ]
           qs = [ q for q in qs if q[:7] != "Http://" ]
           for q in qs:
