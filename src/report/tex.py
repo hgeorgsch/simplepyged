@@ -91,8 +91,8 @@ class texBuilder(object):
           qs = [ q for q in qs if q[:7] != "http://" ]
           qs = [ q for q in qs if q[:7] != "Http://" ]
           for q in qs:
-              self.file.write("\\footnote{«%\n" )
-              self.file.write( char_escape(q)+"»\n" )
+              self.file.write( u"\\footnote{«%\n" )
+              self.file.write( char_escape(q)+u"»\n" )
               self.file.write( texstring + "}" )
       else:
          self.file.write( texstring )
