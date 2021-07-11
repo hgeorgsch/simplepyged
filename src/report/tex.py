@@ -77,7 +77,7 @@ class texBuilder(object):
 	 texstring = " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) 
       if ms: texstring += s 
       if quot:
-          qs = [ q.value() for q in quot ]
+          qs = [ q.value_cont() for q in quot ]
           qs = [ q for q in qs if q[:7] != "http://" ]
           qs = [ q for q in qs if q[:7] != "Http://" ]
           for q in qs:
@@ -87,7 +87,7 @@ class texBuilder(object):
               self.file.write( texstring )
               self.put_quot_e()
       elif fq:
-          qs = [ q.value() for q in fq ]
+          qs = [ q.value_cont() for q in fq ]
           qs = [ q for q in qs if q[:7] != "http://" ]
           qs = [ q for q in qs if q[:7] != "Http://" ]
           for q in qs:
