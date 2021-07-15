@@ -22,6 +22,7 @@ class texBuilder(object):
    newperiod = True
    newsentence = False
    def __init__(self,file,title=""):
+      self._sectiontype = "section"
       self._parsefilename(file)
       self.title = title
 
@@ -60,7 +61,7 @@ class texBuilder(object):
       self.bibfile.close()
    def put_url(self,url,text="link"): 
       self.file.write( "\\href{%s}{%s}" % (url,text,) )
-   def put_cite(self,ref,page=None,media=[],quot=[]): 
+   def put_cite(self,ref,page=None,media=[],quot=[],fq=[]): 
       ms = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
              for m in media ]
       if page:
@@ -76,7 +77,7 @@ class texBuilder(object):
 	 texstring = " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) 
       if ms: texstring += s 
       if quot:
-          qs = [ q.value() for q in quot ]
+          qs = [ q.value_cont() for q in quot ]
           qs = [ q for q in qs if q[:7] != "http://" ]
           qs = [ q for q in qs if q[:7] != "Http://" ]
           for q in qs:
@@ -85,29 +86,37 @@ class texBuilder(object):
               self.put_quot_m()
               self.file.write( texstring )
               self.put_quot_e()
+      elif fq:
+          qs = [ q.value_cont() for q in fq ]
+          qs = [ q for q in qs if q[:7] != "http://" ]
+          qs = [ q for q in qs if q[:7] != "Http://" ]
+          for q in qs:
+              self.file.write( u"\\footnote{«%\n" )
+              self.file.write( char_escape(q)+u"»\n" )
+              self.file.write( texstring + "}" )
       else:
          self.file.write( texstring )
       return
    def put_comment(self,x):
       if x == None: return 
       self.file.write( "% " + str(x) + "\n" )
-   def put_name(self,fn,sn,ref=None): 
+   def put_name(self,fn,sn,key=None,ref=None): 
       if ref == None: s = "%s \\textsc{%s}" % (fn,sn,)
       else: s =  "%s \\textsc{%s} (\\textsc{%s})" % (fn,sn,ref)
       self.file.write( s )
       self.newperiod = False
    def put_phead(self,fn,sn,no,key): 
       self.file.write( "\\PersonHeader{%s}{%s %s}{%s}\n\n" % (no,fn,sn,key) )
-   def put_phead_repeat(self,fn,sn,no,ref): 
+   def put_phead_repeat(self,fn,sn,no,ref,key): 
       self.file.write( "\\PersonRepeat{%s}{%s}{%s %s}\n\n" % (ref,no,fn,sn) )
    def put_subheader(self,header):
       self.file.write( "\\paragraph{%s}\n" % (header,) )
    def put_shead_s(self):
-      self.file.write( "\\section*{" )
+      self.file.write( "\\" + self._sectiontype + "*{" )
    def put_shead_e(self):
       self.file.write( "}\n" )
    def put_shead(self,title=""):
-      self.file.write( "\\section*{" + title + "}\n" )
+      self.file.write( "\\" + self._sectiontype + "*{" + title + "}\n" )
    def put_chead(self,title=""):
       self.file.write( "\\chapter{" + title + "}\n" )
    def put_item_s(self):
@@ -174,7 +183,12 @@ class texBuilder(object):
               self.file.write( char_escape(x) )
 	  except:
 	      print x
-   def put_image( self, title, file, label=None ):
+   def put_image( self, obj ):
+          t = obj.get_title()
+          f = obj.get_file()
+          if not t: t = ""
+          self.put_imagefloat(t,f,obj.xref())
+   def put_imagefloat( self, title, file, label=None ):
       self.file.write( "\\begin{imagefloat}\n" )
       self.file.write( "\\begin{center}\n" )
       self.file.write( "\\includegraphics[width=0.84\\columnwidth]{" + file + "}\n" )
@@ -230,6 +244,7 @@ class texChapterBuilder(texBuilder):
       self._parsefilename(file)
       self.title = title
       self.headertype = headertype
+      if headertype != "chapter": self._sectiontype = "subsection"
    def preamble(self,h=None):
        if h:
           self.file.write( u"\\" + self.headertype + "{" + h + "}\n")

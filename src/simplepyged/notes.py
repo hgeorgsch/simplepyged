@@ -21,6 +21,8 @@
 #
 # Please see the GPL license at http://www.gnu.org/licenses/gpl.txt
 
+import codecs
+
 from errors import *
 from records import Line
 
@@ -29,7 +31,7 @@ def valid_url(s):
    if len(t.split()) > 1: return False
    if t[:7] == "http://": return True
    if t[:8] == "https://": return True
-   if t[:8] == "ftp://": return True
+   if t[:6] == "ftp://": return True
    return False
 
 class NoteStructure(Line):
@@ -39,7 +41,6 @@ class NoteStructure(Line):
 
     def _init(self):
        self._record = None
-       self._value_cont = None
        self._type = None
        v = self.value()
        if valid_pointer(v):
@@ -47,15 +48,13 @@ class NoteStructure(Line):
 	  if self._record == None: 
 	     raise GedcomMissingRecordError, "Missing record " + v
 
-    def value_cont(self):
-       """
-       Return the complete text of the note, including all continued
-       lines.
-       """
-       if self._value_cont == None:
-          if self._record != None: self._value_cont = self._record.value_cont()
-          else: self._value_cont = Line.value_cont(self)
-       return self._value_cont
+    def gettext(self):
+        """Return the text of the note, whether it is inline or from an
+        associated record."""
+        if self._record:
+            return self._record.value_cont()
+        else:
+            return self.value_cont()
 
     def sources(self):
        """

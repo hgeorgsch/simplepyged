@@ -80,7 +80,6 @@ def buildchildren(b,gs,edge="->"):
     d = dict()
     cdict = dict()
     q.put( (1,gs) )
-    print(1,gs)
     root = gs[0]
     while not q.empty():
        (n,gs) = q.get(False)
@@ -98,13 +97,11 @@ def buildchildren(b,gs,edge="->"):
               b.put( " }, \n " ) 
 
 def putnode(b,node):
-      # print node.name()
       b.put( '"\\parbox{24mm}{\\raggedright ' ) 
       (f,s) = node.name()
       b.put_name(f,s)
       by = node.birth_year()
       dy = node.death_year()
-      print(f,s,by,dy)
       if not (by < 0 and dy < 0): 
          r = "("
          if by >= 0: r +=str(by)
@@ -129,7 +126,6 @@ class Graph(object):
       else:
           self._postamble = graphpostamble
           self._preamble = graphpreamble
-      print(self._preamble)
 
    def mkgraph(self,ref1,ref2,header=None,abstract=None):
       "Generate a graph of individuals."

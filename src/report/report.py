@@ -19,88 +19,21 @@ from . import date
 from simplepyged.errors import * 
 from simplepyged.events import Event
 from simplepyged.records import parse_name
+from aux import *
 
 from Queue import Queue
-
-class devnull():
-   """
-   A pseudo-list object, implementing the append() method, but
-   does nothing, simply ignoring the data.
-   """
-   def append(self,*a): pass
-class unsupport():
-   """
-   A pseudo-list object, similar to the devnull class.
-   It implements the append() method, and will issue a warning
-   whenever an object is appended, but otherwise ignore the data.
-   """
-   def append(self,e): 
-      print "Warning! Unsupported tag.", e
-
-class IndiBins(dict):
-   def add(self,e):
-      k = e.tag()
-      if self.has_key(k): self[k].append(e)
-      else: self[None].append(e)
-   def __init__(self,ind=None):
-      # Event records
-      self[None] = []
-      # Other records
-      self["NAME"] = []
-      self["NOTE"] = []
-      self["OBJE"] = []
-      self["SOUR"] = []
-      self["FAMS"] = []
-      self["FAMC"] = []
-      self["ASSO"] = []
-      # Unsupported records
-      self["ALIA"] = unsupport()
-      # Ignore records
-      self["CHAN"] = devnull()
-      self["ANCI"] = devnull()
-      self["DESI"] = devnull()
-      self["RESN"] = devnull()
-      self["RIN"]  = devnull()
-      self["RFN"]  = devnull()
-      self["AFN"]  = devnull()
-      self["REFN"] = devnull()
-      self["SUBM"] = devnull()
-      # ignored records (handled elsewhere)
-      self["SEX"] = devnull()
-      if ind != None:
-         for e in ind.children_lines(): self.add(e)
-
-dic_norsk = { "and" : "og", 
-              "daughter" : "dotter til", 
-              "son" : "son til", 
-              "child" : "barn av", 
-              "born" : u"fødd", 
-              "died" : u"død", 
-              "married" : "gift", 
-              "with" : "med", 
-              "associates" : "andre relevante personar", 
-              "sources" : "kjelder", 
-              "BIRT" : u"fødd", 
-              "CHR" : u"døypt", 
-              "BAPM" : u"døypt", 
-              "CONF" : "konfirmert", 
-              "GRAD" : "eksamen", 
-              "OCCU" : "yrke", 
-              "CENS" : "registrert i folketeljing", 
-              "EMIG" : "utvandra", 
-              "IMMI" : "innvandra", 
-              "RESI" : u"busett", 
-              "RETI" : u"pensjonert", 
-              "DEAT" : u"død", 
-              "BURI" : "gravlagd", 
-              "PROB" : "skifte", 
-              "PROP" : u"åtte", 
-	    }
 
 class Report(object):
    __indicontext = True
 
    def __init__(self,file,builder=None,dic=dic_norsk):
+      """
+      Instantiate a report.
+
+      :param Gedcom file:  :class:`Gedcom` object containing the family tree
+      :param Builder builder:  The Builder object producing output
+      :param dict dic:  The dictionary defining the output language
+      """
       self.__file = file
       self.__history = {}
       self.__reflist = set()
@@ -108,11 +41,20 @@ class Report(object):
       if builder == None: self._builder = Builder()
       else: self._builder = builder
       self._dic = dic
+   def setbuilder(self,builder=None,dic=None):
+      """Change builder.
+
+      This is useful if the report should be split between several
+      files while allowing cross-referencing between them.
+      """
+      self.__context = []
+      if builder == None: self._builder = Builder()
+      else: self._builder = builder
+      if dic != None: self._dic = dic
 
    def history_add(self,ind,no):
       """
-      Record the given individual ind as included in the report under
-      Entry no.
+      Record the given individual ind as included in the report under Entry no.
       """
       key = ind.xref()
       refno = self.__history.get( key )
@@ -138,7 +80,14 @@ class Report(object):
    # Output production methods
 
    def indireport(self,reflist,header=None,abstract=None):
-      "Generate a detailed ahnentafel report."
+      """Report on selected individuals.
+
+      Keyword parameters
+      ------------------
+      :param list reflist: List of xref keys for the individuals to report
+      :param list header: Title for the report
+      :param list abstract: Abstract for the report
+      """
       q = Queue()
       i = 1
       for ref in reflist:
@@ -149,14 +98,43 @@ class Report(object):
          i += 1
       if header == None:
 	 header = "Stamtavle for %s %s" % ind.name()
+      # Abstract
       self._builder.preamble( header )
       if abstract != None:
         self._builder.put_abstract_s( )
         self._builder.put( abstract )
         self._builder.put_abstract_e( )
+      # Main loop
       pgen = 0
       while not q.empty():
 	 (cgen, no, ind ) = q.get(False)
+         self.history_add(ind,no)
+	 self.individual(ind=ind,number=no)
+      # Tail matter
+      self.make_reflist()
+      self._builder.postamble()
+   def swordline(self,ref,mgen=12,header=None,abstract=None):
+      "Generate a sword line listing."
+      q = Queue()
+      ind = self.__file.get( ref )
+      if header == None:
+	 header = u"Sverdlina åt %s %s" % ind.name()
+      self._builder.preamble( header )
+      if abstract != None:
+        self._builder.put_abstract_s( )
+        self._builder.put( abstract )
+        self._builder.put_abstract_e( )
+      assert ind != None
+      q.put( ( 1, 1, ind ) )
+      self.history_add(ind,1)
+      pgen = 0
+      while not q.empty():
+	 (cgen, no, ind ) = q.get(False)
+	 if cgen < mgen:
+           f = ind.father()
+	   if f != None: 
+	      q.put( ( cgen+1, no+1, f ) )
+              self.history_add(f,no+1)
 	 self.individual(ind=ind,number=no)
       self.make_reflist()
       self._builder.postamble()
@@ -224,33 +202,6 @@ class Report(object):
 	       q.put( ( cgen+1, cno, c ) )
             self.history_add(c,cno)
 	 self.individual(ind=ind,number=no)
-      # Tail matter
-      self.make_reflist()
-      self._builder.postamble()
-   def list(self,q,header=None,abstract=None):
-      "Generate a report of a given list (queue) of individuals."
-
-      no = 0
-      ln = 999999
-
-      # Abstract
-      self._builder.preamble( )
-      if abstract != None:
-        self._builder.put_abstract_s( )
-        self._builder.put( abstract )
-        self._builder.put_abstract_e( )
-      # Main loop
-      while not q.empty():
-          pn = ln
-	  (ln, ind ) = q.get(False)
-          no += 1
-          print no, ln, ind.name()
-          if ln <= pn:
-              t = u"Frå %s %s" % ind.name()
-              print t
-	      self._builder.put_chead( t )
-          self.history_add(ind,no)
-	  self.individual(ind=ind,number=no)
       # Tail matter
       self.make_reflist()
       self._builder.postamble()
@@ -324,27 +275,31 @@ class Report(object):
       # if not ( d or p ): self._builder.put( " " )
       if p: self._builder.put( self.formatplace( p ) )
       self._builder.end_sentence()
-      # NOTE/SOUR/OBJE
+      # NOTE/SOUR
       noteq = []
       for n in event.children_tags("NOTE"):
 	 if n.note_type() == "prose":
 	    noteq.append(n)
 	 else:
-	    self._builder.put(n.value_cont())
+	    self._builder.put(n.gettext())
 	    for s in n.sources(): self.citation(s)
       # TODO distinguish between different kinds of notes.
       for n in event.children_tags("SOUR"):
-	 self.citation( n )
+	 self.citation( n,footnotequote=True )
       self._builder.end_sentence( )
       if noteq:
          self._builder.end_period( )
 	 for n in noteq:
-	    self._builder.put(n.value_cont())
+	    self._builder.put(n.gettext())
 	    for s in n.sources(): self.citation(s)
          self._builder.end_period("")
          
       # TODO clean up presentation of sources
-      # TODO OBJE
+      # OBJE
+      for obj in event.children_tags("OBJE"):
+          print obj.get_title()
+	  if not obj.get_use(): continue
+          self._builder.put_image(obj)
       # Finalise
 
    def associate(self,node):
@@ -358,17 +313,17 @@ class Report(object):
 
       (fn,sn) = ind.name()
       ref = self.__history.get(ind.xref())
-      self._builder.put_name(fn,sn,ref)
+      self._builder.put_name(fn,sn,ind.xref(),ref)
 
       if t: self._builder.put( "(" + t + ")" )
       self._builder.end_period()
 
       for n in node.children_tags("NOTE"):
-	 self._builder.put(n.value_cont())
+	 self._builder.put(n.gettext())
 	 for s in n.sources(): self.citation(s)
 	 self._builder.end_paragraph()
 
-   def citation(self,node):
+   def citation(self,node,footnotequote=False):
       """
       Process a source citation structure and produce appropriate
       report output.
@@ -393,7 +348,10 @@ class Report(object):
 	 if data != None: quotes = data.children_tags("TEXT")
 	 else: quotes = None
 	 self.__reflist.add( source )
-	 self._builder.put_cite( val, pl, ml, quot=quotes )
+         if footnotequote:
+	     self._builder.put_cite( val, pl, ml, fq=quotes )
+         else:
+	     self._builder.put_cite( val, pl, ml, quot=quotes )
 	 # TODO: handle notes and quotes
       else:
 	 if node.is_empty():
@@ -407,7 +365,7 @@ class Report(object):
    def simplename(self,node):
       (f,s) = node.name()
       ref = self.__history.get( node.xref() )
-      self._builder.put_name(f,s,ref)
+      self._builder.put_name(f,s,node.xref(),ref)
       if ref != None: return
       by = node.birth_year()
       dy = node.death_year()
@@ -454,10 +412,11 @@ class Report(object):
       #     print error/warning
       # (1) Gift dato (etc)
       if marr == None:
-	 if fam.children_count() > 0:
-           self._builder.put( "Hadde barn med " )
-	 else:
-           self._builder.put( "Sambuar med " )
+          if ind != None:
+	     if fam.children_count() > 0:
+               self._builder.put( "Hadde barn med " )
+	     else:
+               self._builder.put( "Sambuar med " )
       else:
         (d,p) = marr.dateplace()
 	if not (d or p):
@@ -468,13 +427,13 @@ class Report(object):
 	  if d != None and p != None: self._builder.put( " " )
           self._builder.put( self.formatplace(p) )
 	for cit in marr.children_tags("SOUR"):
-	   self.citation(cit)
+	   self.citation(cit,footnotequote=True)
       # (2) Spouse name (and details)
       if ind != None:
         self._builder.put( " " + self._dic["with"] + " " )
         (fn,sn) = ind.name()
 	ref = self.__history.get(ind.xref())
-        self._builder.put_name(fn,sn,ref)
+        self._builder.put_name(fn,sn,ind.xref(),ref)
 	if ref != None and short: 
             self._builder.end_period()
             return
@@ -482,10 +441,7 @@ class Report(object):
       # (3) Images
       for obj in fam.children_tags("OBJE"):
 	  if not obj.get_use(): continue
-          t = obj.get_title()
-          f = obj.get_file()
-          if not t: t = ""
-          self._builder.put_image(t,f,obj.xref())
+          self._builder.put_image(obj)
       # (4) Family sources
       for cit in fam.children_tags("SOUR"):
          self.citation(cit)
@@ -499,7 +455,7 @@ class Report(object):
       key = ind.xref()
       ref = self.__history.get(key)
       (fn,sn) = ind.name()
-      self._builder.put_name(fn,sn,ref)
+      self._builder.put_name(fn,sn,key,ref)
 
       # If the child has his/her own entry, we are done.
       if ref != None: return 
@@ -563,7 +519,7 @@ class Report(object):
       ref = self.__history.get(key)
       if ref != None and ref < number:
           (fn,sn) = ind.name()
-          self._builder.put_phead_repeat(fn,sn,number,ref)
+          self._builder.put_phead_repeat(fn,sn,number,ref,key)
           return ref
       else:
           # Make a complete new entry
@@ -573,6 +529,9 @@ class Report(object):
       """
       Generate a report on a single individual object ind, 
       where number is the person's ID number in a longer report.
+      This should only be called from :func:`individual`,
+      which determines if the individual needs to be reported
+      or can simply be cross-referenced.
       """
 
       (fn,sn) = ind.name()
@@ -588,10 +547,7 @@ class Report(object):
       # (2) OBJE ??
       for obj in rec["OBJE"]:
 	  if not obj.get_use(): continue
-          t = obj.get_title()
-          f = obj.get_file()
-          if not t: t = ""
-          self._builder.put_image(t,f,obj.xref())
+          self._builder.put_image(obj)
 
       # (3) vitals (birth and parents)
       birt = ind.birth()
@@ -604,7 +560,8 @@ class Report(object):
       self._builder.end_paragraph()
 
       # (4) biography (events)
-      evs = [ Event(e) for e in rec[None] if ( e.tag() != "BIRT" and e.tag() != "DEAT" ) ]
+      evs = [ Event(e) for e in rec[None] 
+              if ( e.tag() != "BIRT" and e.tag() != "DEAT" ) ]
       evs.sort()
       for e in evs:
 	 self.event( ind, e )
@@ -619,7 +576,7 @@ class Report(object):
 
       # (5) NOTE
       for n in ind.children_tags("NOTE"):
-	 self._builder.put(n.value_cont())
+	 self._builder.put(n.gettext())
 	 for s in n.sources(): self.citation(s)
 	 self._builder.end_paragraph()
 
@@ -652,9 +609,8 @@ class Report(object):
              else:
                self._builder.put( "Dei hadde " + str(cc) + " born" )
                self._builder.end_period()
-         else:
-             self._builder.put( "Born:" )
 	 if len(cs) > 0:
+           if not cc: self._builder.put( "Born:" )
 	   self._builder.put_enum_s()
 	   for c in cs:
 	      self._builder.put_item_s()
@@ -692,39 +648,28 @@ class Report(object):
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
 
-def formatPageElement( p ):
-   l = [ x.strip() for x in p.split(":") ]
-   if len(l) == 1: return l[0]
-   if len(l) != 2: raise Exception, "Malformed page reference (" + p + ")."
-   if l[0] == "page": return "s. " + l[1]
-   elif l[0] == "number": return "nr. " + l[1]
-   elif l[0] == "entry": return "oppslag " + l[1]
-   elif l[0] == "list": return "liste " + l[1]
-   elif l[0] == "street": return l[1]
-   return l[0] + " " + l[1]
-def formatPage( p ):
-   return [ formatPageElement(x) for x in p.split(",") ]
 class Builder(object):
    def put_url(self,url,text=None): 
       if text == None: print "<URL:%s>" % (url,)
       else: print "%s <URL:%s>" % (text,url,)
-   def put_cite(self,ref): 
+   def put_cite(self,ref,quot=[],fq=[]): 
       print "[%s]" % (ref,)
    def put_comment(self,x):
        pass
-   def put_name(self,fn,sn,ref=None): 
+   def put_name(self,fn,sn,key=None,ref=None): 
       if ref == None: print "%s %s" % (fn,sn),
       else: print "%s %s (sjå %s)" % (fn,sn,ref),
    def put_phead(self,fn,sn,no,key): 
       print "%s\t%s %s" % (no,fn,sn)
       print
-   def put_phead_repeat(self,fn,sn,no,ref): 
+   def put_phead_repeat(self,fn,sn,no,ref,key): 
       print "%s\t%s %s (sjå %s)" % (no,fn,sn,ref)
       print 
    def put_subheader(self,header): print header + ":"
    def put_book_title(self,h): print " ###    %s    ### " % (h,)
    def put_shead(self,title=""): print "* " + title + "\n"
    def put_chead(self,title=""): print "*" + title + "\n"
+   def put_image(self,*a): pass
    def put_item_s(self): print "  + ",
    def put_item_e(self): print
    def put_enum_s(self): print

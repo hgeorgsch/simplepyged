@@ -111,7 +111,7 @@ class Gedcom(Node):
         """
         return self._record_dict
 
-    def get(self,*a): return self._record_dict.get(*a)
+    def get(self,xref,*a): return self._record_dict.get(xref.strip(),*a)
     def individual_list(self):
         """ Return a list of all the individuals in the Gedcom file.  The
         individuals are in the same order as they appeared in the file.
@@ -292,25 +292,3 @@ class Gedcom(Node):
        del(self._record_dict[node.xref()])
        self.del_child_line(node)
 
-class Associate(Line):
-    """
-    Object to represent an ASSOCIATION_STRUCTURE in GEDCOM 5.5.1
-    """
-
-    def __init__(self,*a,**kw):
-       Line.__init__(self,*a,**kw)
-       self._type = None
-
-    def _init(self):
-       v = self.value()
-       if valid_pointer(v):
-	  self._record = self._dict.get(v)
-	  if self._record == None: 
-	     raise GedcomMissingRecordError, "Missing record " + v
-       try: 
-          self._type = self.children_single_tag("RELA").value()
-       except: 
-          self._type = None
-       print ( "ASSO",v, self._type )
-       Node._init(self)
-    def get_type(self): return self._type

@@ -24,6 +24,10 @@
 # Standard libraries
 import string
 
+__all__ = [ "Node", "Line", "Record", "Note", "Multimedia",
+   "Repository", "Source", "Submitter", "Individual", "Family",
+   "Associate" ]
+
 # Other submodules
 from events import Event
 from errors import *
@@ -166,6 +170,12 @@ class Line(Node):
 	if not isinstance( dict, Node ): 
 	   print u"dict:", type(dict), unicode(self)
         self._dict = dict
+
+    def sources(self):
+       """
+       Return an iterator of all sources associated with the note.
+       """
+       return list( self.children_tags("SOUR") )
 
     def is_empty(self):
        """
@@ -828,3 +838,25 @@ class Family(Record):
        self.add_child_line( Line( 1, None, "CHIL", ref, dict=self._dict ) )
        ind.add_child_line( Line( 1, None, "FAMC", self.xref(), dict=self._dict ) )
 
+class Associate(Line):
+    """
+    Object to represent an ASSOCIATION_STRUCTURE in GEDCOM 5.5.1
+    """
+
+    def __init__(self,*a,**kw):
+       Line.__init__(self,*a,**kw)
+       self._type = None
+
+    def _init(self):
+       v = self.value()
+       if valid_pointer(v):
+	  self._record = self._dict.get(v)
+	  if self._record == None: 
+	     raise GedcomMissingRecordError, "Missing record " + v
+       try: 
+          self._type = self.children_single_tag("RELA").value()
+       except: 
+          self._type = None
+       print ( "ASSO",v, self._type )
+       Node._init(self)
+    def get_type(self): return self._type
