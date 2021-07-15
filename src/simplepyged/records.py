@@ -397,8 +397,8 @@ class Individual(Record):
            (first,last) = parse_name(e)
         else:
            for c in e.children_lines():
-              if c.tag() == "GIVN": first = c.value()
-              if c.tag() == "SURN": last = c.value()
+              if c.tag() == "GIVN": first = c.value().strip()
+              if c.tag() == "SURN": last = c.value().strip()
         return (first,last)
 
     def given_name(self):
