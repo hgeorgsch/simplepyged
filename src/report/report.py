@@ -540,14 +540,15 @@ class Report(object):
       # We sort all the child nodes for processing
       rec = IndiBins(ind)
 
-      # (1) Main name
-      self._builder.put_name(fn,sn)
-      self._builder.end_sentence()
-
-      # (2) OBJE ??
+      # (1) OBJE ??
       for obj in rec["OBJE"]:
 	  if not obj.get_use(): continue
           self._builder.put_image(obj)
+
+      # (2) Main name
+      self._builder.put_name(fn,sn)
+      self._builder.end_sentence()
+
 
       # (3) vitals (birth and parents)
       birt = ind.birth()
