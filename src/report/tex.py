@@ -13,6 +13,11 @@ def bib_escape(x):
    return x.replace( "&", " and " )
 def char_escape(x):
    return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" ).replace( "#", "\\#" ).replace( ". ", ".\\ " ).replace( u"død", u"$\dagger$" )
+def url_escape(x):
+   if hasattr(x, 'replace' ):
+       return x.replace( "#", "\\#" ) ;
+   else:
+       return [ url_escape(y) for y in x ]
 
 class texBuilder(object):
    llpackage = u"llbook"
@@ -60,9 +65,11 @@ class texBuilder(object):
       self.file.close()
       self.bibfile.close()
    def put_url(self,url,text="link"): 
-      self.file.write( "\\href{%s}{%s}" % (url,text,) )
+       print(url)
+       url = url_escape(url)
+       self.file.write( "\\href{%s}{%s}" % (url,text,) )
    def put_cite(self,ref,page=None,media=[],quot=[],fq=[]): 
-      ms = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
+      ms = [ "\\href{" + url_escape(m) + "}{\\textcolor{magenta}{\\ding{253}}}"
              for m in media ]
       if page:
          ps = ", ".join(page)
@@ -224,7 +231,7 @@ def makeBibtex( source ):
     bibtex = source.children_single_tag( "_TEX" )
     ms = source.children_tags( "OBJE" )
     ms = filter( lambda x : x, [ x.get_url() for x in ms ] )
-    media = [ "\\href{" + m + "}{\\textcolor{magenta}{\\ding{253}}}"
+    media = [ "\\href{" + url_escape(m) + "}{\\textcolor{magenta}{\\ding{253}}}"
              for m in ms ]
     if bibtex == None:
         author = source.children_single_val( "AUTH" )
