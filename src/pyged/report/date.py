@@ -28,7 +28,7 @@ This module provides the single :func:`formatdate` which takes a
 
 __all__ = [ "formatdate" ]
 
-from simplepyged.date import *
+from pyged.gedcom.date import *
 
 def formatdate(dat,space=True):
    if dat == None: return ""

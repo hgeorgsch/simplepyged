@@ -7,9 +7,9 @@ Graph generators for GEDCOM files.
 
 __all__ = [ "Graph" ]
 from . import date 
-from report import devnull, unsupport, IndiBins, dic_norsk, Builder
-from simplepyged.errors import * 
-from simplepyged.events import Event
+from .report import devnull, unsupport, IndiBins, dic_norsk, Builder
+from pyged.gedcom.errors import * 
+from pyged.gedcom.events import Event
 from queue import Queue
 
 

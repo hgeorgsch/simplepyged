@@ -16,9 +16,9 @@ a template for Concrete Builders.
 
 __all__ = [ "Report", "Builder" ]
 from . import date 
-from simplepyged.errors import * 
-from simplepyged.events import Event
-from simplepyged.records import parse_name
+from pyged.gedcom.errors import * 
+from pyged.gedcom.events import Event
+from pyged.gedcom.records import parse_name
 from .aux import *
 
 from queue import Queue

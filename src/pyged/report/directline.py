@@ -6,9 +6,10 @@ Find direct line relationships via a depth first search.
 """
 
 __all__ = [ "finddescendant", "mklines", "mkqueue" ]
-from graph import finddescendant
+
+from .graph import finddescendant
 from . import date 
-from Queue import Queue
+from queue import Queue
 
 def simplename(node):
       fn = u"%s %s" % node.name()

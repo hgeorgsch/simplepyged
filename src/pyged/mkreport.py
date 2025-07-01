@@ -33,9 +33,9 @@ parser.add_option("-m", "--individuals",
 		default=False, dest="individuals", action="store_true" )
 (opt,args) = parser.parse_args()
 
-from simplepyged.gedcom import Gedcom
-from report.report import Report
-import report.tex as TeX
+from .gedcom import Gedcom
+from .report import Report
+from .report import tex as TeX
 
 g = Gedcom( opt.gedcom )
 

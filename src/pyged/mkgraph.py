@@ -2,10 +2,9 @@
 
 import codecs
 
-from simplepyged.gedcom import Gedcom
-from report.report import Report
-from report.graph import Graph
-from report.tex import texBuilder
+from .gedcom import Gedcom
+from .report import *
+from .report.tex import texBuilder
 
 import optparse
 

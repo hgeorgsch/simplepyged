@@ -1,9 +1,9 @@
 #! /usr/bin/python
 
-from simplepyged.gedcom import Gedcom
-from simplepyged.mkrecords import *
-from report.report import Report
-from report.tex import texBuilder
+from .gedcom import Gedcom
+from .gedcom.mkrecords import *
+from .report import Report
+from .report.tex import texBuilder
 
 import optparse
 
