@@ -153,3 +153,28 @@
 %\PrerenderUnicode{Ø}
 %\PrerenderUnicode{Å}
 %\PrerenderUnicode{ü}
+
+
+\newcounter{esec}
+\setcounter{esec}{0}
+\def\esec{%
+  \ifcase\value{esec}
+    \def\sec@sec{\chapter}
+  \or
+    \def\sec@sec{\section}
+  \or
+    \def\sec@sec{\subsection}
+  \or
+    \def\sec@sec{\subsubsection}
+  \or
+    \def\sec@sec{\paragraph}
+  \or
+    \def\sec@sec{\subparagraph}
+  \fi
+  \addtocounter{esec}{1}
+  \sec@sec
+}
+\def\endesec{
+  \addtocounter{esec}{-1}
+  \ifcase\value{esec}\cleardoublepage\fi
+}
