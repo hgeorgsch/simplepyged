@@ -51,13 +51,13 @@ def parse_line(line):
   line = line.strip("\r\n")
   level,rest = line.split(" ",1)
   level = int(level)
-  if level < 0: raise RuntimeError, "Line must start with a positive integer"
+  if level < 0: raise RuntimeError( "Line must start with a positive integer" )
 
   if rest[0] == "@":
      pointer,rest = rest.split("@ ",1)
      pointer += "@"
      if not valid_pointer(pointer):
-        raise MalformedPointerError, "Malformed pointer"
+        raise MalformedPointerError( "Malformed pointer" )
   else:
      pointer = ""
 
@@ -85,20 +85,20 @@ class Gedcom(Node):
     """
 
     xref_prefix = {
-	  "INDI" : "I",
-	  "FAM"  : "F",
-	  "SOUR" : "S",
-	  "SUBM" : "X",
-	  "NOTE" : "N",
-	  "OBJE" : "M",
-	  }
+          "INDI" : "I",
+          "FAM"  : "F",
+          "SOUR" : "S",
+          "SUBM" : "X",
+          "NOTE" : "N",
+          "OBJE" : "M",
+          }
     xref_next = { }
 
 
     def __init__(self,file):
         """ Initialize a Gedcom parser. You must supply a Gedcom file.
         """
-	Node.__init__(self)
+        Node.__init__(self)
         self._record_dict = {}
         self._current_level = -1
         self._current_line = self
@@ -161,11 +161,11 @@ class Gedcom(Node):
     def _parse_line(self,number,line):
         # each line should have: Level SP (Xref SP)? Tag (SP Value)? (SP)? NL
         # parse the line
-	try:
-	  (l,p,t,v) = parse_line(line)
+        try:
+          (l,p,t,v) = parse_line(line)
         except Exception as e:
-	   print_exc(e)
-	   self._error(number,"Syntax error in GEDCOM file")
+           print_exc(e)
+           self._error(number,"Syntax error in GEDCOM file")
 
         # create the line
         if l > self._current_level + 1:
@@ -197,7 +197,7 @@ class Gedcom(Node):
               e = MediaObject(l,p,t,v,self)
             elif t == "ASSO":
               e = Associate(l,p,t,v,self)
-	    else:
+            else:
               e = Line(l,p,t,v,self)
 
         if p != '':
@@ -211,11 +211,11 @@ class Gedcom(Node):
                 self._current_line = self._current_line.parent_line()
             self._current_line.add_child_line(e)
 
-	if t == "REFN":
-	   ref = e.value()
-	   if self._record_dict.has_key(ref):
-             print "Warning:  Duplicate REFN:", ref
-	   else:
+        if t == "REFN":
+           ref = e.value()
+           if self._record_dict.has_key(ref):
+             print( "Warning:  Duplicate REFN:", ref )
+           else:
              self._record_dict[ref] = e.parent_line()
 
         # finish up
@@ -233,16 +233,16 @@ class Gedcom(Node):
        n = self.xref_next.get(tag)
        p = self.xref_prefix[tag] 
        if n == None:
-	  assert len(p) == 1, "Prefixes are assumed to be single character"
-	  K = [ k for k in self._record_dict.keys() if len(k) > 2 ]
-	  L = [ k[2:-1] for k in K if k[1] == p ]
-	  n = 0
-	  for i in L: # Search for the maximum, ignoring non-integers
-	     try:
-		m = int(i)
-		if m > n: n = m
-	     except: pass
-	  n += 1
+          assert len(p) == 1, "Prefixes are assumed to be single character"
+          K = [ k for k in self._record_dict.keys() if len(k) > 2 ]
+          L = [ k[2:-1] for k in K if k[1] == p ]
+          n = 0
+          for i in L: # Search for the maximum, ignoring non-integers
+             try:
+                m = int(i)
+                if m > n: n = m
+             except: pass
+          n += 1
           self.xref_next[tag] = n + 1
        else:
          n = self.xref_next[tag]
@@ -255,7 +255,7 @@ class Gedcom(Node):
           for e in self.line_list(): f.write( unicode(e) + "\n" )
           f.close()
        else:
-          for e in self.line_list(): print unicode(e)
+          for e in self.line_list(): print( unicode(e) )
 
     def _assert(self,level=None):
        """
@@ -264,23 +264,23 @@ class Gedcom(Node):
        assert self._children_lines[0].tag() == "HEAD", "File lacks header"
        assert self._children_lines[-1].tag() == "TRLR", "File lacks trailer"
        for n in self._children_lines[1:-1]:
-	  ref = n.xref()
-	  if ref:
-	    assert ref[0] == "@", "Malformed xref"
-	    assert ref[-1] == "@", "Malformed xref"
-	  else:
-	     print "Warning!  0-level entry without an xref violates Gedcom"
+          ref = n.xref()
+          if ref:
+            assert ref[0] == "@", "Malformed xref"
+            assert ref[-1] == "@", "Malformed xref"
+          else:
+             print( "Warning!  0-level entry without an xref violates Gedcom" )
 
     # Modifying the data structure
     def add_record(self,node):
        ref = node.xref()
        if self._record_dict.has_key(ref):
-	  print node.gedcom()
-	  print ref
-	  raise Exception, "Record with same xref already exists"
+          print( node.gedcom() )
+          print( ref )
+          raise Exception( "Record with same xref already exists" )
        if ref == None:
-	  ref = self.getxref( node.tag() )
-	  node.set_xref( ref )
+          ref = self.getxref( node.tag() )
+          node.set_xref( ref )
        # (1) append record as child node
        tr = self._children_lines.pop()
        self.add_child_line( node )
