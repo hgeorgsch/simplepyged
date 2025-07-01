@@ -40,12 +40,12 @@ __all__ = [ "Gedcom", ]
 import string
 import codecs
 from traceback import print_exc
-from media import MediaObject
+from .media import MediaObject
 
 # Other submodules
-from records import *
-from errors import *
-from notes import NoteStructure
+from .records import *
+from .errors import *
+from .notes import NoteStructure
 
 def parse_line(line):
   line = line.strip("\r\n")
@@ -152,7 +152,8 @@ class Gedcom(Node):
         f = open(file)
         number = 1
         for line in f.readlines():
-            self._parse_line(number,line.decode("utf-8"))
+            # self._parse_line(number,line.decode("utf-8"))
+            self._parse_line(number,line)
             number += 1
 
         self._init()
@@ -213,7 +214,7 @@ class Gedcom(Node):
 
         if t == "REFN":
            ref = e.value()
-           if self._record_dict.has_key(ref):
+           if ref in self._record_dict:
              print( "Warning:  Duplicate REFN:", ref )
            else:
              self._record_dict[ref] = e.parent_line()
@@ -274,7 +275,7 @@ class Gedcom(Node):
     # Modifying the data structure
     def add_record(self,node):
        ref = node.xref()
-       if self._record_dict.has_key(ref):
+       if ref in self._record_dict:
           print( node.gedcom() )
           print( ref )
           raise Exception( "Record with same xref already exists" )

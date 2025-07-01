@@ -28,8 +28,8 @@ This module provides the Event class to handle event structures
 in Gedcom.
 """
 
-import date
-from place import Place
+from . import date
+from .place import Place
 
 class Event(object):
     """

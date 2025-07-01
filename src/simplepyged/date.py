@@ -123,9 +123,9 @@ class DateProper(Date):
       assert len(dat) == 0
    def gedcom(self):
       R = ""
-      if self.day != None: R += unicode(self.day) + " "
+      if self.day != None: R += self.day + " "
       if self.month != None: R += months[self.month-1] + " "
-      if self.year != None: R += unicode(self.year)
+      if self.year != None: R += self.year
       return R
 
    def getDate(self): return (self.year,self.month,self.day)
@@ -135,7 +135,7 @@ class DateInterpreted(Date):
    def __init__(self,dat):
       super(DateInterpreted,self).__init__()
       assert dat[0] == "INT"
-      raise NotImplementedError, "Interpreted dates not supported."
+      raise NotImplementedError( "Interpreted dates not supported." )
 class DatePhrase(Date):
    def __init__(self,dat):
       super(DatePhrase,self).__init__()
@@ -175,9 +175,9 @@ class DateRange(DateInterval):
       if dat[0] == "BEF": self.start = makeDate( dat[1:] )
       if dat[0] == "AFT": self.end   = makeDate( dat[1:] )
       if dat[0] == "BET":
-	 idx = dat.index("AND")
-	 self.start = makeDate( dat[1:idx] )
-	 self.end   = makeDate( dat[idx+1:] )
+         idx = dat.index("AND")
+         self.start = makeDate( dat[1:idx] )
+         self.end   = makeDate( dat[idx+1:] )
 class DatePeriod(DateInterval):
    """
    A date period, as defined in Gedcom by the FROM and TO keywords.
@@ -186,16 +186,16 @@ class DatePeriod(DateInterval):
       super(DatePeriod,self).__init__()
       assert dat[0] in [ "FROM", "TO" ]
       if dat[0] == "FROM":
-	 try:
-	    idx = dat.index("TO")
-	    self.start = makeDate( dat[1:idx] )
-	    self.end   = makeDate( dat[idx+1:] )
-	 except ValueError:
-	    self.start = makeDate( dat[1:] )
-	    self.end   = None
+         try:
+            idx = dat.index("TO")
+            self.start = makeDate( dat[1:idx] )
+            self.end   = makeDate( dat[idx+1:] )
+         except ValueError:
+            self.start = makeDate( dat[1:] )
+            self.end   = None
       else:
-	 self.end   = makeDate( dat[1:] )
-	 self.start = None
+         self.end   = makeDate( dat[1:] )
+         self.start = None
 
 def makeDate(dat):
    """
@@ -203,7 +203,7 @@ def makeDate(dat):
    given string dat, which should be a valid Gedcom date value.
    """
    if isinstance(dat,str): parts = dat.split()
-   elif isinstance(dat,unicode): parts = dat.split()
+   # elif isinstance(dat,unicode): parts = dat.split()
    else: parts = dat
    if len(parts) == 0: return None
    if parts[0] in [ "FROM", "TO" ]: return DatePeriod( parts )

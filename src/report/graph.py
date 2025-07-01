@@ -10,9 +10,8 @@ from . import date
 from report import devnull, unsupport, IndiBins, dic_norsk, Builder
 from simplepyged.errors import * 
 from simplepyged.events import Event
-from Queue import Queue
+from queue import Queue
 
-from Queue import Queue
 
 def pedigree(file,ref1,ngen=4):
       "Find direct descendance from one individual to another."
@@ -102,11 +101,11 @@ def putnode(b,node):
       b.put_name(f,s)
       by = node.birth_year()
       dy = node.death_year()
-      if not (by < 0 and dy < 0): 
+      if not (by is None and dy is None): 
          r = "("
-         if by >= 0: r +=str(by)
+         if not by is None: r += str(by)
          r += "--" 
-         if dy >= 0: r += str(dy) 
+         if not dy is None: r += str(dy)
          b.put( r + ")" )
       b.put( ' }" ' ) 
 

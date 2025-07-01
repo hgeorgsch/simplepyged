@@ -23,8 +23,8 @@
 
 import codecs
 
-from errors import *
-from records import Line
+from .errors import *
+from .records import Line
 
 def valid_url(s):
    t = s.strip()
@@ -44,9 +44,9 @@ class NoteStructure(Line):
        self._type = None
        v = self.value()
        if valid_pointer(v):
-	  self._record = self._dict.get(v)
-	  if self._record == None: 
-	     raise GedcomMissingRecordError, "Missing record " + v
+          self._record = self._dict.get(v)
+          if self._record == None: 
+             raise GedcomMissingRecordError( "Missing record " + v )
 
     def gettext(self):
         """Return the text of the note, whether it is inline or from an
@@ -62,24 +62,24 @@ class NoteStructure(Line):
        """
        L = list( self.children_tags("SOUR") )
        if len(L) > 0: 
-          print "Warning!  Sources attached to Note Structures is not valid GEDCOM"
-	  print unicode(self)
+          print("Warning!  Sources attached to Note Structures is not valid GEDCOM")
+          print(str(self))
        if self._record != None:
           if len(L) > 0: 
-	     print "Sources in note structure are ignored.  Move them to source record"
-	  return self._record.children_tags("SOUR")
+             print("Sources in note structure are ignored.  Move them to source record")
+          return self._record.children_tags("SOUR")
        else:
-	  return L
+          return L
 
     def note_type(self):
         """
-	Return the contents type of note, identifying a few special 
-	cases like a URL only.
+        Return the contents type of note, identifying a few special 
+        cases like a URL only.
         """
-	if self._type == None:
-	   v = self.value_cont()
-	   s = v.strip()
-	   if valid_url(v): self._type = "url"
-	   elif s[0].islower() and s[-1] != ".": self._type = "phrase"
-	   else: self._type = "prose"
+        if self._type == None:
+           v = self.value_cont()
+           s = v.strip()
+           if valid_url(v): self._type = "url"
+           elif s[0].islower() and s[-1] != ".": self._type = "phrase"
+           else: self._type = "prose"
         return self._type

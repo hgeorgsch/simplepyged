@@ -21,7 +21,7 @@ defaults = [
 
 prepList = [ u"i", u"i", u"i", u"i",
             u"i", u"i", u"på", u"på", 
-	    u"i", ]
+            u"i", ]
 
 def parsePlace(s):
    if s == None:
@@ -43,21 +43,21 @@ class Place(object):
       P = self
       L = [ ]
       while P != None:
-	 L.append(P)
-	 P = P.parent
+         L.append(P)
+         P = P.parent
       while len(L) > 0:
-	 y = L.pop().getName()
-	 yield y
+         y = L.pop().getName()
+         yield y
    def getName(self):
       "Return the base name of the place as a string."
       if self.name:
-	 return self.name
+         return self.name
       else:
-	 return ""
+         return ""
    def asList(self):
       "Return the full hierarchical name of the place as a list of strings."
       if self.parent == None:
-	 R = []
+         R = []
       else:
          R = self.parent.asList()
       R.append(self.getName())
@@ -72,41 +72,41 @@ class Place(object):
       """Get the base name of the place, or the parent place if
       no name is defined."""
       if self.isNone(): 
-	 if self.parent == None:
-	    return ""
-	 else:
-	    return self.parent.getAName()
+         if self.parent == None:
+            return ""
+         else:
+            return self.parent.getAName()
       else: 
-	 return self.getName()
+         return self.getName()
    def text(self,prep=False,local=[]):
       "Return the full name as it should be written in prose."
       if local == None:
-	 local = []
+         local = []
       if self.short != None:
-	 R = self.short
+         R = self.short
       elif self.parent == None:
-	 R = self.getName()
+         R = self.getName()
       elif self.isNone():
-	 R = self.parent.text(local=local)
+         R = self.parent.text(local=local)
       elif self in local:
-	 R = self.getName()
+         R = self.getName()
       else:
-	 local.append(self)
+         local.append(self)
          if self.getName() == self.parent.getAName():
-	    R = self.parent.text(local=local)
+            R = self.parent.text(local=local)
          else:
-	    R = self.getName() + ", " + self.parent.text(local=local)
+            R = self.getName() + ", " + self.parent.text(local=local)
       if prep:
-	 return self.preposition() + " " + R
+         return self.preposition() + " " + R
       else:
          return R
    def setShort(self,short):
       self.short = short
    def level(self):
       if self.parent == None:
-	 return 0
+         return 0
       else:
-	 return 1 + self.parent.level()
+         return 1 + self.parent.level()
    def preposition(self,lang=prepList):
       return lang[self.level()]
    @classmethod
@@ -115,34 +115,34 @@ class Place(object):
       which may be a string as it is taken from GEDCOM or a list
       of strings."""
       if s == None:
-	 return None
+         return None
+      # if isinstance(s,str):
+      #    s = unicode(s)
+      # if isinstance(s,unicode):
+      #    s = parsePlace(s)
       if isinstance(s,str):
-	 s = unicode(s)
-      if isinstance(s,unicode):
-	 s = parsePlace(s)
-      if isinstance(s,str):
-	 s = parsePlace(s)
+         s = parsePlace(s)
       if not s:
-	 return None
+         return None
       c = s[-1]
-      if cls.countries.has_key(c):
-	 P = cls.countries[c]
+      if c in cls.countries:
+         P = cls.countries[c]
       else:
-	 P = cls( c )
-	 cls.countries[c] = P
+         P = cls( c )
+         cls.countries[c] = P
       return P.getPlace( s[:-1] )
    def getPlace(self,s):
       """Get or create a Place object  for the place defined by s,
       as descendant of self, which may be a string as it is taken 
       from GEDCOM or a list of strings."""
       if len(s) == 0:
-	 return self
+         return self
       c = s[-1]
-      if self.children.has_key(c):
-	 P = self.children[c]
+      if c in self.children:
+         P = self.children[c]
       else:
-	 P = Place( c, parent=self )
-	 self.children[c] = P
+         P = Place( c, parent=self )
+         self.children[c] = P
       return P.getPlace( s[:-1] )
 
 for (s,p) in defaults:

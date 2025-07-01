@@ -46,16 +46,16 @@ def formatdate(dat,space=True):
       elif d1 == None: return u" til " + formatdate(d2)
       else: return formatdate(d1) + "--" + formatdate(d2,space=False)
    elif isinstance(dat,DatePhrase):
-      return unicode(dat)
+      return str(dat)
    else:
       (y,m,d) = dat.getDate()
       if space:
          R = u" "
       else:
          R = u""
-      if d != None: R += unicode(d) + ". "
+      if d != None: R += str(d) + ". "
       if m != None: R += month_norsk[m] + " "
-      R += unicode(y)
+      R += str(y)
       if dat.isBC(): R += " f.Kr."
       return R
 

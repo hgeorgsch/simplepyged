@@ -21,9 +21,9 @@
 #
 # Please see the GPL license at http://www.gnu.org/licenses/gpl.txt
 
-from errors import *
-from records import Line
-from notes import valid_url
+from .errors import *
+from .records import Line
+from .notes import valid_url
 
 class MediaObject(Line):
     """
@@ -41,24 +41,24 @@ class MediaObject(Line):
        v = self.value()
        u = self.children_single_tag("_USE")
        if u == None: 
-	   self._use = None
+           self._use = None
        elif u.value().strip() == "Y":
-	   self._use = True
+           self._use = True
        else:
            self._use = False
        if valid_pointer(v):
-	  self._record = self._dict.get(v)
-	  if self._record == None: 
-	     raise GedcomMissingRecordError, "Missing record " + v
+          self._record = self._dict.get(v)
+          if self._record == None: 
+             raise GedcomMissingRecordError( "Missing record " + v )
           rec = self._record
        else:
            rec = self
-       print rec
+       print(rec)
        fs = list(rec.children_tags("FILE"))
        if len(fs) == 0:
-	  raise Exception, "Media object with no file given"
+          raise Exception( "Media object with no file given" )
        if len(fs) > 1:
-	  print "Warning: Media object with multiple files is not supported."
+          print("Warning: Media object with multiple files is not supported.")
        file = fs[0]
        self._file = file.value()
        try: 
@@ -88,7 +88,7 @@ class MediaObject(Line):
     def get_form(self): return self._form
     def get_use(self): 
        if self._use == None:
-	  return (self.get_type() == "photo")
+          return (self.get_type() == "photo")
        else:
           return self._use
     def get_type(self): return self._type

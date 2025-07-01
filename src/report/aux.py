@@ -14,12 +14,12 @@ class unsupport():
    whenever an object is appended, but otherwise ignore the data.
    """
    def append(self,e): 
-      print "Warning! Unsupported tag.", e
+      print("Warning! Unsupported tag.", e)
 
 def formatPageElement( p ):
    l = [ x.strip() for x in p.split(":") ]
    if len(l) == 1: return l[0]
-   if len(l) != 2: raise Exception, "Malformed page reference (" + p + ")."
+   if len(l) != 2: raise Exception( "Malformed page reference (" + p + ")." )
    if l[0] == "page": return "s. " + l[1]
    elif l[0] == "number": return "nr. " + l[1]
    elif l[0] == "entry": return "oppslag " + l[1]
@@ -32,7 +32,7 @@ def formatPage( p ):
 class IndiBins(dict):
    def add(self,e):
       k = e.tag()
-      if self.has_key(k): self[k].append(e)
+      if k in self: self[k].append(e)
       else: self[None].append(e)
    def __init__(self,ind=None):
       # Event records

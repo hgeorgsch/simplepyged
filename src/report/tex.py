@@ -42,7 +42,7 @@ class texBuilder(object):
    def preamble(self,h=None,preamble=None):
        if preamble: self.file.write( preamble )
        else: self.file.write(
-	    u"\\documentclass[combine,nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
+            u"\\documentclass[combine,nynorsk,pdftex,twocolumn,10pt,oneside]{scrartcl}\n"
             + u"\\pagestyle{myheadings}\n\n"
             + u"\\usepackage{" + self.llpackage + "}\n"
             + u"\\xdef\AncDec{Ancestors}\n\n"
@@ -74,14 +74,14 @@ class texBuilder(object):
       if page:
          ps = ", ".join(page)
       else: 
-	 ps = ""
+         ps = ""
       s = "".join( ms )
       if not ps:
-	 texstring = " \\cite{%s}" % (ref,)
+         texstring = " \\cite{%s}" % (ref,)
       elif len(ps) < 20:
-	 texstring = " \\cite[%s]{%s}" % (ps,ref,) 
+         texstring = " \\cite[%s]{%s}" % (ps,ref,) 
       else:
-	 texstring = " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) 
+         texstring = " \\footnote{\\cite{%s} %s.}\n" % (ref, ps + " " +s) 
       if ms: texstring += s 
       if quot:
           qs = [ q.value_cont() for q in quot ]
@@ -162,7 +162,7 @@ class texBuilder(object):
       try:
          idx = x.find( u"http://" )
       except:
-	 print x
+         print(x)
       if idx >= 0:
           s = char_escape(x[:idx]) 
           if self.newperiod: 
@@ -171,13 +171,13 @@ class texBuilder(object):
           elif self.newsentence:
               s = ", " + s
           self.file.write( char_escape(x[:idx]) )
-	  x = x[idx:].split(None,1)
-	  if len(x) > 1:
-	     (url,x) = x
-	     self.put_url(url)
+          x = x[idx:].split(None,1)
+          if len(x) > 1:
+             (url,x) = x
+             self.put_url(url)
              self.put( x )
           else:
-	     self.put_url(x)
+             self.put_url(x)
       else:
           if self.newperiod: 
               x = capFirst(x)
@@ -186,10 +186,10 @@ class texBuilder(object):
               x = ", " + x
               self.newsentence = False
           else: x = " " + x
-	  try:
+          try:
               self.file.write( char_escape(x) )
-	  except:
-	      print x
+          except:
+              print(x)
    def put_image( self, obj ):
           t = obj.get_title()
           f = obj.get_file()
@@ -238,9 +238,9 @@ def makeBibtex( source ):
         title  = source.children_single_val( "TITL" )
         pub    = source.children_single_val( "PUBL" )
         xref   = source.xref()
-	return makeBibtexMisc( xref, author=author, title=title, publication=pub, media=media )
+        return makeBibtexMisc( xref, author=author, title=title, publication=pub, media=media )
     else:
-	return "@" + bibtex.value_cont()
+        return "@" + bibtex.value_cont()
 
 def capFirst(s):
     if len(s) < 2: return s.capitalize()

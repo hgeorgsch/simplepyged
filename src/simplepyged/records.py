@@ -29,18 +29,18 @@ __all__ = [ "Node", "Line", "Record", "Note", "Multimedia",
    "Associate" ]
 
 # Other submodules
-from events import Event
-from errors import *
+from .events import Event
+from .errors import *
 
 def parse_name(e):
     """
     Parse a gedcom NAME value to produce a pair (firstname, lastname).  
     Any suffix after the lastname will be ignored.
     """
-    name = string.split(e.value(),'/')
-    first = string.strip(name[0])
+    name = e.value().split('/')
+    first = name[0].strip()
     if len(name) == 1: last = ""
-    else: last = string.strip(name[1])
+    else: last = name[1].strip()
     return (first,last)
 
 class Node(object):
@@ -56,23 +56,23 @@ class Node(object):
 
     def _init(self):
         """
-	A method which GEDCOM parser runs after all lines are available.
-	Subclasses should implement this method if they want to work with
-	other Lines at parse time, but after all Lines are parsed. 
-	"""
-	for e in self.children_lines(): e._init()
+        A method which GEDCOM parser runs after all lines are available.
+        Subclasses should implement this method if they want to work with
+        other Lines at parse time, but after all Lines are parsed. 
+        """
+        for e in self.children_lines(): e._init()
     def __iter__(self):
        return self._children_lines.__iter__()
 
     def line_list(self):
         """
-	Return an iterator of all the lines in the Gedcom node.  The
+        Return an iterator of all the lines in the Gedcom node.  The
         lines are in the same order as they appeared in the file.
         """
-	for e in self.children_lines():
-	   yield e
-	   for c in e.line_list():
-	      yield c
+        for e in self.children_lines():
+           yield e
+           for c in e.line_list():
+              yield c
 
     def level(self):
         """ Return the level of this node. """
@@ -80,7 +80,7 @@ class Node(object):
 
     def children_lines(self):
         """ Return the child lines of this line """
-	for i in self._children_lines: yield i
+        for i in self._children_lines: yield i
 
     def del_child_line(self,line):
         self._children_lines.remove(line)
@@ -91,15 +91,15 @@ class Node(object):
         
     def children_tags(self, tag):
         """
-	Returns list of child lines whoses tag match the argument.
-	"""
+        Returns list of child lines whoses tag match the argument.
+        """
         for c in self.children_lines():
             if c.tag() == tag: yield c
     def children_single_tag(self, tag):
         """
-	Returns the first child node whose tag matches the argument.
-	None is returned if no such child is found.
-	"""
+        Returns the first child node whose tag matches the argument.
+        None is returned if no such child is found.
+        """
         for c in self.children_lines():
             if c.tag() == tag: return c
         return None
@@ -125,11 +125,11 @@ class Node(object):
        new xref value."""
        if self._level > 0:
           v = self.value().strip()
-	  if v == old.strip(): 
-	     self._value = new
+          if v == old.strip(): 
+             self._value = new
        if hasattr(self,"children_lines"):
           for n in self.children_lines():
-	      n._xref_update(old,new)
+              n._xref_update(old,new)
 
 class Line(Node):
     """ Line of a GEDCOM file
@@ -161,14 +161,14 @@ class Line(Node):
         tag, value, and global line dictionary.  Normally initialized
         by the Gedcom parser, not by a user.
         """
-	Node.__init__(self)
+        Node.__init__(self)
         # basic line info
         self._level = level
         self._xref = xref
         self._tag = tag
         self._value = value
-	if not isinstance( dict, Node ): 
-	   print u"dict:", type(dict), unicode(self)
+        if not isinstance( dict, Node ): 
+           print ( "dict:", type(dict), self )
         self._dict = dict
 
     def sources(self):
@@ -189,14 +189,14 @@ class Line(Node):
 
     def type(self):
         """
-	Return class name of this instance
+        Return class name of this instance
 
         This can be used to determe if this line is Individual, Family,
-	Note or some other record.  However, using the tag() method
-	is a better approach if the data, rather than the class, is
-	relevant.
+        Note or some other record.  However, using the tag() method
+        is a better approach if the data, rather than the class, is
+        relevant.
 
-	TODO: consider deprecating this.
+        TODO: consider deprecating this.
         """
         return self.__class__.__name__
 
@@ -205,10 +205,10 @@ class Line(Node):
         return self._xref
     def set_xref(self,ref):
         """ 
-	Set the xref of this node.  
-	If the xref is already set, an exception will be raised.
-	"""
-	assert self._xref == None
+        Set the xref of this node.  
+        If the xref is already set, an exception will be raised.
+        """
+        assert self._xref == None
         self._xref = ref
     
     def tag(self):
@@ -217,13 +217,13 @@ class Line(Node):
 
     def value_cont(self):
         """ 
-	Return the value of this line, including any subsequent
-	CONT/CONC lines.
-	"""
+        Return the value of this line, including any subsequent
+        CONT/CONC lines.
+        """
         v = self.value()
         for l in self.children_lines():
-	   if l.tag() == "CONT": v += "\n" + l.value()
-	   elif l.tag() == "CONC": v += l.value()
+           if l.tag() == "CONT": v += "\n" + l.value()
+           elif l.tag() == "CONC": v += l.value()
         return v
     def value(self):
         """ Return the value of this line """
@@ -231,36 +231,36 @@ class Line(Node):
 
     def children_single_record(self, tag):
         L = self.children_tag_records(tag)
-	if len(L) == 0: return None
-	else: return L[0]
+        if len(L) == 0: return None
+        else: return L[0]
 
     def children_tag_records(self, tag):
         """ 
-	Returns list of records which are pointed by child lines
-	with given tag.
-	"""
+        Returns list of records which are pointed by child lines
+        with given tag.
+        """
         lines = []
         for e in self.children_tags(tag):
             k = self._dict.get(e.value())
-	    if k != None:
+            if k != None:
                lines.append(self._dict.get(e.value()))
-	    else:
-	       print str(e)
-	       print str(e.parent_line())
-	       raise GedcomMissingRecordError, \
-		     "Undefined pointer: %s.  Missing record." % (e.value(),)
+            else:
+               print ( str(e) )
+               print ( str(e.parent_line()) )
+               raise GedcomMissingRecordError(
+                     f"Undefined pointer: {e.value()}.  Missing record.") 
         return lines
 
     def gedcom(self):
         """ Return GEDCOM code for this line and all of its sub-lines """
-        result = unicode(self)
+        result = self
         for e in self.children_lines():
             result += '\n' + e.gedcom()
         return result
 
     def __str__(self):
         """ Format this line as its original string """
-        result = unicode(self.level())
+        result = str(self.level())
         if self.xref():
             result += ' ' + self.xref()
         result += ' ' + self.tag()
@@ -283,7 +283,7 @@ class Record(Line):
        self._dict._xref_update(other.xref(),self.xref())
        # 2.  Move all sub records of other into self.
        for n in other:
-	  self.add_child_line(n)
+          self.add_child_line(n)
        # 3.  delete other
        self._dict.del_record(other)
        # Should do.
@@ -293,17 +293,17 @@ class Record(Line):
         """ Creates new event for each line with given tag"""
         retval = []
         for event_line in self.children_tags(tag):
-	   if not event_line.is_empty(): retval.append(Event(event_line))
+           if not event_line.is_empty(): retval.append(Event(event_line))
 
         return retval
     def add_source(self,sour,page=None):
        level = self.level()+1
        src = Line( level=level, xref=None, tag="SOUR",
-	     value=sour, dict=self._dict )
+             value=sour, dict=self._dict )
        if page:
           src.add_child_line(
-		Line( level=level+1, xref=None, tag="PAGE",
-		   value=page, dict=self._dict ) )
+                Line( level=level+1, xref=None, tag="PAGE",
+                   value=page, dict=self._dict ) )
        self.add_child_line( src )
        return src
 
@@ -326,9 +326,9 @@ class Individual(Record):
 
     def _init(self):
         """ Implementing Line._init() """
-	Record._init(self)
+        Record._init(self)
 
-	# TODO: reconsider the need for these attributes
+        # TODO: reconsider the need for these attributes
         self._parent_family = self.get_parent_family()
         self._families = self.get_families()
 
@@ -337,11 +337,11 @@ class Individual(Record):
 
     def sex(self):
         """
-	Returns 'M' for males, 'F' for females, 'U' for unknown gender.
-	"""
-	s = self.children_single_tag("SEX")
-	if s == None: return "U"
-	else: return s.value()
+        Returns 'M' for males, 'F' for females, 'U' for unknown gender.
+        """
+        s = self.children_single_tag("SEX")
+        if s == None: return "U"
+        else: return s.value()
 
     def parent_family(self):
         return self._parent_family
@@ -385,8 +385,8 @@ class Individual(Record):
         famc = self.children_tag_records("FAMC")
         
         if len(famc) > 1:
-	   print "Warning: multiple parent families not supported"
-	   print "Additional parents ignored for individual", self.xref()
+           print("Warning: multiple parent families not supported")
+           print("Additional parents ignored for individual", self.xref())
 
         if len(famc) == 0:
             return None
@@ -395,11 +395,11 @@ class Individual(Record):
     
     def name(self):
         """
-	Return a person's names as a tuple: (first,last).
+        Return a person's names as a tuple: (first,last).
 
-	The GIVN/SURN tags are used if provided, otherwise
-	the name is parsed from the NAME value itself.
-	"""
+        The GIVN/SURN tags are used if provided, otherwise
+        the name is parsed from the NAME value itself.
+        """
         first = ""
         last = ""
         e = self.children_single_tag( "NAME" )
@@ -431,12 +431,12 @@ class Individual(Record):
         
     def birth(self):
         """
-	Return the birth event of the individual.
+        Return the birth event of the individual.
 
         If the person has multiple birth events, then the returned
-	event is the first one entered in the file.  This event
-	should be treated as the `prefered' event according to
-	Gedcom 5.5.1.
+        event is the first one entered in the file.  This event
+        should be treated as the `prefered' event according to
+        Gedcom 5.5.1.
 
         For list of all birth events see self.birth_events().
         """
@@ -449,22 +449,21 @@ class Individual(Record):
     def birth_year(self):
         """ Return the birth year of a person in integer format """
 
-        if self.birth() == None: return -1
+        if self.birth() == None: return None
         return self.birth().year()
-        # TODO: reconsider the use of -1 here.
 
     def alive(self):
         "Return True if individual lacks death entry."
-	return self.death() is None
+        return self.death() is None
 
     def death(self):
         """
-	Return the death event of the individual.
+        Return the death event of the individual.
 
         If the person has multiple death events, then the returned
-	event is the first one entered in the file.  This event
-	should be treated as the `prefered' event according to
-	Gedcom 5.5.1.
+        event is the first one entered in the file.  This event
+        should be treated as the `prefered' event according to
+        Gedcom 5.5.1.
 
         For list of all death events see self.death_events().
         """
@@ -477,7 +476,7 @@ class Individual(Record):
     def death_year(self):
         """ Return the death year of a person in integer format """
 
-        if self.death() == None: return -1
+        if self.death() == None: return None
         return self.death().year() 
 
     def deceased(self):
@@ -529,7 +528,7 @@ class Individual(Record):
         him['old'] = []
 
         while(me['new'] != [] or him['new'] != []):
-	    #loop until we have no new ancestors to compare
+            #loop until we have no new ancestors to compare
             for p in me['new']: #compare new ancestors of both me and him
                 if p in him['new']:
                     return p
@@ -695,9 +694,9 @@ class Individual(Record):
        """
        fam = self.parent_family()
        if fam == None:
-	  fam = Family( 0, None, "FAM", None, self._dict )
-	  if marr:
-	     fam.add_child_line( Line( 1, None, "MARR", "Y", self._dict ) )
+          fam = Family( 0, None, "FAM", None, self._dict )
+          if marr:
+             fam.add_child_line( Line( 1, None, "MARR", "Y", self._dict ) )
           self._dict.add_record( fam )
        fam.add_child( self )
        if f != None: fam.add_husband( f, force )
@@ -709,10 +708,10 @@ class Individual(Record):
        """
        fam = Family( 0, None, "FAM", None, self._dict )
        if marr:
-	  e = Line( 1, None, "MARR", "Y", self._dict )
-	  if type(marr) == str:
-	     e.add_child_line( Line( 2, None, "DATE", marr, self._dict ) )
-	  fam.add_child_line( e )
+          e = Line( 1, None, "MARR", "Y", self._dict )
+          if type(marr) == str:
+             e.add_child_line( Line( 2, None, "DATE", marr, self._dict ) )
+          fam.add_child_line( e )
        self._dict.add_record( fam )
        # fam.add_child( self )
        return fam
@@ -730,13 +729,13 @@ class Family(Record):
 
     def _init(self):
         """
-	Implementing Line._init()
+        Implementing Line._init()
 
         Initialise husband, wife and children attributes.
-	"""
-	Record._init(self)
+        """
+        Record._init(self)
         
-	# TODO: reconsider the usefulness of the following attributes
+        # TODO: reconsider the usefulness of the following attributes
         self._husband = self.children_single_record("HUSB")
         self._wife = self.children_single_record("WIFE")
         self._children = self.children_tag_records("CHIL")
@@ -757,8 +756,8 @@ class Family(Record):
 
     def children_count_exact(self):
         """
-	Return the number of children using the NCHI tag.
-	"""
+        Return the number of children using the NCHI tag.
+        """
         n = self.children_single_tag("NCHI")
         try:
            return int(n.value())
@@ -767,13 +766,13 @@ class Family(Record):
 
     def children_count(self):
         """
-	Return the number of children.
+        Return the number of children.
 
-	This uses the NCHI entry of Gedcom if present,
-	otherwise it counts the children registered.
-	"""
+        This uses the NCHI entry of Gedcom if present,
+        otherwise it counts the children registered.
+        """
         n = self.children_count_exact()
-	if n != None: return n
+        if n != None: return n
         else: return len(self._children)
 
     def children(self):
@@ -786,14 +785,14 @@ class Family(Record):
 
     def marriage(self):
         """ 
-	Return the first marriage event from the record.
+        Return the first marriage event from the record.
 
         If a family has only one marriage event (which is most common
         case), return that one marriage event. For list of all marriage
         events see self.marriage_events.
         """
 
-	if len(self.marriage_events) == 0: return None
+        if len(self.marriage_events) == 0: return None
         return self.marriage_events[0]
 
     def is_relative(self, candidate):
@@ -809,21 +808,21 @@ class Family(Record):
     # Modifier methods
     def add_spouse(self,ind,force=False,tag=None):
        if self.xref() == None:
-	  raise ValueError, "Cannot add spouse to family without xref key."
+          raise ValueError( "Cannot add spouse to family without xref key." )
        if tag == None:
-	  sex = ind.sex()
-	  if sex == "F":
-	     tag = "WIFE"
-	  elif sex == "M":
-	     tag = "HUSB"
-	  else:
-	     print ind.gedcom()
-	     raise ValueError, "Don't know whether spouse is husband or wife."
+          sex = ind.sex()
+          if sex == "F":
+             tag = "WIFE"
+          elif sex == "M":
+             tag = "HUSB"
+          else:
+             print(ind.gedcom())
+             raise ValueError( "Don't know whether spouse is husband or wife." )
        ref = ind.xref()
        t = self.children_single_tag( tag )
        if t != None:
-	  if force: raise NotImplementedError
-	  else: raise Exception, "The family already has a %s record." %(tag,)
+          if force: raise NotImplementedError()
+          else: raise Exception( f"The family already has a {tag} record." )
        self.add_child_line( Line( 1, None, tag, ref, dict=self._dict ) )
        ind.add_child_line( Line( 1, None, "FAMS", self.xref(), dict=self._dict ) )
 
@@ -850,9 +849,9 @@ class Associate(Line):
     def _init(self):
        v = self.value()
        if valid_pointer(v):
-	  self._record = self._dict.get(v)
-	  if self._record == None: 
-	     raise GedcomMissingRecordError, "Missing record " + v
+          self._record = self._dict.get(v)
+          if self._record == None: 
+             raise GedcomMissingRecordError( "Missing record " + v )
        try: 
           self._type = self.children_single_tag("RELA").value()
        except: 
