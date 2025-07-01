@@ -15,7 +15,7 @@ def char_escape(x):
    return x.replace( "&", "\\&" ).replace( "%", "\\%" ).replace( "_", "\\_" ).replace( "#", "\\#" ).replace( ". ", ".\\ " ).replace( u"død", u"$\dagger$" )
 def url_escape(x):
    if hasattr(x, 'replace' ):
-       return x.replace( "#", "\\#" ) ;
+       return x.replace( "#", "\\#" ).replace( "%", "\\%" ) ;
    else:
        return [ url_escape(y) for y in x ]
 
