@@ -12,18 +12,18 @@ from . import date
 from queue import Queue
 
 def simplename(node):
-      fn = u"%s %s" % node.name()
+      fn = "%s %s" % node.name()
       by = node.birth_year()
       dy = node.death_year()
-      if by < 0 and dy < 0: return fn
+      if by is None and dy is None: return fn
       r = ""
-      if by >= 0: r += unicode(by)
+      if not by is None: r += str(by)
       r += "--"
-      if dy >= 0: r += unicode(dy)
-      return unicode(fn + u" (" + r + u")")
+      if not dy is None: r += str(dy)
+      return f"{fn} ({r})"
 
 def mklinesaux(l,n,r):
-        l.append( u"" + unicode(n) + u". " + simplename(r[0]) )
+        l.append( f"{n}. {simplename(r[0])}" )
         nx = r[1]
         if len(nx) == 0: 
             l.append("")
