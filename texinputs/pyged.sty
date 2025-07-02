@@ -1,0 +1,191 @@
+% $Id: llbook.sty 752 2011-07-31 04:33:01Z georg $
+% (C) 2011: Hans Georg Schaathun <hg+slekt@schaathun.net>
+
+% We may exceed TeX capacity, but etex did not help us.
+% \RequirePackage{etex}
+
+% Font and encoding
+\RequirePackage{babel}
+
+% Omitted because they do not work with lualatex
+% \RequirePackage[utf8x]{inputenc}
+% \RequirePackage[T1]{fontenc}
+
+% This tikz setup requires lualatex
+\RequirePackage{tikz}
+\usetikzlibrary{graphs,graphdrawing,quotes}
+\usegdlibrary{force}
+\usegdlibrary{layered}
+
+
+%\RequirePackage{ucs}
+\RequirePackage{graphicx}
+\RequirePackage{xcolor}
+\RequirePackage{caption}
+\IfFileExists{newfloat.sty}{\RequirePackage{newfloat}}{}
+\RequirePackage{pifont}
+
+\RequirePackage{quoting}
+
+\RequirePackage[encoding,filenameencoding=utf8x,space]{grffile}
+
+
+% Handle URL-s and hyperlinks in PDF
+\RequirePackage{hyperref}
+%% Note: hyperref does not handle # or % in URL-s -- URL's must be rewritten
+
+% Other packages
+\RequirePackage{comment}
+
+% Conditionals and options
+\newif\ifgensection\gensectiontrue
+\newif\ifbrief\brieffalse
+\DeclareOption{gensection}{\gensectiontrue}
+\DeclareOption{brie}{\brietrue}
+\ProcessOptions
+
+% Originally, all http URL-s were set with the \fnurl macro.
+% This is not entirely satisfactory.
+% TODO: simplify the use of URL-s and remove obsolete def's
+
+% We define this to be a hyperlink with a short text «link».
+% It will look silly in print, but it's the best we can do for
+% now.
+\def\llurl#1{(\href{#1}{link})}
+\def\fnurl#1{(\href{#1}{link})}
+%\def\fnurl#1{\footnote{\url{#1}}}
+
+
+% Shrink the margins to use more of the page.
+% This is taken from fullpage.sty, which is on some systems.
+\topmargin 0pt
+\advance \topmargin by -\headheight
+\advance \topmargin by -\headsep
+\textheight 8.9in
+\oddsidemargin 0pt
+\evensidemargin \oddsidemargin
+\textwidth 6.5in
+
+\newcounter{childnumber}
+
+% The \noname command is needed because TeX doesnt like underscores.
+\newcommand{\noname}{\underline{\ \ \ \ \ }}
+\newcommand{\nodate}{\underline{\ \ \ \ }}
+% TODO: reconsider the typesetting of missing names.
+
+% Environment for printing the list of children.
+\newenvironment{childrenlist}{\begin{small}\begin{list}{\sc\roman{childnumber}.}{\usecounter{childnumber}\setlength{\leftmargin}{0.5in}\setlength{\labelsep}{0.07in}\setlength{\labelwidth}{0.43in}}}{\end{list}\end{small}}
+
+% The following commands are used to create the index.
+\newcommand{\bold}[1]{{\bf #1}}
+\newcommand{\bfit}[1]{{\bf\it #1}}
+%%\newcommand{\see}[2]{{\it see #1}} %not needed with makeidx.sty
+
+\newcommand{\image}[4]{\begin{figure}
+\centerline{\psfig{figure=#1,height=#4}}
+\label{#3}
+\caption{#2}
+\end{figure}}
+\newcommand{\imwide}[4]{\begin{figure*}
+\centerline{\psfig{figure=#1,height=#4}}
+\label{#3}
+\caption{#2}
+\end{figure*}}
+\makeindex
+
+% \input{tree}
+
+\def\mktitle{
+  \let\l@@author\@author
+  \maketitle
+  \clearpage
+  \onecolumn
+  \pagestyle{empty}
+  \mbox{ }
+  \vfill
+  \begin{center}
+
+  Copyright \copyright \ \today \  \l@@author\\
+  % /* getstrmsg(copyplace, "Enter the place for the copyright notice:") */
+  % /* strxlat(tex_xlat, copyplace) */
+  \end{center}
+  \clearpage
+}
+\def\tocpage{
+  \pagestyle{myheadings}
+  \twocolumn
+
+  \setcounter{page}{1}
+  \tableofcontents
+}
+
+% Header for a new individual (typically a subsection)
+% Use \PersonRepeat when an individual is repeated,
+% and only a reference to the original inclusion is desired.
+\newcommand{\PersonHeader}[3]{%
+  \ifgensection\subsection*{#1 #2}\relax
+    \ifx\chapter\undefined
+      \def\@currentlabel{#1}\relax
+    \else
+      \def\@currentlabel{\thechapter.#1}\relax
+    \fi
+  \else\section*{#1 #2}\def\@currentlabel{#1}\fi\label{#3}
+}
+\ifgensection\let\size@person=\size@subsection\relax
+  \else\let\size@person=\size@section
+\fi
+\newcommand{\PersonRepeat}[3]{%
+  \vskip 3.25ex\@plus 1ex \@minus .2ex\relax
+  \par\begingroup\raggedsection\normalfont\sectfont\nobreak\size@person
+  #2 #3 \textrm{(See #1)}\endgroup\par
+  \vskip 0ex \@plus .2ex\relax
+}
+
+% Header for a new generation (typically a section)
+\newcommand{\generation}[2]{
+  \ifgensection
+    \ifbrief\section{#2 \AncDec\  \mbox{Generation~#1}}\relax
+    \else\section{\mbox{Generation~#1}}\fi
+  \else\chapter*{#2 \AncDec\  \mbox{Generation~#1}}\fi
+  \setcounter{footnote}{0}
+}
+
+\DeclareFloatingEnvironment[fileext=img,name=Bilet]{imagefloat}
+
+\def\theimagefloat{%
+    \colorbox{blue}{\textbf{\textcolor{white}{\footnotesize\arabic{imagefloat}}}}}
+\def\imgref#1{\ref{#1}}
+
+%\PrerenderUnicode{æ}
+%\PrerenderUnicode{ø}
+%\PrerenderUnicode{å}
+%\PrerenderUnicode{Æ}
+%\PrerenderUnicode{Ø}
+%\PrerenderUnicode{Å}
+%\PrerenderUnicode{ü}
+
+% \DeclareUnicodeCharacter{2028}{} 
+
+\newcounter{esec}
+\setcounter{esec}{0}
+\def\esec{%
+  \ifcase\value{esec}
+    \def\sec@sec{\chapter}
+  \or
+    \def\sec@sec{\section}
+  \or
+    \def\sec@sec{\subsection}
+  \or
+    \def\sec@sec{\subsubsection}
+  \or
+    \def\sec@sec{\paragraph}
+  \or
+    \def\sec@sec{\subparagraph}
+  \fi
+  \addtocounter{esec}{1}
+  \sec@sec
+}
+\def\endesec{
+  \addtocounter{esec}{-1}
+  \ifcase\value{esec}\cleardoublepage\fi
+}

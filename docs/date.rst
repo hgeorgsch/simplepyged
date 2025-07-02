@@ -2,7 +2,7 @@ Date
 ====
 
 
-.. automodule:: simplepyged.date
+.. automodule:: pyged.gedcom.date
 
 .. autoclass:: Date
    :members:

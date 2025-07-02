@@ -1,7 +1,7 @@
 Line
 ====
 
-.. automodule:: simplepyged.records
+.. automodule:: pyged.gedcom.records
 
 .. autoclass:: Line
    :members:

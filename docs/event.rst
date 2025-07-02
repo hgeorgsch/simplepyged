@@ -1,7 +1,7 @@
 Event
 ======
 
-.. automodule:: simplepyged.events
+.. automodule:: pyged.gedcom.events
 
 .. autoclass:: Event
    :members:

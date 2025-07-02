@@ -3,7 +3,7 @@ The report generator is intended to use a builder design pattern.
 The Director
 ^^^^^^^^^^^^
 
-.. automodule:: report.report
+.. automodule:: pyged.report
 
 .. autoclass:: Report
 
@@ -17,7 +17,7 @@ A very crude builder for ASCII output on stdout is provided
 by the same module.
 
 
-.. automodule:: report.tex
+.. automodule:: pyged.report.tex
 
 LaTeX output
 ------------

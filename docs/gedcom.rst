@@ -1,7 +1,7 @@
 Gedcom
 ======
 
-.. automodule:: simplepyged.gedcom
+.. automodule:: pyged.gedcom
 
 .. autoclass:: Gedcom
    :members:

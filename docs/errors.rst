@@ -1,7 +1,7 @@
 Errors
 ======
 
-.. automodule:: simplepyged.errors
+.. automodule:: pyged.gedcom.errors
 
 .. autoclass:: GedcomParseError
    :members:

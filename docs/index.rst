@@ -28,8 +28,8 @@ We have aimed to keep the two packages independent, so that
 speed up report generation, without affecting the
 :mod:`report` package.
 
-The simplepyged package
-=======================
+The `pyged.gedcom` package
+==========================
 
 General Structures
 ------------------

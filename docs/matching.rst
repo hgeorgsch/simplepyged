@@ -1,7 +1,7 @@
 MatchIndividual and MatchList
 =============================
 
-.. automodule:: simplepyged.matches
+.. automodule:: pyged.gedcom.matches
 
 .. autoclass:: MatchIndividual
    :members:
