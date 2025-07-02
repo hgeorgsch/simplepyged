@@ -130,9 +130,10 @@ class texBuilder(object):
       self.file.write( "  \\item " )
    def put_item_e(self): 
       self.file.write( "\n" )
-   def put_enum_s(self,n=1): 
+   def put_enum_s(self,n=None): 
       self.file.write( "\\begin{enumerate}\n" )
-      self.file.write( "\\setcounter{enumi}{" + str(n) + "}\n" )
+      if not n is None:
+         self.file.write( "\\setcounter{enumi}{" + str(n) + "}\n" )
    def put_enum_e(self): 
       self.file.write( "\\end{enumerate}\n" )
    def put_quot_s(self): 
