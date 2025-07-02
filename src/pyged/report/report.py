@@ -648,6 +648,20 @@ class Report(object):
       if len(L) > 0:
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
+   def list(self,q):
+       lst = -1
+       self._builder.put_enum_s(1)
+       while not q.empty():
+          (n, ind ) = q.get(False)
+          if n <= lst:
+              self._builder.put_enum_e()
+              self._builder.put_enum_s(n)
+          lst = n
+          self._builder.put_item_s( )
+          self.simplename( ind )
+          self._builder.put_item_e( )
+       self._builder.put_enum_e()
+
 
 class Builder(object):
    def put_url(self,url,text=None): 
@@ -673,7 +687,7 @@ class Builder(object):
    def put_image(self,*a): pass
    def put_item_s(self): print("  + ")
    def put_item_e(self): print()
-   def put_enum_s(self): print()
+   def put_enum_s(self,n=1): print()
    def put_enum_e(self): print()
    def put_quot_s(self): print("«")
    def put_quot_e(self): print("»")
