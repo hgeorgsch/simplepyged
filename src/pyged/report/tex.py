@@ -248,6 +248,7 @@ def capFirst(s):
 
 class texChapterBuilder(texBuilder):
    def __init__(self,file,title="",headertype="chapter"):
+      self._sectiontype = "section"
       self._parsefilename(file)
       self.title = title
       self.headertype = headertype
