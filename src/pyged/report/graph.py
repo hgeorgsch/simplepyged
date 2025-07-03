@@ -12,6 +12,7 @@ from pyged.gedcom.errors import *
 from pyged.gedcom.events import Event
 from queue import Queue
 
+from functools import reduce
 
 def pedigree(file,ref1,ngen=4):
       "Find direct descendance from one individual to another."
@@ -61,6 +62,18 @@ def depthfirst(file,ind1,ind2):
    else: 
        return (ind1,r)
 
+def unfoldgraph(g,p=[]):
+    print( "g", type(g) )
+    if isinstance(g,tuple): return unfoldgraph([g])
+    if g == []:
+        return [p]
+    else:
+        b = [ unfoldgraph( s, p+[c] ) for (c,s) in g ]
+        print( "b", b )
+        b = reduce( lambda x,y : x+y, b, [] )
+        return b
+# unfoldgraph( [ (0,[(1,[]),(2,[(4,[]),(5,[(6,[]),(7,[])]),(3,[])])])  ] )
+
 
 graphpreamble = (u"\\documentclass[10pt]{standalone}\n"
               + u"\\usepackage{tikz}\n"
@@ -95,6 +108,23 @@ def buildchildren(b,gs,edge="->"):
                     b.put( ", " )
                     q.put((n+1,c)) 
               b.put( " }, \n " ) 
+
+def buildtree(b,gs,edge="->"):
+    """
+    This does not work.
+    It is a dropin replacement for buildchildren(), aiming
+    to reduce the number of crossing edges, but the attempt fails,
+    and we get more arrows pointing upwards.
+    """
+    ss = unfoldgraph(gs)
+    for path in ss:
+        cnt = False
+        for node in path:
+            if cnt:
+                b.put( "\n " + edge + " " ) 
+            cnt = True
+            putnode(b,node) 
+        b.put( ",\n " ) 
 
 def putnode(b,node):
       b.put( '"\\nodebox{\\raggedright ' ) 
