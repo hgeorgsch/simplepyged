@@ -68,6 +68,7 @@ graphpreamble = (u"\\documentclass[10pt]{standalone}\n"
               + u"\\usetikzlibrary{graphs,graphdrawing,quotes}\n"
               + u"\\usegdlibrary{force}\n"
               + u"\\usegdlibrary{layered}\n"
+              + u"\\def\\nodebox{\\parbox{24mm}}\n"
               + u"\\begin{document}\n\\tiny\n"
               + u"  \\begin{tikzpicture}\n")
 graphpostamble = u"  \\end{tikzpicture}\n\\end{document}\n"
@@ -96,7 +97,7 @@ def buildchildren(b,gs,edge="->"):
               b.put( " }, \n " ) 
 
 def putnode(b,node):
-      b.put( '"\\parbox{24mm}{\\raggedright ' ) 
+      b.put( '"\\nodebox{\\raggedright ' ) 
       (f,s) = node.name()
       b.put_name(f,s)
       by = node.birth_year()
@@ -129,6 +130,8 @@ class Graph(object):
    def mkgraph(self,ref1,ref2,header=None,abstract=None):
       "Generate a graph of individuals."
       gs = finddescendant( self.__file, ref1, ref2 )
+      if gs is None:
+          raise Exception( "No descendants found" )
       self.printgraph(gs,header,abstract)
 
    def printgraph(self,gs,header=None,abstract=None,grow="down",edge="->"):

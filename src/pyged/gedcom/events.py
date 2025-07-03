@@ -88,7 +88,7 @@ class Event(object):
 
     # Other methods
     def year(self):
-       if self.date == None: R = -1
+       if self.date == None: R = None
        else: R = self.date.year
        return R
 
