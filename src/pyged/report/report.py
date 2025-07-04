@@ -648,6 +648,14 @@ class Report(object):
       if len(L) > 0:
         self._builder.put_subheader( self._dic.get("sources").capitalize() )
         for cit in L: self.citation(cit)
+   def listbio(self,q):
+       lst = -1
+       while not q.empty():
+          (n, ind ) = q.get(False)
+          if n <= lst:
+              self._builder.put_shead(title="Alternativ line")
+          lst = n
+          self.individual( ind=ind, number=n )
    def list(self,q):
        lst = -1
        self._builder.put_enum_s()

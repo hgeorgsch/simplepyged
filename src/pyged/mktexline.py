@@ -22,10 +22,16 @@ parser.add_option("-I", "--individual",
 parser.add_option("-T", "--target",
                 help="Key for the individual to search.",
 		dest="target" )
+parser.add_option("-b", "--bio",
+                help="Print individuals with biography.",
+		default=False, dest="bio", action="store_true" )
 (opt,args) = parser.parse_args()
 
 g = Gedcom( opt.gedcom )
 a = finddescendant(g,opt.indi,opt.target)
 q = mkqueue(a)
 r = Report(g,texBuilder(opt.outfile))
-r.list(q)
+if opt.bio:
+    r.listbio(q)
+else:
+    r.list(q)
