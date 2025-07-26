@@ -1,8 +1,8 @@
 from setuptools import setup, find_packages
-from simplepyged import __version__
+from pyged import __version__
 
 setup(
-    name='simplepyged',
+    name='pyged',
     version=__version__,
     description='A simple Python GEDCOM parser',
     long_description=open('README.rst', 'r').read(),
