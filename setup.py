@@ -9,9 +9,9 @@ setup(
     keywords='gedcom, genealogy',
     author=u'Hans Georg Schaathun',
     author_email='hg+slekt@schaathun.net',
-    url='https://github.com/hgeorgsch/simplepyged/',
+    url='https://github.com/hgeorgsch/pyged/',
     license='GPL',
-    package_dir={'simplepyged': 'simplepyged'},
+    package_dir={'pyged': 'src/pyged'},
     include_package_data=True,
     packages=find_packages(),
     classifiers=[
