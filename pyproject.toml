@@ -9,7 +9,7 @@ authors = [
   { name='Hans Georg Schaathun', email="georg+github@schaathun.net" },
 ]
 description = 'A simple Python GEDCOM parser'
-readme = "README.rst"
+readme = "README.md"
 requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
