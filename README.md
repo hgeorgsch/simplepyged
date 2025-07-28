@@ -58,3 +58,9 @@ recommended by Gedcom.  To represent dates, we have created a
 new `Date` class to handle the many forms of approximate
 dates supported in Gedcom.  All use of event objects must be
 updated accordingly.
+
+## Version History
+
++ v0.2.0.  First version released on PyPI - still rudimentary and undocumented.
++ v0.1.1.  Preliminary version, debugging the packaging info for PyPI
++ v0.1.  Unreleased versions, available on github.
