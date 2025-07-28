@@ -8,7 +8,7 @@ version = "0.2"
 authors = [
   { name='Hans Georg Schaathun', email="georg+github@schaathun.net" },
 ]
-description='A simple Python GEDCOM parser'
+description = 'A simple Python GEDCOM parser'
 readme = "README.rst"
 requires-python = ">=3.11"
 classifiers = [
