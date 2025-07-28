@@ -1,0 +1,23 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pyged"
+version = "0.2"
+authors = [
+  { name='Hans Georg Schaathun', email="georg+github@schaathun.net" },
+]
+description='A simple Python GEDCOM parser'
+readme = "README.rst"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL v3"
+license-files = ["LICENSE.txt"]
+
+[project.urls]
+Homepage = "https://github.com/CosmoAI-AES/CosmoSim"
+Issues = "https://github.com/CosmoAI-AES/CosmoSim/issues"
