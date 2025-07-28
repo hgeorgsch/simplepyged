@@ -14,9 +14,14 @@ requires-python = ">=3.11"
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Sociology :: Genealogy",
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-license = "GPL v3"
+license = "GPL-3.0"
 license-files = ["LICENSE.txt"]
+keywords=[ 'gedcom', 'genealogy', ]
 
 [project.urls]
 Homepage = "https://github.com/CosmoAI-AES/CosmoSim"
