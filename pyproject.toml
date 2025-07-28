@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyged"
-version = "0.2.0"
+version = "0.2.1"
 authors = [
   { name='Hans Georg Schaathun', email="georg+github@schaathun.net" },
 ]
@@ -24,5 +24,5 @@ license-files = ["LICENSE.txt"]
 keywords=[ 'gedcom', 'genealogy', ]
 
 [project.urls]
-Homepage = "https://github.com/CosmoAI-AES/CosmoSim"
-Issues = "https://github.com/CosmoAI-AES/CosmoSim/issues"
+Homepage = "https://github.com/hgeorgsch/pyged"
+Issues = "https://github.com/hgeorgsch/pyged/issues"

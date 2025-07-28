@@ -61,6 +61,7 @@ updated accordingly.
 
 ## Version History
 
++ v0.2.1.  Bugfix in metadata
 + v0.2.0.  First version released on PyPI - still rudimentary and undocumented.
 + v0.1.1.  Preliminary version, debugging the packaging info for PyPI
 + v0.1.  Unreleased versions, available on github.
